@@ -1,0 +1,9 @@
+# Setup git config --global core.excludesfile ~/.gitignore_global
+
+
+# For vscode typings tsd
+typings/
+.vscode/
+.idea/
+typings.json
+jsconfig.json
