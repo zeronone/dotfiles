@@ -57,6 +57,7 @@
        rotate-text       ; cycle region at point between text candidates
        snippets          ; my elves. They type so I don't have to
        ;file-templates    ; auto-snippets for empty files
+       word-wrap
 
        :emacs
        (dired            ; making dired pretty [functional]

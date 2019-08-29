@@ -294,3 +294,7 @@ Other errors while reverting a buffer are reported only as messages."
 
   ;; 'rust-analyzer is not ready yet
   (setq rustic-lsp-server 'lsp))
+
+
+;; custom
+(+global-word-wrap-mode +1)
