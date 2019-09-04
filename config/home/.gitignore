@@ -1,3 +1,4 @@
 spacemacs.custom.el
 .localcustomizations
 .secretsrc
+.emacs.d/*.elc

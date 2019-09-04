@@ -1,0 +1,31 @@
+# Setup git config --global core.excludesfile ~/.gitignore_global
+
+# mac
+.DS_Store
+
+# For vscode typings tsd
+.vscode/
+
+# Jetbrains
+.idea/
+
+# JS
+node_modules/
+typings.json
+jsconfig.json
+typings/
+
+# Haskell
+.stack-work/
+dist-newstyle/
+
+# Emacs
+.dir-locals.el
+
+
+# python
+.python-version
+__pycache__
+.mypy_cache
+.pycheckers
+**.egg-info/

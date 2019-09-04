@@ -1,0 +1,38 @@
+
+# Java (multiple versions)
+# export JAVA_8_HOME=$(/usr/libexec/java_home -v1.8)
+# export JAVA_9_HOME=$(/usr/libexec/java_home -v9)
+export JAVA_11_HOME=$(/usr/libexec/java_home -v11)
+
+alias java8='export JAVA_HOME=$(/usr/libexec/java_home -v1.8)'
+alias java9='export JAVA_HOME=$(/usr/libexec/java_home -v9)'
+alias java11='export JAVA_HOME=$JAVA_11_HOME'
+
+#default java8
+export JAVA_HOME=$JAVA_11_HOME
+
+# .oh-my-zsh prompt prefix
+export PS1="[osx] $PS1"
+
+# iterm shell integration
+if [ -n "$INSIDE_EMACS" ]; then
+else
+    test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+fi
+
+function osxwithsync() {
+  echo "Setting env vars"
+  sudo sh ~/myfiles/dotfiles/bin/osx/osx-sync-env-vars.sh
+  echo "Will run: $@"
+  ($@)
+}
+
+function osxresync() {
+  osxwithsync echo "Sync finsihed"
+}
+
+# emacs gui
+# alias emacsgui="open -n -a /usr/local/Cellar/emacs-mac/emacs-26.1-z-mac-7.4/Emacs.app/Contents/MacOS/Emacs"
+alias emacsgui="DOOMENV=0 open -n -a /usr/local/Cellar/emacs-mac/emacs-26.2-z-mac-7.6/Emacs.app/Contents/MacOS/Emacs"
+
+export PATH="/usr/local/opt/mysql@5.7/bin:$PATH"

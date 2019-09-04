@@ -1,0 +1,77 @@
+#!/bin/sh
+
+# install brew
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+## Terminal
+# install oh-my-zsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+brew install zsh-syntax-highlighting zsh-completions
+
+# spaceship theme
+git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt"
+ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH/themes/spaceship.zsh-theme"
+
+
+# Java
+brew cask install adoptopenjdk
+brew tap AdoptOpenJDK/openjdk
+brew cask install adoptopenjdk8
+brew cask install adoptopenjdk9
+
+# install sdkman
+curl -s https://get.sdkman.io | bash
+
+# Tools
+brew install git vim
+brew install stow
+brew install tldr
+
+
+# emacs railwaycat
+brew tap railwaycat/emacsmacport
+brew install emacs-mac --with-modules --with-imagemagick --with-glib --with-dbus --with-ctags --with-xml2
+
+# ripgrep installation is in install-rust-deps.sh
+brew install the_silver_searcher
+
+# iOS
+brew install carthage
+gem install cocoapods --user-install
+
+# fd (faster find)
+brew install fd
+
+# ip
+brew install iproute2mac
+
+# osquery
+brew install osquery
+
+# wireshark and tshark
+brew cask install wireshark
+
+# libvterm
+brew install libvterm
+
+# mtr
+brew install mtr
+sudo mkdir -p /usr/local/sbin
+sudo chown $(whoami) /usr/local/sbin
+brew link mtr
+
+# sqlite3 (emacs + Dash docsets)
+brew install sqlite3
+
+# install db beaver
+brew cask install dbeaver-community
+
+# k8s
+brew install kubernetes-cli
+brew cask install minikube
+brew install kubernetes-helm
+
+
+# jq
+brew install jq

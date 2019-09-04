@@ -1,0 +1,7 @@
+
+alias emacs="emacs -nw"
+
+export PS1="[centos] $PS1"
+
+alias ls="ls -al --color"
+

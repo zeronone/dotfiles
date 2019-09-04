@@ -3,29 +3,45 @@
 ## Installation
 
 ```
-$ cd $HOME
-$ mkdir myfiles
+# Install dotfiles
+$ mkdir -v myfiles
 $ cd myfiles
-$ git clone https://github.com/zeronone/dotfiles.git
+$ git clone https://github.com/zeronone/dotfiles.git $HOME/myfiles/dotfiles
+$ export DOTFILES_DIR=$HOME/myfiles/dotfiles
 $ cd dotfiles
-$ cd home && stow -t ~ .
+
+# Install necassary directories
+$ $DOTFILES_DIR/install/install-necassary-dirs.sh
+
+# Install system dependences
+# i.e: $DOTFILES_DIR/<operating_system>/install-base.sh
+
+# install oh-my-zsh
+$ sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+
+# Apply config
+$ cd $DOTFILES_DIR/config/home && stow -t ~ .
 # other directories based on the environment
+# $ cd ubuntu && stow -t ~ .
 
-# VIM
-$ cd $HOME
-$ git clone https://github.com/zeronone/vim.git .vim --recursive
-$ cd .vim
-$ ln -sf $HOME/.vim/.vimrc $HOME/.vimrc
-$ cd $HOME/.vim
-$ git submodule update --init
+# Install VIM config
+$ cd $DOTFILES_DIR/install
+$ ./install-vim-config.sh
 
-# EMACS
+# Install EMACS config
 $ cd $HOME
-$ git clone https://github.com/zeronone/doom-emacs.git .emacs.d
+$ git clone https://github.com/hlissner/doom-emacs.git $HOME/.emacs.d --recursive
 $ cd $HOME/.emacs.d
-$ cp init.example.el init.el
+$ git checkout --track origin/develop
+$ make
+# Consider M-x install-all-fonts && M-x unicode-fonts-setup
+# Install Fira Mono / Hack fonts
+
+# install private dotfiles
+$ git clone https://github.com/zeronone/dotfiles-private.git $HOME/myfiles/dotfiles-private
+# install according to profile
+
+# install remaining depdencies
+# i.e: ./install/install-rust-deps.sh
 ```
-
-
-
 
