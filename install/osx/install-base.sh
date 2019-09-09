@@ -75,3 +75,6 @@ brew install kubernetes-helm
 
 # jq
 brew install jq
+
+# ccls
+brew install ccls

@@ -297,4 +297,4 @@ Other errors while reverting a buffer are reported only as messages."
 
 
 ;; custom
-(+global-word-wrap-mode +1)
+(global-visual-line-mode +1)
