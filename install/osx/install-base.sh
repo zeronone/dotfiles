@@ -83,3 +83,6 @@ brew install ccls
 brew install direnv
 
 brew install aspell
+
+# ipsell
+brew install ispell

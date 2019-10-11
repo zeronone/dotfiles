@@ -51,3 +51,4 @@ source $HOME/.gvm/scripts/gvm
 # manpth
 export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:${MANPATH-/usr/share/man}"
 export MANPATH="$HOME/man/linux-kernel:${MANPATH-/usr/share/man}"
+export PATH="/usr/local/opt/curl/bin:$PATH"
