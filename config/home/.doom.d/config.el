@@ -8,8 +8,9 @@
  +pretty-code-enabled-modes '(emacs-lisp-mode org-mode)
  +format-on-save-enabled-modes '(not emacs-lisp-mode rjsx-mode javascript-mode))
 
-(setq +doom-modeline-buffer-file-name-style 'relative-from-project
-      show-trailing-whitespace t)
+(setq doom-modeline-buffer-file-name-style 'truncate-with-project)
+(setq doom-modeline-persp-name t)
+(setq show-trailing-whitespace t)
 
 (add-hook! '(minibuffer-setup-hook doom-popup-mode-hook)
   (setq-local show-trailing-whitespace nil))
@@ -295,6 +296,13 @@ Other errors while reverting a buffer are reported only as messages."
   ;; 'rust-analyzer is not ready yet
   (setq rustic-lsp-server 'lsp))
 
+
+;; Fancy look
+(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+(add-to-list 'default-frame-alist '(ns-appearance . dark))
+
+;; Disable title bars
+;; (setq default-frame-alist '((undecorated . t)))
 
 ;; custom
 (global-visual-line-mode +1)

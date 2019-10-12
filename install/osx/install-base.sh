@@ -78,3 +78,8 @@ brew install jq
 
 # ccls
 brew install ccls
+
+# direnv
+brew install direnv
+
+brew install aspell
