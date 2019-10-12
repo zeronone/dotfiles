@@ -1,5 +1,8 @@
 ;;; config.el -*- lexical-binding: t; -*-
 
+;; Initial frame size
+(when window-system (set-frame-size (selected-frame) 150 50))
+
 (setq-default
  user-full-name    "Arif Rezai"
  user-mail-address "me@arifrezai.com"
