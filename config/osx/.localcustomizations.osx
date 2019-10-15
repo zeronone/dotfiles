@@ -36,3 +36,6 @@ function osxresync() {
 alias emacsgui="DOOMENV=0 open -n -a /usr/local/Cellar/emacs-mac/emacs-26.2-z-mac-7.6/Emacs.app/Contents/MacOS/Emacs"
 
 export PATH="/usr/local/opt/mysql@5.7/bin:$PATH"
+
+# for iterm integration
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"

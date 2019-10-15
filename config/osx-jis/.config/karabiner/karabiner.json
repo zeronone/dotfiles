@@ -606,7 +606,7 @@
                         "key_code": "lang1"
                     },
                     "to": {
-                        "key_code": "escape"
+                        "key_code": "right_shift"
                     }
                 },
                 {
@@ -615,6 +615,14 @@
                     },
                     "to": {
                         "key_code": "fn"
+                    }
+                },
+                {
+                    "from": {
+                        "key_code": "right_shift"
+                    },
+                    "to": {
+                        "key_code": "right_control"
                     }
                 }
             ],
