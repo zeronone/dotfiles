@@ -81,7 +81,7 @@
        ;;ein               ; tame Jupyter notebooks with emacs
        eval              ; run code, run (also, repls)
        flycheck
-       flyspell
+       ; flyspell       ; TODO: currently buggy on Mac OSX
        gist              ; interacting with github gists
        (lookup           ; helps you navigate your code and documentation
         +docsets)        ; ...or in Dash docsets locally

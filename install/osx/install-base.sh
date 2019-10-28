@@ -91,3 +91,12 @@ brew install starship
 
 # podman
 brew cask install podman
+
+# Alacritty
+brew cask install alacritty
+
+# tmux
+brew install tmux
+
+# bat (better cat)
+brew install bat

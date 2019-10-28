@@ -198,6 +198,10 @@ export N_PREFIX="$HOME/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PR
 # python
 # to avoid loading inside nested shell
 if [[ -z "${PYENV_ROOT}" ]]; then
+    pyenv_init
+fi
+
+function pyenv_init {
     # pyenv / pyenv-virtualenv
     export PYENV_ROOT="$HOME/.pyenv"
     export PATH="$PYENV_ROOT/bin:$PATH"
@@ -207,7 +211,7 @@ if [[ -z "${PYENV_ROOT}" ]]; then
         eval "$(pyenv init -)"
         eval "$(pyenv virtualenv-init -)";
     fi
-fi
+}
 
 #########################################################
 

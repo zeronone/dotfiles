@@ -59,7 +59,12 @@
   (setq org-image-actual-width 400)
 
   (setq org-directory "~/Dropbox/orgs/")
-  (setq org-agenda-files '("~/Dropbox/orgs"))
+  (setq org-agenda-files (list "~/Dropbox/orgs/"
+                               "~/Dropbox/orgs/personal-wiki"
+                               "~/Dropbox/orgs/line-wiki"
+                               "~/Dropbox/orgs/line"
+                               "~/Dropbox/orgs/verda"
+                               "~/Dropbox/orgs/toptal"))
   (setq org-refile-additional-targets-a '("~/Dropbox/orgs/verda"))
   (setq org-refile-targets '((nil :maxlevel . 9)
                              (org-refile-additional-targets-a :maxlevel . 9)
