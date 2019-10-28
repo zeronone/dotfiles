@@ -72,7 +72,6 @@ brew install kubernetes-cli
 brew cask install minikube
 brew install kubernetes-helm
 
-
 # jq
 brew install jq
 
@@ -83,6 +82,12 @@ brew install ccls
 brew install direnv
 
 brew install aspell
-
-# ipsell
 brew install ispell
+
+brew install fzf
+
+# cross platform prompt written in rust
+brew install starship
+
+# podman
+brew cask install podman

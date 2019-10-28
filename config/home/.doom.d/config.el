@@ -53,6 +53,9 @@
   (setq-default org-cycle-separator-lines 0)
   (setq-default org-agenda-inhibit-startup nil)
 
+  ;; use python3 in org-babel
+  (setq org-babel-python-command "python3")
+
   (setq org-image-actual-width 400)
 
   (setq org-directory "~/Dropbox/orgs/")
@@ -149,7 +152,7 @@
 (setq exec-path-from-shell-shell-name "/bin/zsh")
 
 ;; doom-theme
-(setq doom-theme 'doom-dracula)
+(setq doom-theme 'wombat)
 
 ;; magit
 (setq +magit-hub-enable-by-default nil)

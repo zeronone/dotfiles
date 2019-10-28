@@ -80,7 +80,7 @@ ZSH_THEME="avit"
 if [ -n "$INSIDE_EMACS" ]; then
     plugins=()
 else
-    plugins=(zsh-autosuggestions kubectl)
+    plugins=(kubectl)
 fi
 
 if [ -n "$INSIDE_EMACS" ]; then
@@ -220,4 +220,8 @@ fi
 # pipenv install --dev
 # install_python_dev_deps
 
+
+#####
+# starship
+eval "$(starship init zsh)"
 
