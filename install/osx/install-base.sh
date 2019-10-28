@@ -97,6 +97,7 @@ brew cask install alacritty
 
 # tmux
 brew install tmux
+brew install reattach-to-user-namespace
 
 # bat (better cat)
 brew install bat
