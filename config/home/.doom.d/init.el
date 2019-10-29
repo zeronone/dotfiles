@@ -21,43 +21,46 @@
        )
 
        :ui
-       workspaces        ; tab emulation, persistence & separate workspaces
        deft
        doom              ; what makes DOOM look the way it does
        doom-dashboard    ; a nifty splash screen for Emacs
-       modeline     ; a snazzy Atom-inspired mode-line
        ;doom-quit         ; DOOM quit-message prompts when you quit Emacs
-       ;; evil-goggles      ; display visual hints when editing in evil
        fill-column       ; a `fill-column' indicator
        hl-todo           ; highlight TODO/FIXME/NOTE tags
+       ;hydra
+       ;indent-guides
+       modeline     ; a snazzy Atom-inspired mode-line
        nav-flash         ; blink the current line after jumping
        ;neotree           ; a project drawer, like NERDTree for vim
        ophints
-       treemacs          ; a project drawer, like neotree but cooler
        (popup            ; tame sudden yet inevitable temporary windows
         +all             ; catch all popups that start with an asterix
         +defaults)       ; default popup rules
        ;(pretty-code       ; replace bits of code with pretty symbols
        ; +iosevka
        ; )
-       ;tabbar            ; FIXME an (incomplete) tab bar for Emacs
+       ;tabs
+       treemacs          ; a project drawer, like neotree but cooler
        unicode           ; extended unicode support for various languages
-       vi-tilde-fringe   ; fringe tildes to mark beyond EOB
        vc-gutter
+       vi-tilde-fringe   ; fringe tildes to mark beyond EOB
        window-select     ; visually switch windows
-       indent-guides
+       workspaces        ; tab emulation, persistence & separate workspaces
 
        :editor
        (evil +everywhere); come to the dark side, we have cookies
-       fold
-       format
-       ;;(format +onsave)  ; automated prettiness
+       ;file-templates    ; auto-snippets for empty files
+       ;;god               ; run Emacs commands without modifier keys
+       fold              ; (nigh) universal code folding
+       ;;format          ; automated prettiness
+       ;;lispy             ; vim for lisp, for people who dont like vim
        multiple-cursors  ; editing in many places at once
-       ;;parinfer          ; turn lisp into python, sort of
+       ;;objed             ; text object editing for the innocent
+       parinfer          ; turn lisp into python, sort of
        rotate-text       ; cycle region at point between text candidates
        snippets          ; my elves. They type so I don't have to
-       ;file-templates    ; auto-snippets for empty files
-       ; word-wrap     ; slows down
+       ;;word-wrap         ; soft wrapping with language-aware indent
+
 
        :emacs
        (dired            ; making dired pretty [functional]
@@ -65,6 +68,7 @@
          +icons          ; colorful icons for dired-mode
         )
        electric          ; smarter, keyword-based electric-indent
+       ibuffer           ; interactive buffer management
        vc                ; version-control and Emacs, sitting in a tree
 
        :term
