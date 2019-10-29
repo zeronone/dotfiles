@@ -193,14 +193,9 @@ function install_python_dev_deps() {
 ########################################################
 ### The following didn't work when put in ~/.zshenv
 #########################################################
-# n
 export N_PREFIX="$HOME/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PREFIX/bin"  # Added by n-install (see http://git.io/n-install-repo).
 # python
 # to avoid loading inside nested shell
-if [[ -z "${PYENV_ROOT}" ]]; then
-    pyenv_init
-fi
-
 function pyenv_init {
     # pyenv / pyenv-virtualenv
     export PYENV_ROOT="$HOME/.pyenv"
@@ -208,10 +203,13 @@ function pyenv_init {
 
     # enable pyenv-virtualenv
     if which pyenv > /dev/null; then
-        eval "$(pyenv init -)"
+        eval "$(pyenv init -)";
         eval "$(pyenv virtualenv-init -)";
     fi
 }
+if [[ -z "${PYENV_ROOT}" ]] || (( ${+TMUX} )); then
+    pyenv_init
+fi
 
 #########################################################
 

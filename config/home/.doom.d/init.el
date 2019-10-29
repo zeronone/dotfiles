@@ -197,6 +197,12 @@
  '(jdee-db-requested-breakpoint-face-colors (cons "#1c1f24" "#7bc275"))
  '(jdee-db-spec-breakpoint-face-colors (cons "#1c1f24" "#484854"))
  '(objed-cursor-color "#ff665c")
+ '(safe-local-variable-values
+   (quote
+    ((eval setenv "PYTHONPATH" "/Users/st21371/verda/repos/fabriclb")
+     (eval setq lsp-python-ms-extra-paths "/Users/st21371/verda/repos/fabriclb")
+     (eval setq flycheck-checker
+           (quote python-pycheckers)))))
  '(vc-annotate-background "#242730")
  '(vc-annotate-color-map
    (list

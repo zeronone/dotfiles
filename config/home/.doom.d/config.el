@@ -80,7 +80,7 @@
   (setq org-bullets-bullet-list '("#")))
 
 ;; private/org-wiki
-(def-package! org-wiki
+(use-package! org-wiki
   :commands org-wiki-index
   :config
   (setq org-wiki-template
@@ -106,7 +106,7 @@
   (setq multi-term-scroll-to-bottom-on-output t)
   (setq multi-term-dedicated-window-height 40))
 
-(def-package! eterm-256color
+(use-package! eterm-256color
   :hook (term-mode-hook . eterm-256color-mode))
 
 
@@ -119,7 +119,7 @@
 
   (add-hook 'flycheck-error-list-mode #'doom|mark-buffer-as-real))
 
-(def-package! flycheck-pycheckers
+(use-package! flycheck-pycheckers
               :after flycheck
               :config
               (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup))
@@ -163,6 +163,8 @@
 (setq +magit-hub-enable-by-default nil)
 (setq +magit-hub-features nil)
 
+;; Add mspyls to exec-path
+(add-to-list 'exec-path (concat doom-etc-dir "mypyls"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;; lsp-ui customizations
@@ -210,18 +212,6 @@
       "k" #'lsp-ui-peek--select-prev
       "l" #'lsp-ui-peek--select-next-file)
 ;;;;;;;;;;;;;;;;;;;;;;;;
-
-
-(def-package! lsp-python-ms
-  :commands lsp-python-ms
-  :config
-  (setq lsp-python-ms-dir
-        (concat doom-local-dir ".lsp-python/"))
-  (setq lsp-python-ms-executable
-        (concat lsp-python-ms-dir
-                "Microsoft.Python.LanguageServer"
-                (and (eq system-type 'windows-nt) ".exe"))))
-
 (after! lsp-mode
   (setq
    ;; auto configure lsp-ui, lsp-company ...
@@ -233,10 +223,10 @@
     '(("^\\*lsp-help*" :slot -1 :vslot -1 :size #'+popup-shrink-to-fit :select t :quit t :ttl 0)))
 
   ;; manually configure following clients
-  (require 'lsp-python-ms)
+  ;; (require 'lsp-python-ms)
   (require 'lsp-rust))
 
-(def-package! dap-mode
+(use-package! dap-mode
   :after lsp-mode
   :config
 
