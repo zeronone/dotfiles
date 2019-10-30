@@ -101,3 +101,6 @@ brew install reattach-to-user-namespace
 
 # bat (better cat)
 brew install bat
+
+# nghttp2
+brew install nghttp2
