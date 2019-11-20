@@ -79,7 +79,7 @@ brew install jq
 brew install ccls
 
 # direnv
-brew install direnv
+curl -sfL https://direnv.net/install.sh | bash
 
 brew install aspell
 brew install ispell

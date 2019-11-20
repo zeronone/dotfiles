@@ -1,5 +1,9 @@
 ;;; config.el -*- lexical-binding: t; -*-
 
+;; default indent
+(setq-default tab-width 2)
+(setq-default python-indent 2)
+
 ;; Initial frame size
 (when window-system (set-frame-size (selected-frame) 150 50))
 
@@ -49,6 +53,7 @@
     "l" nil))
 
 ;; lang/org
+(setq-default +org-export-directory "~/Dropbox/orgs/.export")
 (after! org
   (setq-default org-cycle-separator-lines 0)
   (setq-default org-agenda-inhibit-startup nil)
@@ -223,7 +228,6 @@
     '(("^\\*lsp-help*" :slot -1 :vslot -1 :size #'+popup-shrink-to-fit :select t :quit t :ttl 0)))
 
   ;; manually configure following clients
-  ;; (require 'lsp-python-ms)
   (require 'lsp-rust))
 
 (use-package! dap-mode

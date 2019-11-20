@@ -6,12 +6,8 @@
 ;; (package! org-jira)
 
 ;; don't use exec-path-from-shell
-;; Use osxwithsync/osxdosync
+;; use doom patch-macosx
 (package! exec-path-from-shell :disable t)
-
-;; Use Microsoft python language server
-(package! lsp-python-ms
-          :recipe (:host github :repo "andrew-christianson/lsp-python-ms"))
 
 ;; use pycheckers
 (package! flycheck-pycheckers)
