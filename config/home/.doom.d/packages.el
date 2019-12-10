@@ -19,3 +19,6 @@
 
 ;; dap mode
 (package! dap-mode)
+
+;; SRS in org
+(package! org-drill)

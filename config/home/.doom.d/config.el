@@ -53,6 +53,9 @@
     "l" nil))
 
 ;; lang/org
+(use-package! org-drill
+  :after org)
+
 (setq-default +org-export-directory "~/Dropbox/orgs/.export")
 (after! org
   (setq-default org-cycle-separator-lines 0)
