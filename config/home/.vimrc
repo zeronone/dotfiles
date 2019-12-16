@@ -7,6 +7,12 @@ filetype off                  " required
 filetype plugin indent on     " required
 
 "
+" My customizations
+"
+set clipboard=unnamed
+
+
+"
 " Settings
 "
 set noerrorbells                " No beeps
