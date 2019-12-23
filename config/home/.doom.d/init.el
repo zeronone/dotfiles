@@ -140,6 +140,11 @@
         +capture         ; org-capture in and outside of Emacs
         +export          ; Exporting org to whatever you want
         +habit
+        +dragndrop
+        +pandoc
+        +pomodoro
+        +jupyter
+        +brain
         +present         ; Emacs for presentations
         +protocol)
        perl              ; write code no one else can comprehend

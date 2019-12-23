@@ -107,6 +107,9 @@
   (setq org-wiki-location-list '("~/Dropbox/orgs/personal-wiki" "~/Dropbox/orgs/line-wiki"))
   (setq org-wiki-location (car org-wiki-location-list)))
 
+;; org-brain
+(setq org-brain-path "~/Dropbox/orgs/brain")
+
 ;; multiterm scrolling
 (setq multi-term-program "/bin/zsh")
 (after! multiterm
