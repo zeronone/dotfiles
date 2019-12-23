@@ -22,3 +22,8 @@
 
 ;; SRS in org
 (package! org-drill)
+
+;; anzu.vim
+(package! anzu)
+(package! evil-anzu)
+

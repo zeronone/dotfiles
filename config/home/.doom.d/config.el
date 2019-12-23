@@ -21,6 +21,28 @@
 
 (add-hook! '(minibuffer-setup-hook doom-popup-mode-hook)
   (setq-local show-trailing-whitespace nil))
+
+;; From hlissner private config
+(setq
+ ;; Line numbers are pretty slow all around. The performance boost of
+ ;; disabling them outweighs the utility of always keeping them on.
+ display-line-numbers-type nil
+
+ ;; On-demand code completion. I don't often need it.
+ company-idle-delay nil
+
+ ;; lsp-ui-sideline is redundant with eldoc and much more invasive, so
+ ;; disable it by default.
+ lsp-ui-sideline-enable nil
+ lsp-enable-indentation nil
+ lsp-enable-on-type-formatting nil
+ lsp-enable-symbol-highlighting nil
+ lsp-enable-file-watchers nil)
+
+;;; :editor evil
+(setq evil-split-window-below t
+      evil-vsplit-window-right t)
+
 ;;
 ;; Keybindings
 
