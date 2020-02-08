@@ -4,6 +4,11 @@
 (setq-default tab-width 2)
 (setq-default python-indent 2)
 
+(setq straight-vc-git-default-clone-depth 10)
+;; I've swapped these keys on my keyboard
+(setq x-super-keysym 'meta
+      x-alt-keysym   'alt)
+
 ;; Initial frame size
 (when window-system (set-frame-size (selected-frame) 150 50))
 
@@ -337,5 +342,3 @@ Other errors while reverting a buffer are reported only as messages."
 ;; Disable title bars
 ;; (setq default-frame-alist '((undecorated . t)))
 
-;; custom
-(global-visual-line-mode +1)

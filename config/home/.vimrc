@@ -10,7 +10,9 @@ filetype plugin indent on     " required
 " My customizations
 "
 set clipboard=unnamed
-
+set list
+set listchars=tab:>-
+set colorcolumn=120
 
 "
 " Settings

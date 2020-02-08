@@ -98,6 +98,7 @@ brew cask install alacritty
 # tmux
 brew install tmux
 brew install reattach-to-user-namespace
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
 # bat (better cat)
 brew install bat
