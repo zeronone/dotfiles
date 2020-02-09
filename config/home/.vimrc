@@ -11,7 +11,7 @@ filetype plugin indent on     " required
 "
 set clipboard=unnamed
 set list
-set listchars=tab:>-
+set listchars=eol:⏎,tab:␉·,trail:␠,nbsp:⎵
 set colorcolumn=120
 
 "
