@@ -10,7 +10,7 @@
 (package! exec-path-from-shell :disable t)
 
 ;; use pycheckers
-(package! flycheck-pycheckers)
+;; (package! flycheck-pycheckers)
 
 
 ;; disable flycheck UI
@@ -26,4 +26,6 @@
 ;; anzu.vim
 (package! anzu)
 (package! evil-anzu)
+
+(package! dap-mode :pin "e7a5144ce74")
 

@@ -30,8 +30,14 @@ brew install tldr
 
 
 # emacs railwaycat
-brew tap railwaycat/emacsmacport
-brew install emacs-mac --with-modules --with-imagemagick --with-glib --with-dbus --with-ctags --with-xml2
+# brew tap railwaycat/emacsmacport
+# brew install emacs-mac --with-imagemagick --with-glib --with-modules --with-xml2 --with-ctags --with-dbus --HEAD
+
+# from HEAD
+brew tap daviderestivo/emacs-head
+brew install emacs-head --HEAD --with-cocoa --with-imagemagick --with-jansson
+ln -s /usr/local/opt/emacs-head/Emacs.app /Applications
+
 
 # ripgrep installation is in install-rust-deps.sh
 brew install the_silver_searcher

@@ -1,10 +1,5 @@
 ;;; config.el -*- lexical-binding: t; -*-
 
-;; default indent
-(setq-default tab-width 2)
-(setq-default python-indent 2)
-
-(setq straight-vc-git-default-clone-depth 10)
 ;; I've swapped these keys on my keyboard
 (setq x-super-keysym 'meta
       x-alt-keysym   'alt)
@@ -12,17 +7,55 @@
 ;; Initial frame size
 (when window-system (set-frame-size (selected-frame) 150 50))
 
+;; Fancy look
+(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+(add-to-list 'default-frame-alist '(ns-appearance . dark))
+
+;; Disable visual line mode
+(visual-line-mode -1)
+(setq truncate-lines nil)
+
+;; default indent
+(setq-default tab-width 2)
+
+(setq straight-vc-git-default-clone-depth 10)
+
 (setq-default
  user-full-name    "Arif Rezai"
- user-mail-address "me@arifrezai.com"
+ user-mail-address "me@arifrezai.com")
 
- ;; +workspaces-switch-project-function #'ignore
- +pretty-code-enabled-modes '(emacs-lisp-mode org-mode)
- +format-on-save-enabled-modes '(not emacs-lisp-mode rjsx-mode javascript-mode))
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; doom-ui
+;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; An extra measure to prevent the flash of unstyled mode-line while Emacs is
+;; booting up (when Doom is byte-compiled).
+(setq-default mode-line-format nil)
+
+(setq doom-font (font-spec :family "Input Mono Narrow" :size 14)
+      doom-variable-pitch-font (font-spec :family "Noto Sans" :size 14)
+      doom-big-font (font-spec :family "Fira Mono" :size 19))
+
+;; Fira Mono doesn't have italics, so we highlight it instead.
+(add-hook! doom-post-init
+  (set-face-attribute 'italic nil :weight 'ultra-light :foreground "#ffffff"))
+
+(add-hook! doom-big-font-mode
+  (setq +doom-modeline-height (if doom-big-font-mode 37 29)))
+
+;; doom-theme
+(setq doom-theme 'wombat)
+
+;; doom-modeline
 (setq doom-modeline-buffer-file-name-style 'truncate-with-project)
 (setq doom-modeline-persp-name t)
 (setq show-trailing-whitespace t)
+
+;; (setq-default +pretty-code-enabled-modes '(emacs-lisp-mode org-mode))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (add-hook! '(minibuffer-setup-hook doom-popup-mode-hook)
   (setq-local show-trailing-whitespace nil))
@@ -33,16 +66,14 @@
  ;; disabling them outweighs the utility of always keeping them on.
  display-line-numbers-type nil
 
- ;; On-demand code completion. I don't often need it.
- company-idle-delay nil
-
  ;; lsp-ui-sideline is redundant with eldoc and much more invasive, so
  ;; disable it by default.
  lsp-ui-sideline-enable nil
  lsp-enable-indentation nil
- lsp-enable-on-type-formatting nil
- lsp-enable-symbol-highlighting nil
- lsp-enable-file-watchers nil)
+ ;; lsp-enable-on-type-formatting nil
+ ;; lsp-enable-symbol-highlighting nil
+ ;; lsp-enable-file-watchers nil
+)
 
 ;;; :editor evil
 (setq evil-split-window-below t
@@ -50,7 +81,6 @@
 
 ;;
 ;; Keybindings
-
 (map!
  ;; Easier window navigation
  :n "C-h"   #'evil-window-left
@@ -67,6 +97,7 @@
    (:prefix "g"
      :desc "Magit branches"        :n "B" #'magit-branch-popup)))
 
+;; treemacs
 (after! treemacs-evil
   (define-key! treemacs-mode-map
     "h" nil
@@ -79,11 +110,15 @@
     "h" nil
     "l" nil))
 
+;;;;;;;;;;;;;;;;;;;;;;;;
 ;; lang/org
-(use-package! org-drill
-  :after org)
+;;;;;;;;;;;;;;;;;;;;;;;;
 
+
+;; Org default directory
+(defvar +org-dir (expand-file-name "~/Dropbox/orgs/"))
 (setq-default +org-export-directory "~/Dropbox/orgs/.export")
+
 (after! org
   (setq-default org-cycle-separator-lines 0)
   (setq-default org-agenda-inhibit-startup nil)
@@ -107,12 +142,18 @@
   (setq org-outline-path-complete-in-steps nil)
   (setq org-refile-use-outline-path t))
 
+(use-package! org-drill
+  :after org)
+
 ;; lang/org
 (after! org-bullets
   ;; The standard unicode characters are usually misaligned depending on the
   ;; font. This bugs me. Personally, markdown #-marks for headlines are more
   ;; elegant, so we use those.
   (setq org-bullets-bullet-list '("#")))
+
+;; Everywhere else, I have big displays and plenty of space, so use it!
+(setq org-ellipsis " ▼ ")
 
 ;; private/org-wiki
 (use-package! org-wiki
@@ -137,6 +178,11 @@
 ;; org-brain
 (setq org-brain-path "~/Dropbox/orgs/brain")
 
+;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; term
 ;; multiterm scrolling
 (setq multi-term-program "/bin/zsh")
 (after! multiterm
@@ -144,9 +190,15 @@
   (setq multi-term-scroll-to-bottom-on-output t)
   (setq multi-term-dedicated-window-height 40))
 
+;; multi-term
+(after! term
+  (add-hook 'term-mode-hook
+            (lambda ()
+              (setq show-trailing-whitespace nil)
+              (setq term-buffer-maximum-size 10000))))
+
 (use-package! eterm-256color
   :hook (term-mode-hook . eterm-256color-mode))
-
 
 ;; flycheck
 (after! flycheck
@@ -157,56 +209,37 @@
 
   (add-hook 'flycheck-error-list-mode #'doom|mark-buffer-as-real))
 
-(use-package! flycheck-pycheckers
-              :after flycheck
-              :config
-              (add-hook 'flycheck-mode-hook #'flycheck-pycheckers-setup))
-
-;; multi-term
-(after! term
-  (add-hook 'term-mode-hook
-            (lambda ()
-              (setq show-trailing-whitespace nil)
-              (setq term-buffer-maximum-size 10000))))
-
-;; An extra measure to prevent the flash of unstyled mode-line while Emacs is
-;; booting up (when Doom is byte-compiled).
-(setq-default mode-line-format nil)
-
-;; Org default directory
-(defvar +org-dir (expand-file-name "~/Dropbox/orgs/"))
-
-(setq doom-font (font-spec :family "Input Mono Narrow" :size 14)
-      doom-variable-pitch-font (font-spec :family "Noto Sans" :size 14)
-      doom-big-font (font-spec :family "Fira Mono" :size 19))
-
-;; Everywhere else, I have big displays and plenty of space, so use it!
-(setq org-ellipsis " ▼ ")
-
-;; Fira Mono doesn't have italics, so we highlight it instead.
-(add-hook! doom-post-init
-  (set-face-attribute 'italic nil :weight 'ultra-light :foreground "#ffffff"))
-
-(add-hook! doom-big-font-mode
-  (setq +doom-modeline-height (if doom-big-font-mode 37 29)))
-
-;; set shell of choice to "/bin/zsh"
-;; Doesn't seem to work perfectly, should also set `export SHELL="/bin/zsh"` in ~/.bash_profile
-(setq exec-path-from-shell-shell-name "/bin/zsh")
-
-;; doom-theme
-(setq doom-theme 'wombat)
-
 ;; magit
 (setq +magit-hub-enable-by-default nil)
 (setq +magit-hub-features nil)
 
-;; Add mspyls to exec-path
-(add-to-list 'exec-path (concat doom-etc-dir "mypyls"))
+;; company
+(after! company
+  ;; disable for org-mode
+  (setq company-idle-delay 0.1)
+  (setq company-global-modes '(not org-mode)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
-;; lsp-ui customizations
+;; lsp customizations
 ;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;
+
+(setq +lsp-company-backend 'company-capf)
+(after! lsp-mode
+  (setq
+   ;; auto configure lsp-ui, lsp-company ...
+   lsp-auto-configure t
+   lsp-auto-require-clients nil
+   lsp-print-io f)
+
+  (set-popup-rules!
+    '(("^\\*lsp-help*" :slot -1 :vslot -1 :size #'+popup-shrink-to-fit :select t :quit t :ttl 0))))
+
+;; Automatically call dap-hydra when execution stopped
+(after! dap-mode
+  (add-hook 'dap-stopped-hook
+          (lambda (arg) (call-interactively #'dap-hydra))))
+
 (after! lsp-ui
   (setq
    ;; disable doc-mode
@@ -215,68 +248,24 @@
    lsp-ui-sideline-enable nil
    lsp-ui-sideline-ignore-duplicate t
    lsp-ui-doc-header nil
-   lsp-ui-doc-include-signature nil
-
    lsp-ui-doc-include-signature t
    lsp-ui-doc-max-width 90
    lsp-ui-doc-max-height 50
    lsp-ui-doc-use-webkit t
 
-   ;; niether flymake nor flycheck
-   lsp-prefer-flymake :none
-
-   ;; override K in lsp-mode for documentation
-   ;; (map! :localleader
-   ;;       :map lsp-mode-map
-   ;;       :prefix "h"
-   ;;       "K" #'lsp-describe-thing-at-point)
-
    lsp-ui-peek-expand-function (lambda (xs) (mapcar #'car xs))))
 
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(lsp-ui-doc-background ((t (:inherit doom-modeline-bar))))
- '(lsp-ui-peek-highlight ((t (:inherit doom-modeline-urgent :box 1))))
- '(lsp-ui-peek-peek ((t (:inherit mode-line))))
- '(lsp-ui-peek-selection ((t (:inherit doom-modeline-bar :weight bold)))))
-
+;; requires (lsp +peek) flag
 (map! :after lsp-ui-peek
       :map lsp-ui-peek-mode-map
       "h" #'lsp-ui-peek--select-prev-file
       "j" #'lsp-ui-peek--select-next
       "k" #'lsp-ui-peek--select-prev
       "l" #'lsp-ui-peek--select-next-file)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;
-(after! lsp-mode
-  (setq
-   ;; auto configure lsp-ui, lsp-company ...
-   lsp-auto-configure t
-   lsp-auto-require-clients nil
-   lsp-print-io t)
-
-  (set-popup-rules!
-    '(("^\\*lsp-help*" :slot -1 :vslot -1 :size #'+popup-shrink-to-fit :select t :quit t :ttl 0)))
-
-  ;; manually configure following clients
-  (require 'lsp-rust))
-
-(use-package! dap-mode
-  :after lsp-mode
-  :config
-
-  (dap-mode t)
-  (dap-ui-mode t)
-
-  ;; enabled languages
-  (require 'dap-python))
-
-;; company mode
-(after! company
-  ;; disable for org-mode
-  (setq company-global-modes '(not org-mode)))
+;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; pyvenv fix
 ;; https://github.com/palantir/python-language-server/issues/431
@@ -288,6 +277,8 @@
     (setenv "VIRTUAL_ENV"))
   (advice-add 'pyenv-mode-unset :after 'pyenv-venv-wrapper-deact))
 
+;; Add mspyls to exec-path
+(add-to-list 'exec-path (concat doom-etc-dir "mypyls"))
 
 ;; vterm colors fix
 ;; From: https://github.com/akermu/emacs-libvterm/issues/73
@@ -332,13 +323,10 @@ Other errors while reverting a buffer are reported only as messages."
       ("^\\*rustic-compilation\\*" :select nil :quit t :side bottom :slot 2)))
 
   ;; 'rust-analyzer is not ready yet
-  (setq rustic-lsp-server 'lsp))
-
-
-;; Fancy look
-(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-(add-to-list 'default-frame-alist '(ns-appearance . dark))
+  (setq rustic-lsp-server 'rls))
 
 ;; Disable title bars
 ;; (setq default-frame-alist '((undecorated . t)))
 
+;; format module is disabled
+;; (setq-default +format-on-save-enabled-modes '(not emacs-lisp-mode rjsx-mode javascript-mode))
