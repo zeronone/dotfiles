@@ -35,7 +35,7 @@ brew install tldr
 
 # from HEAD
 brew tap daviderestivo/emacs-head
-brew install emacs-head --HEAD --with-cocoa --with-imagemagick --with-jansson
+brew install emacs-head --HEAD --with-cocoa --with-imagemagick --with-jansson --with-ctags --with-pdumper --with-no-frame-refocus --with-xwidgets --with-dbus --with-crash-debug
 ln -s /usr/local/opt/emacs-head/Emacs.app /Applications
 
 

@@ -44,7 +44,8 @@
   (setq +doom-modeline-height (if doom-big-font-mode 37 29)))
 
 ;; doom-theme
-(setq doom-theme 'wombat)
+;; (setq doom-theme 'wombat)
+(setq doom-theme 'doom-one)
 
 ;; doom-modeline
 (setq doom-modeline-buffer-file-name-style 'truncate-with-project)
@@ -230,7 +231,13 @@
    ;; auto configure lsp-ui, lsp-company ...
    lsp-auto-configure t
    lsp-auto-require-clients nil
-   lsp-print-io f)
+
+   ;; https://github.com/hlissner/doom-emacs/issues/2060#issuecomment-554165917
+   ;; lsp-prefer-flymake nil   ;; deprecated
+   lsp-diagnostic-package :flycheck
+
+   ;; for performance
+   lsp-log-io nil)
 
   (set-popup-rules!
     '(("^\\*lsp-help*" :slot -1 :vslot -1 :size #'+popup-shrink-to-fit :select t :quit t :ttl 0))))
@@ -243,15 +250,22 @@
 (after! lsp-ui
   (setq
    ;; disable doc-mode
-   lsp-ui-doc-enable nil
+   ;; lsp-ui-doc-enable nil
+   ;; the max-width doesn't work for webkit
+   ;; lsp-ui-doc-use-webkit t
+   lsp-ui-doc-use-childframe t
+   lsp-ui-doc-alignment 'frame
+   ;; avoid documentation being rednered as markdown
+   lsp-ui-doc-render-function 'nil
+   lsp-ui-doc-delay 0.5
+   lsp-ui-doc-header nil
+   lsp-ui-doc-include-signature t
+   lsp-ui-doc-max-height 45
+   lsp-ui-doc-max-width 90
+   lsp-ui-doc-position 'bottom
 
    lsp-ui-sideline-enable nil
    lsp-ui-sideline-ignore-duplicate t
-   lsp-ui-doc-header nil
-   lsp-ui-doc-include-signature t
-   lsp-ui-doc-max-width 90
-   lsp-ui-doc-max-height 50
-   lsp-ui-doc-use-webkit t
 
    lsp-ui-peek-expand-function (lambda (xs) (mapcar #'car xs))))
 
