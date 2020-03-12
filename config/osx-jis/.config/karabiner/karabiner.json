@@ -11,8 +11,8 @@
                 "parameters": {
                     "basic.simultaneous_threshold_milliseconds": 50,
                     "basic.to_delayed_action_delay_milliseconds": 500,
-                    "basic.to_if_alone_timeout_milliseconds": 500,
-                    "basic.to_if_held_down_threshold_milliseconds": 400,
+                    "basic.to_if_alone_timeout_milliseconds": 150,
+                    "basic.to_if_held_down_threshold_milliseconds": 150,
                     "mouse_motion_to_scroll.speed": 100
                 },
                 "rules": [
@@ -30,12 +30,12 @@
                                 },
                                 "to": [
                                     {
-                                        "key_code": "fn"
+                                        "key_code": "delete_or_backspace"
                                     }
                                 ],
-                                "to_if_alone": [
+                                "to_if_held_down": [
                                     {
-                                        "key_code": "delete_or_backspace"
+                                        "key_code": "fn"
                                     }
                                 ],
                                 "type": "basic"
@@ -56,12 +56,12 @@
                                 },
                                 "to": [
                                     {
-                                        "key_code": "left_control"
+                                        "key_code": "escape"
                                     }
                                 ],
-                                "to_if_alone": [
+                                "to_if_held_down": [
                                     {
-                                        "key_code": "escape"
+                                        "key_code": "left_control"
                                     }
                                 ],
                                 "type": "basic"
@@ -82,12 +82,12 @@
                                 },
                                 "to": [
                                     {
-                                        "key_code": "left_shift"
+                                        "key_code": "spacebar"
                                     }
                                 ],
-                                "to_if_alone": [
+                                "to_if_held_down": [
                                     {
-                                        "key_code": "spacebar"
+                                        "key_code": "left_shift"
                                     }
                                 ],
                                 "type": "basic"
