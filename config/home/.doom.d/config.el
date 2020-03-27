@@ -124,6 +124,10 @@
   (setq-default org-cycle-separator-lines 0)
   (setq-default org-agenda-inhibit-startup nil)
 
+  ;; html export
+  (setq-default org-html-htmlize-output-type 'css)
+  (setq-default org-html-head "<link rel=\"stylesheet\" href=\"http://dakrone.github.io/org.css\" type=\"text/css\" />")
+
   ;; use python3 in org-babel
   (setq org-babel-python-command "python3")
 
@@ -144,7 +148,14 @@
   (setq org-refile-use-outline-path t))
 
 (use-package! org-drill
-  :after org)
+  :after org
+  :config
+  (setq org-drill-left-cloze-delimiter "[hint][")
+  (setq org-drill-maximum-items-per-session 60)
+  (setq org-drill-maximum-duration 90)           ; 90 minutes
+  (setq org-drill-add-random-noise-to-intervals-p t)
+  (setq org-drill-adjust-intervals-for-early-and-late-repetitions-p t))
+
 
 ;; lang/org
 (after! org-bullets

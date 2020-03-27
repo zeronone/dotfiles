@@ -22,7 +22,15 @@ export ZSH=$HOME/.oh-my-zsh
 # fi
 # ZSH_THEME="robbyrussell"
 # ZSH_THEME="spaceship"
-ZSH_THEME="avit"
+# ZSH_THEME="avit"
+
+# disable theme
+# we use pure (https://github.com/sindresorhus/pure)
+ZSH_THEME=""
+
+# needs: npm install --global pure-prompt
+autoload -U promptinit; promptinit
+prompt pure
 
 # spaceship customizations
 # SPACESHIP_PROMPT_ADD_NEWLINE="true"
@@ -77,16 +85,9 @@ ZSH_THEME="avit"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 #plugins=(git rbenv rails)
-if [ -n "$INSIDE_EMACS" ]; then
-    plugins=()
-else
-    plugins=(kubectl)
-fi
 
-if [ -n "$INSIDE_EMACS" ]; then
-    alias vim="echo not available"
-    alias vi="echo not available"
-fi
+plugins=()
+
 
 source $ZSH/oh-my-zsh.sh
 
@@ -225,7 +226,7 @@ fi
 
 #####
 # starship
-eval "$(starship init zsh)"
+# eval "$(starship init zsh)"
 
 #### direnv
 eval "$(direnv hook zsh)"

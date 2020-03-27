@@ -17,9 +17,6 @@
 (package! flycheck-popup-tip :disable t)
 (package! flycheck-posframe :disable t)
 
-;; dap mode
-(package! dap-mode)
-
 ;; SRS in org
 (package! org-drill)
 
@@ -28,4 +25,3 @@
 (package! evil-anzu)
 
 (package! dap-mode :pin "e7a5144ce74")
-
