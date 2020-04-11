@@ -9,12 +9,16 @@ filetype plugin indent on     " required
 "
 " My customizations
 "
-set clipboard=unnamed
+set clipboard+=unnamed
 set list
 set listchars=eol:⏎,tab:␉·,trail:␠,nbsp:⎵
 set colorcolumn=120
 
 set nofixendofline
+
+set t_BE=
+
+
 
 "
 " Settings

@@ -45,7 +45,8 @@
 
 ;; doom-theme
 ;; (setq doom-theme 'wombat)
-(setq doom-theme 'doom-one)
+;; (setq doom-theme 'doom-one)
+(setq doom-theme 'doom-Iosvkem)
 
 ;; doom-modeline
 (setq doom-modeline-buffer-file-name-style 'truncate-with-project)
@@ -117,8 +118,11 @@
 
 
 ;; Org default directory
-(defvar +org-dir (expand-file-name "~/Dropbox/orgs/"))
-(setq-default +org-export-directory "~/Dropbox/orgs/.export")
+(setq org-directory (expand-file-name "~/Dropbox/orgs/"))
+(setq +org-dir (expand-file-name "~/Dropbox/orgs/"))
+(setq +org-export-directory (expand-file-name "~/Dropbox/orgs/.export"))
+(setq org-roam-directory "~/Dropbox/orgs")
+(setq org-ellipsis " ▼ ")
 
 (after! org
   (setq-default org-cycle-separator-lines 0)
@@ -132,14 +136,38 @@
   (setq org-babel-python-command "python3")
 
   (setq org-image-actual-width 400)
-
-  (setq org-directory "~/Dropbox/orgs/")
   (setq org-agenda-files (list "~/Dropbox/orgs/"
+                               "~/Dropbox/orgs/journal"
                                "~/Dropbox/orgs/personal-wiki"
                                "~/Dropbox/orgs/line-wiki"
                                "~/Dropbox/orgs/line"
                                "~/Dropbox/orgs/verda"
                                "~/Dropbox/orgs/toptal"))
+
+  (setq org-publish-project-alist
+        '(("org-notes"
+           :base-directory "~/Dropbox/orgs"
+           :base-extension "org"
+           :publishing-directory "~/myfiles/orgs_published/"
+           :recursive t
+           :publishing-function org-html-publish-to-html
+           :headline-levels 4             ; Just the default for this project.
+           :auto-preamble t)
+          ("org-static"
+           :base-directory "~/Dropbox/orgs"
+           :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+           :publishing-directory "~/myfiles/orgs_published/"
+           :recursive t
+           :publishing-function org-publish-attachment)
+          ("org-attachments"
+           :base-directory "~/Dropbox/.attach"
+           :publishing-directory "~/myfiles/orgs_published/"
+           :recursive t
+           :publishing-function org-publish-attachment)
+          ("org-all"
+           :components ("org-notes" "org-static" "org-attachments"))))
+
+
   (setq org-refile-additional-targets-a '("~/Dropbox/orgs/verda"))
   (setq org-refile-targets '((nil :maxlevel . 9)
                              (org-refile-additional-targets-a :maxlevel . 9)
@@ -156,6 +184,22 @@
   (setq org-drill-add-random-noise-to-intervals-p t)
   (setq org-drill-adjust-intervals-for-early-and-late-repetitions-p t))
 
+(after! deft
+  (add-to-list 'deft-extensions "md")
+  (setq deft-recursive t)
+  (setq deft-directory "~/Dropbox/orgs")
+  (setq deft-archive-directory "~/Dropbox/orgs"))
+
+;; org-journal
+(after! org-journal
+  (setq org-journal-file-type 'weekly)
+
+  (setq org-journal-carryover-items t)
+
+  (setq org-journal-enable-agenda-integration t
+        org-icalendar-store-UID t
+        org-icalendar-include-todo "all"
+        org-icalendar-combined-agenda-file "~/Dropbox/orgs/org-journal.ics"))
 
 ;; lang/org
 (after! org-bullets
@@ -164,31 +208,26 @@
   ;; elegant, so we use those.
   (setq org-bullets-bullet-list '("#")))
 
-;; Everywhere else, I have big displays and plenty of space, so use it!
-(setq org-ellipsis " ▼ ")
-
-;; private/org-wiki
-(use-package! org-wiki
-  :commands org-wiki-index
+(use-package! org-noter
+  :commands (org-noter)
   :config
-  (setq org-wiki-template
-        "#+TITLE: %n
-#+DESCRIPTION:
-#+KEYWORDS:
-#+STARTUP:  showeverything
+  (require 'org-noter-pdftools)
+  (after! pdf-tools
+    (setq pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note))
+  (setq org-noter-notes-mode-map (make-sparse-keymap)))
 
-
-- [[wiki:index][Index]]
-
-- Related:
-
-* %n
-")
-  (setq org-wiki-location-list '("~/Dropbox/orgs/personal-wiki" "~/Dropbox/orgs/line-wiki"))
-  (setq org-wiki-location (car org-wiki-location-list)))
-
-;; org-brain
-(setq org-brain-path "~/Dropbox/orgs/brain")
+(use-package! org-pdftools
+  :init
+  (setq org-pdftools-root-dir "~/Dropbox/orgs/pdfs"
+        org-pdftools-search-string-separator "??")
+  :config
+  (after! org
+    (org-link-set-parameters "pdftools"
+                             :follow #'org-pdftools-open
+                             :complete #'org-pdftools-complete-link
+                             :store #'org-pdftools-store-link
+                             :export #'org-pdftools-export)
+    (add-hook 'org-store-link-functions 'org-pdftools-store-link)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -227,16 +266,17 @@
 
 ;; company
 (after! company
-  ;; disable for org-mode
-  (setq company-idle-delay 0.1)
-  (setq company-global-modes '(not org-mode)))
+  (setq company-idle-delay 1.0))
+
+(after! company-box
+  ;; trigger manually with C-h when completion box  is open
+  (setq company-box-doc-enable nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;; lsp customizations
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
 
-(setq +lsp-company-backend 'company-capf)
 (after! lsp-mode
   (setq
    ;; auto configure lsp-ui, lsp-company ...
@@ -302,9 +342,6 @@
     (setenv "VIRTUAL_ENV"))
   (advice-add 'pyenv-mode-unset :after 'pyenv-venv-wrapper-deact))
 
-;; Add mspyls to exec-path
-(add-to-list 'exec-path (concat doom-etc-dir "mypyls"))
-
 ;; vterm colors fix
 ;; From: https://github.com/akermu/emacs-libvterm/issues/73
 ;; (after! vterm
@@ -355,3 +392,11 @@ Other errors while reverting a buffer are reported only as messages."
 
 ;; format module is disabled
 ;; (setq-default +format-on-save-enabled-modes '(not emacs-lisp-mode rjsx-mode javascript-mode))
+
+(add-to-list 'load-path "~/.doom.d/local")
+(require 'minizinc-mode)
+(add-to-list 'auto-mode-alist '("\\.mzn\\'" . minizinc-mode))
+
+(after! org-src
+  ;; ~/.doom.d/local/ob-minizinc.el
+  (require 'ob-minizinc))

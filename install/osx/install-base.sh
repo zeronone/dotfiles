@@ -111,3 +111,13 @@ brew install bat
 
 # nghttp2
 brew install nghttp2
+
+# mactex, gnuplot
+brew cask install mactex
+brew install gnuplot
+
+# dot
+brew install graphviz
+
+# pdf-tools emac
+brew install poppler automake

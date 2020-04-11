@@ -1,8 +1,6 @@
 ;; -*- no-byte-compile: t; -*-
 ;;; packages.el
 
-(package! org-wiki :recipe (:host github :repo "caiorss/org-wiki"))
-
 ;; (package! org-jira)
 
 ;; don't use exec-path-from-shell
@@ -20,8 +18,13 @@
 ;; SRS in org
 (package! org-drill)
 
+(package! org-pdftools :recipe (:host github :repo "fuxialexander/org-pdftools" :files ("org-pdftools.el")))
+(package! org-noter-pdftools :recipe (:host github :repo "fuxialexander/org-pdftools" :files ("org-noter-pdftools.el")))
+(package! org-noter)
+
 ;; anzu.vim
 (package! anzu)
 (package! evil-anzu)
 
-(package! dap-mode :pin "e7a5144ce74")
+;; minizinc
+;; (package! minizinc-mode :load-path "~/.doom.d/local/minizinc-mode.el")
