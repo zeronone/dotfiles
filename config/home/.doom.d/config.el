@@ -1,5 +1,7 @@
 ;;; config.el -*- lexical-binding: t; -*-
 
+(setq module-file-suffix ".so")
+
 ;; I've swapped these keys on my keyboard
 (setq x-super-keysym 'meta
       x-alt-keysym   'alt)
@@ -122,9 +124,16 @@
 (setq +org-dir (expand-file-name "~/Dropbox/orgs/"))
 (setq +org-export-directory (expand-file-name "~/Dropbox/orgs/.export"))
 (setq org-roam-directory "~/Dropbox/orgs")
+(setq org-journal-dir "~/Dropbox/orgs")
+(setq org-noter-notes-search-path "~/Dropbox/orgs")
+(setq org-pdftools-search-string-separator "??")
 (setq org-ellipsis " ▼ ")
+(setq org-id-link-to-org-use-id t)
 
 (after! org
+
+  (setq org-image-actual-width (/ (display-pixel-width) 3))
+
   (setq-default org-cycle-separator-lines 0)
   (setq-default org-agenda-inhibit-startup nil)
 
@@ -178,6 +187,24 @@
 (use-package! org-drill
   :after org
   :config
+
+  ;; default is 2
+  (setq org-drill-failure-quality 1)
+  ;; okay to forget around 30%
+  (setq org-drill-forgetting-index 30)
+  ;; failure threshold to consider an item as a leech
+  (setq org-drill-leech-failure-threshold 40)
+
+  (set-popup-rules!
+    '(("^\\*Org-Drill\\*$" :side bottom :size 3 :select t :quit nil :ttl 0)))
+
+  ;; (unmap! :map org-drill-response-mode-map
+  ;;   [return] "RET")
+  (map! :map org-drill-response-mode-map
+        [return] nil
+        "C-c c" #'org-drill-response-rtn)
+
+  (setq org-drill-presentation-prompt-with-typing t)
   (setq org-drill-left-cloze-delimiter "[hint][")
   (setq org-drill-maximum-items-per-session 60)
   (setq org-drill-maximum-duration 90)           ; 90 minutes
@@ -201,33 +228,10 @@
         org-icalendar-include-todo "all"
         org-icalendar-combined-agenda-file "~/Dropbox/orgs/org-journal.ics"))
 
-;; lang/org
-(after! org-bullets
-  ;; The standard unicode characters are usually misaligned depending on the
-  ;; font. This bugs me. Personally, markdown #-marks for headlines are more
-  ;; elegant, so we use those.
-  (setq org-bullets-bullet-list '("#")))
-
-(use-package! org-noter
-  :commands (org-noter)
-  :config
-  (require 'org-noter-pdftools)
+(use-package! org-noter-pdftools
+  :after org-noter
   (after! pdf-tools
-    (setq pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note))
-  (setq org-noter-notes-mode-map (make-sparse-keymap)))
-
-(use-package! org-pdftools
-  :init
-  (setq org-pdftools-root-dir "~/Dropbox/orgs/pdfs"
-        org-pdftools-search-string-separator "??")
-  :config
-  (after! org
-    (org-link-set-parameters "pdftools"
-                             :follow #'org-pdftools-open
-                             :complete #'org-pdftools-complete-link
-                             :store #'org-pdftools-store-link
-                             :export #'org-pdftools-export)
-    (add-hook 'org-store-link-functions 'org-pdftools-store-link)))
+    (setq pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -266,7 +270,7 @@
 
 ;; company
 (after! company
-  (setq company-idle-delay 1.0))
+  (setq company-idle-delay 0.7))
 
 (after! company-box
   ;; trigger manually with C-h when completion box  is open
@@ -276,6 +280,10 @@
 ;; lsp customizations
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
+
+(after! company-lsp
+  (setq company-lsp-async t)
+  (setq company-lsp-cache-candidates 'auto))
 
 (after! lsp-mode
   (setq
@@ -291,7 +299,7 @@
    lsp-log-io nil)
 
   (set-popup-rules!
-    '(("^\\*lsp-help*" :slot -1 :vslot -1 :size #'+popup-shrink-to-fit :select t :quit t :ttl 0))))
+    '(("^\\*lsp-help\\*" :slot -1 :vslot -1 :size #'+popup-shrink-to-fit :select t :quit t :ttl 0))))
 
 ;; Automatically call dap-hydra when execution stopped
 (after! dap-mode
@@ -334,13 +342,13 @@
 
 ;; pyvenv fix
 ;; https://github.com/palantir/python-language-server/issues/431
-(after! pyvenv
-  (defun pyenv-venv-wrapper-act (&optional ARG PRED)
-    (setenv "VIRTUAL_ENV" (shell-command-to-string "_pyenv_virtualenv_hook; echo -n $VIRTUAL_ENV")))
-  (advice-add 'pyenv-mode-set :after 'pyenv-venv-wrapper-act)
-  (defun pyenv-venv-wrapper-deact (&optional ARG PRED)
-    (setenv "VIRTUAL_ENV"))
-  (advice-add 'pyenv-mode-unset :after 'pyenv-venv-wrapper-deact))
+;; (after! pyvenv
+;;   (defun pyenv-venv-wrapper-act (&optional ARG PRED)
+;;     (setenv "VIRTUAL_ENV" (shell-command-to-string "_pyenv_virtualenv_hook; echo -n $VIRTUAL_ENV")))
+;;   (advice-add 'pyenv-mode-set :after 'pyenv-venv-wrapper-act)
+;;   (defun pyenv-venv-wrapper-deact (&optional ARG PRED)
+;;     (setenv "VIRTUAL_ENV"))
+;;   (advice-add 'pyenv-mode-unset :after 'pyenv-venv-wrapper-deact))
 
 ;; vterm colors fix
 ;; From: https://github.com/akermu/emacs-libvterm/issues/73
@@ -355,9 +363,10 @@
 
   (setq flycheck-check-syntax-automatically '(save))
 
-  (set-popup-rule! "^\\*Flycheck errors\\*"
-    :modeline nil :select nil :quit 'current
-    :side 'bottom :slot 9999 :vslot 9999))
+  (set-popup-rules!
+    '(("^\\*Flycheck errors\\*"
+       :modeline nil :select nil :quit current
+       :side bottom :slot 9999 :vslot 9999))))
 
 ;;;;;;;;; Custom functions
 (defun revert-all-no-confirm ()

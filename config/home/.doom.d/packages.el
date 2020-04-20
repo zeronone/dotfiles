@@ -10,17 +10,13 @@
 ;; use pycheckers
 ;; (package! flycheck-pycheckers)
 
-
 ;; disable flycheck UI
 (package! flycheck-popup-tip :disable t)
 (package! flycheck-posframe :disable t)
 
 ;; SRS in org
-(package! org-drill)
-
-(package! org-pdftools :recipe (:host github :repo "fuxialexander/org-pdftools" :files ("org-pdftools.el")))
-(package! org-noter-pdftools :recipe (:host github :repo "fuxialexander/org-pdftools" :files ("org-noter-pdftools.el")))
-(package! org-noter)
+(package! org-drill :recipe (:host github :repo "zeronone/org-drill"))
+(package! org-noter-pdftools)
 
 ;; anzu.vim
 (package! anzu)

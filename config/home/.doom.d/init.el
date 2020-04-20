@@ -42,7 +42,7 @@
        ;;neotree           ; a project drawer, like NERDTree for vim
        ophints           ; highlight the region an operation acts on
        (popup            ; tame sudden yet inevitable temporary windows
-        +all             ; catch all popups that start with an asterix
+        ;;+all             ; catch all popups that start with an asterix
         +defaults)       ; default popup rules
        ;; (pretty-code +pragmatic-pro)       ; replace bits of code with pretty symbols
        ;;tabs              ; an tab bar for Emacs
@@ -73,6 +73,7 @@
        electric          ; smarter, keyword-based electric-indent
        ibuffer           ; interactive buffer management
        vc                ; version-control and Emacs, sitting in a tree
+       undo
 
        :term
        ;;eshell            ; a consistent, cross-platform shell (WIP)
@@ -87,7 +88,7 @@
 
        :tools
        ansible
-       debugger          ; FIXME stepping through code, to help you add bugs
+       (debugger +lsp)          ; FIXME stepping through code, to help you add bugs
        direnv
        docker
        editorconfig      ; let someone else argue about tabs vs spaces
@@ -147,11 +148,12 @@
         +gnuplot
         ;;+hugo            ; use Emacs for hugo blogging
         +journal
-        +jupyter
+        ;; +jupyter
         +pandoc
         +pomodoro
         +present
         +roam
+        +noter
        )
        ;;perl              ; write code no one else can comprehend
        ;;php               ; perl's insecure younger brother
