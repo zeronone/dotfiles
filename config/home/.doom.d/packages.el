@@ -24,3 +24,7 @@
 
 ;; minizinc
 ;; (package! minizinc-mode :load-path "~/.doom.d/local/minizinc-mode.el")
+
+;; themes
+(package! modus-operandi-theme)
+(package! modus-vivendi-theme)

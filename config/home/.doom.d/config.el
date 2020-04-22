@@ -34,9 +34,13 @@
 ;; booting up (when Doom is byte-compiled).
 (setq-default mode-line-format nil)
 
-(setq doom-font (font-spec :family "Input Mono Narrow" :size 14)
+;; (setq doom-font (font-spec :family "Input Mono Narrow" :size 14)
+;;       doom-variable-pitch-font (font-spec :family "Noto Sans" :size 14)
+;;       doom-big-font (font-spec :family "Fira Mono" :size 19))
+
+(setq doom-font (font-spec :family "Hack" :size 14)
       doom-variable-pitch-font (font-spec :family "Noto Sans" :size 14)
-      doom-big-font (font-spec :family "Fira Mono" :size 19))
+      doom-big-font (font-spec :family "Hack" :size 19))
 
 ;; Fira Mono doesn't have italics, so we highlight it instead.
 (add-hook! doom-post-init
@@ -44,11 +48,6 @@
 
 (add-hook! doom-big-font-mode
   (setq +doom-modeline-height (if doom-big-font-mode 37 29)))
-
-;; doom-theme
-;; (setq doom-theme 'wombat)
-;; (setq doom-theme 'doom-one)
-(setq doom-theme 'doom-Iosvkem)
 
 ;; doom-modeline
 (setq doom-modeline-buffer-file-name-style 'truncate-with-project)
@@ -409,3 +408,48 @@ Other errors while reverting a buffer are reported only as messages."
 (after! org-src
   ;; ~/.doom.d/local/ob-minizinc.el
   (require 'ob-minizinc))
+
+;; themes
+(use-package! modus-operandi-theme
+  :init
+  ;; disabled
+  (setq modus-operandi-theme-rainbow-headings nil)
+  (setq modus-operandi-theme-slanted-constructs t
+        modus-operandi-theme-bold-constructs t
+        modus-operandi-theme-visible-fringes t
+        modus-operandi-theme-3d-modeline t
+        modus-operandi-theme-subtle-diffs t
+        modus-operandi-theme-distinct-org-blocks t
+        modus-operandi-theme-proportional-fonts t
+        modus-operandi-theme-section-headings t
+        modus-operandi-theme-scale-headings t
+        modus-operandi-theme-scale-1 1.05
+        modus-operandi-theme-scale-2 1.1
+        modus-operandi-theme-scale-3 1.15
+        modus-operandi-theme-scale-4 1.2)
+  :ensure t)
+(use-package! modus-vivendi-theme
+  ;; disabled
+  :init
+  (setq modus-vivendi-theme-rainbow-headings nil)
+  (setq modus-vivendi-theme-slanted-constructs t
+        modus-vivendi-theme-bold-constructs t
+        modus-vivendi-theme-visible-fringes t
+        modus-vivendi-theme-3d-modeline t
+        modus-vivendi-theme-subtle-diffs t
+        modus-vivendi-theme-distinct-org-blocks t
+        modus-vivendi-theme-proportional-fonts t
+        modus-vivendi-theme-section-headings t
+        modus-vivendi-theme-scale-headings t
+        modus-vivendi-theme-scale-1 1.05
+        modus-vivendi-theme-scale-2 1.1
+        modus-vivendi-theme-scale-3 1.15
+        modus-vivendi-theme-scale-4 1.2)
+  :ensure t)
+
+;; doom-theme
+;; (setq doom-theme 'wombat)
+;; (setq doom-theme 'doom-one)
+;; (setq doom-theme 'doom-Iosvkem)
+(setq doom-theme 'modus-operandi)
+;; (setq doom-theme 'modus-vivendi)
