@@ -100,6 +100,7 @@
    (:prefix "g"
      :desc "Magit branches"        :n "B" #'magit-branch-popup)))
 
+(setq +treemacs-git-mode nil)
 ;; treemacs
 (after! treemacs-evil
   (define-key! treemacs-mode-map
@@ -269,7 +270,7 @@
 
 ;; company
 (after! company
-  (setq company-idle-delay 0.7))
+  (setq company-idle-delay 0.1))
 
 (after! company-box
   ;; trigger manually with C-h when completion box  is open
@@ -414,15 +415,16 @@ Other errors while reverting a buffer are reported only as messages."
   :init
   ;; disabled
   (setq modus-operandi-theme-rainbow-headings nil)
+  (setq modus-operandi-theme-proportional-fonts nil)
+  (setq modus-operandi-theme-scale-headings nil)
+  ;; enabled
   (setq modus-operandi-theme-slanted-constructs t
         modus-operandi-theme-bold-constructs t
         modus-operandi-theme-visible-fringes t
         modus-operandi-theme-3d-modeline t
         modus-operandi-theme-subtle-diffs t
         modus-operandi-theme-distinct-org-blocks t
-        modus-operandi-theme-proportional-fonts t
         modus-operandi-theme-section-headings t
-        modus-operandi-theme-scale-headings t
         modus-operandi-theme-scale-1 1.05
         modus-operandi-theme-scale-2 1.1
         modus-operandi-theme-scale-3 1.15
@@ -432,15 +434,16 @@ Other errors while reverting a buffer are reported only as messages."
   ;; disabled
   :init
   (setq modus-vivendi-theme-rainbow-headings nil)
+  (setq modus-vivendi-theme-proportional-fonts nil)
+  (setq modus-vivendi-theme-scale-headings nil)
+  ;; enabled
   (setq modus-vivendi-theme-slanted-constructs t
         modus-vivendi-theme-bold-constructs t
         modus-vivendi-theme-visible-fringes t
         modus-vivendi-theme-3d-modeline t
         modus-vivendi-theme-subtle-diffs t
         modus-vivendi-theme-distinct-org-blocks t
-        modus-vivendi-theme-proportional-fonts t
         modus-vivendi-theme-section-headings t
-        modus-vivendi-theme-scale-headings t
         modus-vivendi-theme-scale-1 1.05
         modus-vivendi-theme-scale-2 1.1
         modus-vivendi-theme-scale-3 1.15

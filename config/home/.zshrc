@@ -240,3 +240,7 @@ function tmux_cp_loop {
         sleep 0.5
     done
 }
+
+
+### Disable auto cd
+unsetopt AUTO_CD

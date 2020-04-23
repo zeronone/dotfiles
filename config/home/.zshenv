@@ -4,7 +4,6 @@
 SHELL=/bin/zsh
 
 ### PATH
-export PATH=$HOME/bin:$PATH
 export PATH=/usr/local/sbin:$PATH
 # for haskell stack local bins
 export PATH=$HOME/.local/bin:$PATH   # 3
@@ -12,6 +11,7 @@ export PATH=$HOME/.ghcup/bin:$PATH   # 2
 export PATH=$HOME/.cabal/bin:$PATH   # 1
 # for rustup, cargo installations
 export PATH=$HOME/.cargo/bin:$PATH
+
 
 # doom emacs
 export PATH=$HOME/.emacs.d/bin:$PATH
@@ -55,3 +55,4 @@ export PATH="/usr/local/opt/curl/bin:$PATH"
 
 # dotfiles common bin
 export PATH=$PATH:$HOME/myfiles/dotfiles/bin
+export PATH=$HOME/bin:$PATH

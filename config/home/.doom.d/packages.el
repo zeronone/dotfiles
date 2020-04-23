@@ -28,3 +28,6 @@
 ;; themes
 (package! modus-operandi-theme)
 (package! modus-vivendi-theme)
+
+;; disable org-superstar
+(package! org-superstar :disable t)

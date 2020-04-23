@@ -37,3 +37,6 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 
 # Minizinc
 export PATH=/Applications/MiniZincIDE.app/Contents/Resources:$PATH
+
+# gccemacs
+export PATH=$HOME/gccemacs/bin:$PATH
