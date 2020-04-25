@@ -6,15 +6,13 @@ Copied from:
 
 
 ```bash
-
 # build gcc with JIT support
 ./build-patched-gcc.sh
 
 ./build-gccemacs.sh
 
 
-# add (setq comp-deferred-compilation t) to your ~/.emacs.d/early-init.el
-
+# execute (native-comp-async "~/.emacs.d/.local/straight/build" t t)
 # run gccemacs
 gccemacs
 ```

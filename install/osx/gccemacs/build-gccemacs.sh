@@ -1,28 +1,37 @@
 #!/bin/sh
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
 workingdir="$HOME/src/emacs"
 
 mkdir -p $workingdir
 git clone https://github.com/emacs-mirror/emacs $workingdir || true
 cd $workingdir
 git clean -fdx
+git checkout -- .
 git checkout master
 git branch -D feature/native-comp || true
 git pull
 git checkout --track origin/feature/native-comp
+
+# patches for emacs-head
+patch -g 0 -f -p1 -i $DIR/0001-No-frame-refocus-cocoa.patch
+patch -g 0 -f -p1 -i $DIR/0003-Pdumper-size-increase.patch
+patch -g 0 -f -p1 -i $DIR/0005-Xwidgets-webkit-in-cocoa-pdumper.patch
+
 git status
 
 # instead usr/include
 # sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
 
 
-prefix=$HOME/gccemacs
-if [ ! -d $prefix ]; then
-    echo "Creating gccemacs dir: $prefix"
-    mkdir -p $prefix
-    mkdir -p $prefix/bin
+prefixdir=$HOME/gccemacs
+if [ ! -d $prefixdir ]; then
+    echo "Creating gccemacs dir: $prefixdir"
+    mkdir -p $prefixdir
+    mkdir -p $prefixdir/bin
 fi
-echo "Will install at ${prefix}"
+echo "Will install at ${prefixdir}"
 
 libs=(
     /usr/local/opt/openssl@1.1
@@ -42,15 +51,15 @@ libs=(
     /usr/local/opt/p11-kit
 )
 
-CFLAGS=""
+CFLAGS="-g3 "
 LDFLAGS=""
 PKG_CONFIG_PATH=""
 PATH="$(brew --prefix gcc)/$(brew list --versions gcc | tr ' ' '\n' | tail -1)/bin:${PATH}"
 for dir in "${libs[@]}"; do
-    CFLAGS="${CFLAGS}-I${dir}/include "
-    LDFLAGS="${LDFLAGS}-L${dir}/lib "
-    PKG_CONFIG_PATH="${PKG_CONFIG_PATH}${dir}/lib/pkgconfig:"
-    PATH="${PATH}${dir}/bin:"
+    [[ -d "${dir}/lib" ]] && LDFLAGS="${LDFLAGS}-L${dir}/lib "
+    [[ -d "${dir}/include" ]] && CFLAGS="${CFLAGS}-I${dir}/include "
+    [[ -d "${dir}/lib/pkgconfig" ]] && PKG_CONFIG_PATH="${PKG_CONFIG_PATH}${dir}/lib/pkgconfig:"
+    [[ -d "${dir}/bin" ]] && PATH="${dir}/bin:${PATH}"
 done
 export CPPFLAGS="${CFLAGS}"
 export CFLAGS
@@ -59,7 +68,7 @@ export PKG_CONFIG_PATH
 export PATH
 
 export LDFLAGS="${LDFLAGS}-L/usr/local/lib/gcc/9 "
-export PATH=$PATH:/usr/local/opt/gnu-sed/libexec/gnubin
+export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
 
 echo "$CPPFLAGS"
 echo "$CFLAGS"
@@ -71,21 +80,21 @@ echo "$PATH"
 CC='clang' \
 ./configure \
 --disable-silent-rules \
---prefix=${prefix} \
+--prefix=${prefixdir} \
+--enable-locallisppath=/usr/local/share/emacs/site-lisp \
 --with-nativecomp \
---with-gnutls \
 --without-dbus \
 --without-imagemagick \
 --without-x \
+--with-xwidgets \
+--with-harfbuzz \
+--with-pdumper \
+--with-ns \
+--disable-ns-self-contained \
+--with-gnutls \
 --with-modules \
---with-xml2
---with-json \
---with-ns
-# --enable-locallisppath=/usr/local/share/emacs/site-lisp \
-# --disable-ns-self-contained
-# --with-x \
-# --with-ns \
-# --with-xwidgets \
+--with-xml2 \
+--with-json
 
 
 function catch_errors() {
@@ -94,23 +103,16 @@ function catch_errors() {
 }
 trap catch_errors ERR;
 
-make -j 8 NATIVE_FAST_BOOT=1 BYTE_COMPILE_EXTRA_FLAGS='--eval "(setq comp-speed 0)"'
+make --debug=j -j 8 NATIVE_FAST_BOOT=1 BYTE_COMPILE_EXTRA_FLAGS='--eval "(setq comp-speed 0)"'
+# make -j 8 NATIVE_FAST_BOOT=1
 make install
 
-cd $workingdir
-rm -rf ${prefix}/Emacs.app
-cp -rf nextstep/Emacs.app  ${prefix}/Emacs.app
+# Currently this is failing, also need -g3 in CFLAGS
+dsymutil nextstep/Emacs.app/Contents/MacOS/Emacs
 
-# link seems invalid
-# emacs: dlopen($HOME/gccemacs/Emacs.app/Contents/MacOS/../lisp/eln-x86_64-apple-darwin19.4.0-3e45ce4a4d4
-cd $prefix/Emacs.app
-ln -s Resources/lisp lisp
+rm -rf ${prefixdir}/Emacs.app
+cp -rf nextstep/Emacs.app  ${prefixdir}/Emacs.app
 
-cat << EOF > ${prefix}/bin/emacs
-#!/bin/bash
-exec ${prefix}/Emacs.app/Contents/MacOS/Emacs "\$@"
-EOF
+# emacs binary is crated at ${prefixdir}/bin
+ls -l ${prefixdir}/bin
 
-chmod 755 ${prefix}/bin/emacs
-rm ${prefix}/bin/emacs || true
-ln -s ${prefix}/bin/emacs ~/bin/gccemacs

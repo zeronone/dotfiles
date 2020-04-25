@@ -101,13 +101,6 @@ setopt nosharehistory
 
 alias sshu="ssh -Y -l ubuntu"
 
-# Already done in ~/.zshenv
-# source local customizations and passwords
-source ~/.secretsrc  # already in .zshenv
-for file in ~/.localcustomizations.*; do
-    source "$file"
-done
-
 #####################################################################
 # Helper functions
 #####################################################################
@@ -241,6 +234,12 @@ function tmux_cp_loop {
     done
 }
 
-
 ### Disable auto cd
 unsetopt AUTO_CD
+
+# Already done in ~/.zshenv
+# source local customizations and passwords
+source ~/.secretsrc  # already in .zshenv
+for file in ~/.localcustomizations.*; do
+    source "$file"
+done

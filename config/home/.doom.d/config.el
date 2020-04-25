@@ -1,10 +1,11 @@
 ;;; config.el -*- lexical-binding: t; -*-
 
-(setq module-file-suffix ".so")
-
 ;; I've swapped these keys on my keyboard
 (setq x-super-keysym 'meta
       x-alt-keysym   'alt)
+
+;; no fringes
+(set-fringe-mode '(0 . 0))
 
 ;; Initial frame size
 (when window-system (set-frame-size (selected-frame) 150 50))
@@ -25,6 +26,10 @@
 (setq-default
  user-full-name    "Arif Rezai"
  user-mail-address "me@arifrezai.com")
+
+;; which-key
+(after! which-key
+  (which-key-setup-side-window-right-bottom))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; doom-ui
@@ -53,6 +58,10 @@
 (setq doom-modeline-buffer-file-name-style 'truncate-with-project)
 (setq doom-modeline-persp-name t)
 (setq show-trailing-whitespace t)
+(setq doom-modeline-buffer-state-icon nil)
+;; (after! doom-modeline
+;;  (remove-hook 'doom-modeline-mode-hook #'size-indication-mode) ; filesize in modeline
+;;  (line-number-mode -1))
 
 ;; (setq-default +pretty-code-enabled-modes '(emacs-lisp-mode org-mode))
 
@@ -100,6 +109,7 @@
    (:prefix "g"
      :desc "Magit branches"        :n "B" #'magit-branch-popup)))
 
+(setq treemacs-git-mode nil)
 (setq +treemacs-git-mode nil)
 ;; treemacs
 (after! treemacs-evil
@@ -131,6 +141,12 @@
 (setq org-id-link-to-org-use-id t)
 
 (after! org
+
+  ;; scrolling in large org files is too slow if enabled
+  (setq org-highlight-latex-and-related nil)
+
+  ;; disable eldoc-mode (don't work well in src blocks)
+  (eldoc-mode -1)
 
   (setq org-image-actual-width (/ (display-pixel-width) 3))
 
@@ -451,8 +467,12 @@ Other errors while reverting a buffer are reported only as messages."
   :ensure t)
 
 ;; doom-theme
-;; (setq doom-theme 'wombat)
-;; (setq doom-theme 'doom-one)
-;; (setq doom-theme 'doom-Iosvkem)
 (setq doom-theme 'modus-operandi)
 ;; (setq doom-theme 'modus-vivendi)
+
+
+;; disable smartparens, scrolling large org files is very slow
+;; smartparens is core package, so it should be disabled here
+;; https://github.com/Fuco1/smartparens/issues/464
+(after! smartparens
+  (smartparens-global-mode -1))

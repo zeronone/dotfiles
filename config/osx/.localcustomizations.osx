@@ -25,9 +25,6 @@ function osxresync() {
   osxwithsync echo "Sync finsihed"
 }
 
-# emacs gui
-# alias emacsgui="open -n -a /usr/local/Cellar/emacs-mac/emacs-26.1-z-mac-7.4/Emacs.app/Contents/MacOS/Emacs"
-alias emacsgui="DOOMENV=0 open -n -a /usr/local/Cellar/emacs-mac/emacs-26.2-z-mac-7.6/Emacs.app/Contents/MacOS/Emacs"
 
 export PATH="/usr/local/opt/mysql@5.7/bin:$PATH"
 
@@ -36,7 +33,5 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 
 
 # Minizinc
-export PATH=/Applications/MiniZincIDE.app/Contents/Resources:$PATH
-
-# gccemacs
-export PATH=$HOME/gccemacs/bin:$PATH
+export PATH="/Applications/MiniZincIDE.app/Contents/Resources:$PATH"
+export PATH="$HOME/bin:$PATH"
