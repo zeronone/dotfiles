@@ -31,3 +31,6 @@
 
 ;; disable org-superstar
 (package! org-superstar :disable t)
+
+;; temp
+(package! lsp-mode :pin "9c1ab8adf1a")

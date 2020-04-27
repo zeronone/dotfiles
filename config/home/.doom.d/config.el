@@ -54,11 +54,12 @@
 (add-hook! doom-big-font-mode
   (setq +doom-modeline-height (if doom-big-font-mode 37 29)))
 
+;; doom-modeline is disabled currently
 ;; doom-modeline
-(setq doom-modeline-buffer-file-name-style 'truncate-with-project)
-(setq doom-modeline-persp-name t)
-(setq show-trailing-whitespace t)
-(setq doom-modeline-buffer-state-icon nil)
+;; (setq doom-modeline-buffer-file-name-style 'truncate-with-project)
+;; (setq doom-modeline-persp-name t)
+;; (setq show-trailing-whitespace t)
+;; (setq doom-modeline-buffer-state-icon nil)
 ;; (after! doom-modeline
 ;;  (remove-hook 'doom-modeline-mode-hook #'size-indication-mode) ; filesize in modeline
 ;;  (line-number-mode -1))
@@ -133,6 +134,8 @@
 (setq org-directory (expand-file-name "~/Dropbox/orgs/"))
 (setq +org-dir (expand-file-name "~/Dropbox/orgs/"))
 (setq +org-export-directory (expand-file-name "~/Dropbox/orgs/.export"))
+(setq org-attach-id-dir (expand-file-name "~/Dropbox/orgs/.attach"))
+(setq org-download-image-dir (expand-file-name "~/Dropbox/orgs/.attach"))
 (setq org-roam-directory "~/Dropbox/orgs")
 (setq org-journal-dir "~/Dropbox/orgs")
 (setq org-noter-notes-search-path "~/Dropbox/orgs")
@@ -140,13 +143,13 @@
 (setq org-ellipsis " ▼ ")
 (setq org-id-link-to-org-use-id t)
 
-(after! org
+;; eldoc in org-mode src blocks recurses https://github.com/hlissner/doom-emacs/issues/2972
+(after! python
+  (setq eldoc-documentation-function #'python-eldoc-function))
 
+(after! org
   ;; scrolling in large org files is too slow if enabled
   (setq org-highlight-latex-and-related nil)
-
-  ;; disable eldoc-mode (don't work well in src blocks)
-  (eldoc-mode -1)
 
   (setq org-image-actual-width (/ (display-pixel-width) 3))
 
@@ -218,7 +221,7 @@
   ;;   [return] "RET")
   (map! :map org-drill-response-mode-map
         [return] nil
-        "C-c c" #'org-drill-response-rtn)
+        "C-c C-c" #'org-drill-response-rtn)
 
   (setq org-drill-presentation-prompt-with-typing t)
   (setq org-drill-left-cloze-delimiter "[hint][")
@@ -231,7 +234,10 @@
   (add-to-list 'deft-extensions "md")
   (setq deft-recursive t)
   (setq deft-directory "~/Dropbox/orgs")
-  (setq deft-archive-directory "~/Dropbox/orgs"))
+  (setq deft-archive-directory "~/Dropbox/orgs")
+
+  (map! :map deft-mode-map
+        [escape] #'quit-window))
 
 ;; org-journal
 (after! org-journal
@@ -286,7 +292,9 @@
 
 ;; company
 (after! company
-  (setq company-idle-delay 0.1))
+  ;;  original: (not erc-mode message-mode help-mode gud-mode eshell-mode)
+  (setq company-global-modes '(not org-mode erc-mode message-mode help-mode gud-mode eshell-mode))
+  (setq company-idle-delay 0.3))
 
 (after! company-box
   ;; trigger manually with C-h when completion box  is open
@@ -433,14 +441,14 @@ Other errors while reverting a buffer are reported only as messages."
   (setq modus-operandi-theme-rainbow-headings nil)
   (setq modus-operandi-theme-proportional-fonts nil)
   (setq modus-operandi-theme-scale-headings nil)
+  (setq modus-operandi-theme-distinct-org-blocks nil
+        modus-operandi-theme-section-headings nil)
   ;; enabled
   (setq modus-operandi-theme-slanted-constructs t
         modus-operandi-theme-bold-constructs t
         modus-operandi-theme-visible-fringes t
         modus-operandi-theme-3d-modeline t
         modus-operandi-theme-subtle-diffs t
-        modus-operandi-theme-distinct-org-blocks t
-        modus-operandi-theme-section-headings t
         modus-operandi-theme-scale-1 1.05
         modus-operandi-theme-scale-2 1.1
         modus-operandi-theme-scale-3 1.15
@@ -452,14 +460,14 @@ Other errors while reverting a buffer are reported only as messages."
   (setq modus-vivendi-theme-rainbow-headings nil)
   (setq modus-vivendi-theme-proportional-fonts nil)
   (setq modus-vivendi-theme-scale-headings nil)
+  (setq modus-vivendi-theme-distinct-org-blocks nil
+        modus-vivendi-theme-section-headings nil)
   ;; enabled
   (setq modus-vivendi-theme-slanted-constructs t
         modus-vivendi-theme-bold-constructs t
         modus-vivendi-theme-visible-fringes t
         modus-vivendi-theme-3d-modeline t
         modus-vivendi-theme-subtle-diffs t
-        modus-vivendi-theme-distinct-org-blocks t
-        modus-vivendi-theme-section-headings t
         modus-vivendi-theme-scale-1 1.05
         modus-vivendi-theme-scale-2 1.1
         modus-vivendi-theme-scale-3 1.15
@@ -476,3 +484,17 @@ Other errors while reverting a buffer are reported only as messages."
 ;; https://github.com/Fuco1/smartparens/issues/464
 (after! smartparens
   (smartparens-global-mode -1))
+
+;; Custom functions
+(defun subtree-to-new-file ()
+  "Sloppily assists in moving an org subtree to a new file, if base-directory is defined it will be placed there"
+  (interactive)
+  (setq header-text (org-entry-get nil "ITEM"))
+  (org-copy-subtree nil t)
+  (setq new-filename (concat (s-snake-case header-text) ".org"))
+  (find-file-other-window (expand-file-name new-filename (or base-directory org-directory)))
+  (erase-buffer)
+  (insert (concat "#+TITLE: " header-text "\n"))
+  (insert "\n")
+  (org-paste-subtree)
+  (delete-window))
