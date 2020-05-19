@@ -11,10 +11,12 @@ Copied from:
 
 ./build-gccemacs.sh
 
+# compile third-party libs
+~/gccemacs/bin/emacs --fg-daemon
+~/gccemacs/bin/emacsclient --eval '(native-compile-async "~/.emacs.d/.local/straight/build" 4 t)'
 
-# execute (native-comp-async "~/.emacs.d/.local/straight/build" t t)
 # run gccemacs
-gccemacs
+~/gccemacs/bin/emacs
 ```
 
 

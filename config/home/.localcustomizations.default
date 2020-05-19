@@ -1,0 +1,6 @@
+
+
+# Run emacs daemon by "emacs --fg-daemon"
+alias ec="emacsclient --create-frame"
+
+

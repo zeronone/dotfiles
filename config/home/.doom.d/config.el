@@ -1,5 +1,13 @@
 ;;; config.el -*- lexical-binding: t; -*-
 
+;; improve startup time
+(after! gcmh
+  (setq gcmh-high-cons-threshold (* 128 1024 1024)))
+(setq inhibit-compacting-font-caches t)
+
+;; load all packages when in deamon mode
+(setq use-package-always-demand (daemonp))
+
 ;; I've swapped these keys on my keyboard
 (setq x-super-keysym 'meta
       x-alt-keysym   'alt)
@@ -19,7 +27,7 @@
 (setq truncate-lines nil)
 
 ;; default indent
-(setq-default tab-width 2)
+(setq-default tab-width 4)
 
 (setq straight-vc-git-default-clone-depth 10)
 
@@ -136,25 +144,37 @@
 (setq +org-export-directory (expand-file-name "~/Dropbox/orgs/.export"))
 (setq org-attach-id-dir (expand-file-name "~/Dropbox/orgs/.attach"))
 (setq org-download-image-dir (expand-file-name "~/Dropbox/orgs/.attach"))
-(setq org-roam-directory "~/Dropbox/orgs")
-(setq org-journal-dir "~/Dropbox/orgs")
-(setq org-noter-notes-search-path "~/Dropbox/orgs")
+(setq org-roam-directory "~/Dropbox/orgs/mywiki")
+(setq org-journal-dir "~/Dropbox/orgs/mywiki/journal")
+(setq org-noter-notes-search-path "~/Dropbox/orgs/mywiki/notes")
 (setq org-pdftools-search-string-separator "??")
 (setq org-ellipsis " ▼ ")
 (setq org-id-link-to-org-use-id t)
 
 ;; eldoc in org-mode src blocks recurses https://github.com/hlissner/doom-emacs/issues/2972
-(after! python
-  (setq eldoc-documentation-function #'python-eldoc-function))
+(after! org-eldoc
+  (puthash "python" #'ignore org-eldoc-local-functions-cache))
+
 
 (after! org
   ;; scrolling in large org files is too slow if enabled
   (setq org-highlight-latex-and-related nil)
 
+  ;; for performance
+  ;; https://github.com/hlissner/doom-emacs/blob/develop/docs/faq.org#why-is-scrolling-slow-in-emacsdoom
+  (remove-hook 'org-mode-hook #'org-superstar-mode)
+  (setq org-fontify-quote-and-verse-blocks nil)
+  (setq org-fontify-whole-heading-line nil)
+  (setq org-hide-leading-stars nil)
+  ;; (setq org-startup-indented nil)
+
   (setq org-image-actual-width (/ (display-pixel-width) 3))
 
   (setq-default org-cycle-separator-lines 0)
   (setq-default org-agenda-inhibit-startup nil)
+
+  ;; https://github.com/hlissner/doom-emacs/issues/3085
+  (setq org-id-link-to-org-use-id 'use-existing)
 
   ;; html export
   (setq-default org-html-htmlize-output-type 'css)
@@ -163,11 +183,23 @@
   ;; use python3 in org-babel
   (setq org-babel-python-command "python3")
 
+  ;; This should be put here rather than in (after! org-journal)
+  (defun +org-journal-find-location ()
+    ;; Open today's journal, but specify a non-nil prefix argument in order to
+    ;; inhibit inserting the heading; org-capture will insert the heading.
+    (org-journal-new-entry t)
+    ;; Position point on the journal's top-level heading so that org-capture
+    ;; will add the new entry as a child entry.
+    (goto-char (point-min)))
+  ;; org-capture-templates
+  (add-to-list 'org-capture-templates
+               '("j" "Journal entry" entry (function +org-journal-find-location)
+                 "* %(format-time-string org-journal-time-format)%^{Title}\n%i%?" :prepend t))
+
   (setq org-image-actual-width 400)
   (setq org-agenda-files (list "~/Dropbox/orgs/"
                                "~/Dropbox/orgs/journal"
-                               "~/Dropbox/orgs/personal-wiki"
-                               "~/Dropbox/orgs/line-wiki"
+                               "~/Dropbox/orgs/mywiki"
                                "~/Dropbox/orgs/line"
                                "~/Dropbox/orgs/verda"
                                "~/Dropbox/orgs/toptal"))
@@ -230,6 +262,9 @@
   (setq org-drill-add-random-noise-to-intervals-p t)
   (setq org-drill-adjust-intervals-for-early-and-late-repetitions-p t))
 
+(use-package! hydra
+  :ensure t)
+
 (after! deft
   (add-to-list 'deft-extensions "md")
   (setq deft-recursive t)
@@ -242,7 +277,6 @@
 ;; org-journal
 (after! org-journal
   (setq org-journal-file-type 'weekly)
-
   (setq org-journal-carryover-items t)
 
   (setq org-journal-enable-agenda-integration t
@@ -274,9 +308,6 @@
               (setq show-trailing-whitespace nil)
               (setq term-buffer-maximum-size 10000))))
 
-(use-package! eterm-256color
-  :hook (term-mode-hook . eterm-256color-mode))
-
 ;; flycheck
 (after! flycheck
   (setq flycheck-display-errors-delay 1.5)    ;; 1.5 seconds
@@ -294,7 +325,7 @@
 (after! company
   ;;  original: (not erc-mode message-mode help-mode gud-mode eshell-mode)
   (setq company-global-modes '(not org-mode erc-mode message-mode help-mode gud-mode eshell-mode))
-  (setq company-idle-delay 0.3))
+  (setq company-idle-delay 0.2))
 
 (after! company-box
   ;; trigger manually with C-h when completion box  is open
@@ -411,6 +442,7 @@ Other errors while reverting a buffer are reported only as messages."
 (setq vc-follow-symlinks nil)
 
 ;; rust
+(setq rustic-lsp-server 'rust-analyzer)
 (after! rustic
   (set-evil-initial-state! 'rustic-popup-mode 'emacs)
   (set-popup-rules!
@@ -418,7 +450,7 @@ Other errors while reverting a buffer are reported only as messages."
       ("^\\*rustic-compilation\\*" :select nil :quit t :side bottom :slot 2)))
 
   ;; 'rust-analyzer is not ready yet
-  (setq rustic-lsp-server 'rls))
+  (setq rustic-lsp-server 'rust-analyzer))
 
 ;; Disable title bars
 ;; (setq default-frame-alist '((undecorated . t)))
@@ -441,14 +473,14 @@ Other errors while reverting a buffer are reported only as messages."
   (setq modus-operandi-theme-rainbow-headings nil)
   (setq modus-operandi-theme-proportional-fonts nil)
   (setq modus-operandi-theme-scale-headings nil)
-  (setq modus-operandi-theme-distinct-org-blocks nil
-        modus-operandi-theme-section-headings nil)
+  (setq modus-operandi-theme-section-headings nil)
   ;; enabled
   (setq modus-operandi-theme-slanted-constructs t
         modus-operandi-theme-bold-constructs t
         modus-operandi-theme-visible-fringes t
         modus-operandi-theme-3d-modeline t
         modus-operandi-theme-subtle-diffs t
+        modus-operandi-theme-distinct-org-blocks t
         modus-operandi-theme-scale-1 1.05
         modus-operandi-theme-scale-2 1.1
         modus-operandi-theme-scale-3 1.15
@@ -460,14 +492,14 @@ Other errors while reverting a buffer are reported only as messages."
   (setq modus-vivendi-theme-rainbow-headings nil)
   (setq modus-vivendi-theme-proportional-fonts nil)
   (setq modus-vivendi-theme-scale-headings nil)
-  (setq modus-vivendi-theme-distinct-org-blocks nil
-        modus-vivendi-theme-section-headings nil)
+  (setq modus-vivendi-theme-section-headings nil)
   ;; enabled
   (setq modus-vivendi-theme-slanted-constructs t
         modus-vivendi-theme-bold-constructs t
         modus-vivendi-theme-visible-fringes t
         modus-vivendi-theme-3d-modeline t
         modus-vivendi-theme-subtle-diffs t
+        modus-vivendi-theme-distinct-org-blocks t
         modus-vivendi-theme-scale-1 1.05
         modus-vivendi-theme-scale-2 1.1
         modus-vivendi-theme-scale-3 1.15
@@ -482,8 +514,9 @@ Other errors while reverting a buffer are reported only as messages."
 ;; disable smartparens, scrolling large org files is very slow
 ;; smartparens is core package, so it should be disabled here
 ;; https://github.com/Fuco1/smartparens/issues/464
-(after! smartparens
-  (smartparens-global-mode -1))
+;; (after! smartparens
+;;   (add-hook 'org-mode-hook #'turn-off-smartparens-mode)
+;;   (sp-local-pair 'org-mode "*" nil))
 
 ;; Custom functions
 (defun subtree-to-new-file ()
@@ -498,3 +531,13 @@ Other errors while reverting a buffer are reported only as messages."
   (insert "\n")
   (org-paste-subtree)
   (delete-window))
+
+;; file-templates
+(use-package! s
+  :ensure t)
+(defvar +private-file-templates-dir
+  (expand-file-name "templates/" (file-name-directory load-file-name))
+  "The path to a directory of yasnippet folders to use for file templates.")
+(after! yasnippets
+  (add-to-list 'yas-snippet-dirs '+private-file-templates-dir 'append #'eq)
+  (yas-reload-all))

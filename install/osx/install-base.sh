@@ -29,14 +29,15 @@ brew install stow
 brew install tldr
 
 
-# emacs railwaycat
+# emacs railwaycat (27.x)
 # brew tap railwaycat/emacsmacport
 # brew install emacs-mac --with-imagemagick --with-glib --with-modules --with-xml2 --with-ctags --with-dbus --HEAD
+brew install emacs-mac --HEAD --with-jansson --with-xml2 --with-rsvg --with-modules --with-glib --with-ctags --with-dbus --with-imagemagick --with-emacs-sexy-icon
 
-# from HEAD
-brew tap daviderestivo/emacs-head
-brew install emacs-head --HEAD --with-cocoa --with-ctags --with-dbus --with-imagemagick --with-jansson --with-mailutils --with-no-frame-refocus --with-pdumper --with-xwidgets --with-crash-debug
-ln -s /usr/local/opt/emacs-head/Emacs.app /Applications
+# from HEAD (28.x)
+# brew tap daviderestivo/emacs-head
+# brew install emacs-head --HEAD --with-cocoa --with-ctags --with-dbus --with-imagemagick --with-jansson --with-mailutils --with-no-frame-refocus --with-pdumper --with-xwidgets --with-crash-debug
+# ln -s /usr/local/opt/emacs-head/Emacs.app /Applications
 
 
 # ripgrep installation is in install-rust-deps.sh
@@ -121,3 +122,9 @@ brew install graphviz
 
 # pdf-tools emac
 brew install poppler automake
+
+# git-delta
+brew install git-delta
+
+# gawk
+brew install gawk

@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: Org template                                              
+# --
+#+TITLE: ${1:`(s-titleized-words (file-name-base buffer-file-name))`}
+#+STARTUP: showall inlineimages
+#+OPTIONS: toc:nil
+
+$0

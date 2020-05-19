@@ -36,3 +36,20 @@ test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell
 export PATH="/Applications/MiniZincIDE.app/Contents/Resources:$PATH"
 export PATH="$HOME/bin:$PATH"
 export PATH="$HOME/gccemacs/bin:$PATH"
+
+
+# function demacs {
+#   ip=$(ifconfig en0 | grep inet | awk '$1=="inet" {print $2}')
+#   xhost + $ip
+#   docker run -ti --name emacs\
+#    -e DISPLAY=$ip:0 \
+#    -e UNAME="zeronone" \
+#    -e GNAME="zeronone" \
+#    -e UHOME="/Users/zeronone" \
+#    -e UID="502" \
+#    -e GID="502" \
+#    -v /Users/zeronone:/Users/zeronone \
+#    arif-emacs emacs
+# }
+
+

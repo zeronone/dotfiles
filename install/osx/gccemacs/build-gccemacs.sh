@@ -14,15 +14,12 @@ git branch -D feature/native-comp || true
 git pull
 git checkout --track origin/feature/native-comp
 
-# patches for emacs-head
+# patches from emacs-head
 patch -g 0 -f -p1 -i $DIR/0001-No-frame-refocus-cocoa.patch
 patch -g 0 -f -p1 -i $DIR/0003-Pdumper-size-increase.patch
-patch -g 0 -f -p1 -i $DIR/0005-Xwidgets-webkit-in-cocoa-pdumper.patch
+#patch -g 0 -f -p1 -i $DIR/0005-Xwidgets-webkit-in-cocoa-pdumper.patch
 
 git status
-
-# instead usr/include
-# sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
 
 
 prefixdir=$HOME/gccemacs
@@ -54,21 +51,21 @@ libs=(
 CFLAGS="-g3 "
 LDFLAGS=""
 PKG_CONFIG_PATH=""
+
+LDFLAGS="${LDFLAGS}-L/usr/local/lib/gcc/9 "
 PATH="$(brew --prefix gcc)/$(brew list --versions gcc | tr ' ' '\n' | tail -1)/bin:${PATH}"
+PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
+
 for dir in "${libs[@]}"; do
     [[ -d "${dir}/lib" ]] && LDFLAGS="${LDFLAGS}-L${dir}/lib "
     [[ -d "${dir}/include" ]] && CFLAGS="${CFLAGS}-I${dir}/include "
     [[ -d "${dir}/lib/pkgconfig" ]] && PKG_CONFIG_PATH="${PKG_CONFIG_PATH}${dir}/lib/pkgconfig:"
-    [[ -d "${dir}/bin" ]] && PATH="${dir}/bin:${PATH}"
 done
 export CPPFLAGS="${CFLAGS}"
 export CFLAGS
 export LDFLAGS
 export PKG_CONFIG_PATH
 export PATH
-
-export LDFLAGS="${LDFLAGS}-L/usr/local/lib/gcc/9 "
-export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
 
 echo "$CPPFLAGS"
 echo "$CFLAGS"
@@ -80,21 +77,23 @@ echo "$PATH"
 CC='clang' \
 ./configure \
 --disable-silent-rules \
+--without-dbus \
+--without-imagemagick \
 --prefix=${prefixdir} \
 --enable-locallisppath=/usr/local/share/emacs/site-lisp \
 --with-nativecomp \
---without-dbus \
---without-imagemagick \
---without-x \
---with-xwidgets \
---with-harfbuzz \
---with-pdumper \
 --with-ns \
 --disable-ns-self-contained \
 --with-gnutls \
 --with-modules \
 --with-xml2 \
---with-json
+--with-json \
+--with-cocoa
+#--with-xwidgets \
+#--without-x \
+#--with-x \
+#--with-harfbuzz \
+#--with-pdumper \
 
 
 function catch_errors() {
@@ -103,8 +102,8 @@ function catch_errors() {
 }
 trap catch_errors ERR;
 
-make --debug=j -j 8 NATIVE_FAST_BOOT=1 BYTE_COMPILE_EXTRA_FLAGS='--eval "(setq comp-speed 0)"'
-# make -j 8 NATIVE_FAST_BOOT=1
+# make -j 8 NATIVE_FAST_BOOT=1 BYTE_COMPILE_EXTRA_FLAGS='--eval "(setq comp-speed 0)"'
+make -j 8 NATIVE_FAST_BOOT=1
 make install
 
 # Currently this is failing, also need -g3 in CFLAGS

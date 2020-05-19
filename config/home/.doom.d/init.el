@@ -15,18 +15,21 @@
 ;;      directory (for easy access to its source code).
 
 
-
-
-
 (doom! :input
        ;;chinese
        ;;japanese
 
        :completion
-       (company +childframe)          ; the ultimate code completion backend
+       (company
+         +childframe          ; the ultimate code completion backend
+       )
        ;;helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
-       (ivy +fuzzy)               ; a search engine for love and life
+       (ivy
+         +fuzzy
+         +prescient
+         +icons
+       )               ; a search engine for love and life
 
        :ui
        deft              ; notational velocity for Emacs
@@ -42,15 +45,16 @@
        ;;neotree           ; a project drawer, like NERDTree for vim
        ophints           ; highlight the region an operation acts on
        (popup            ; tame sudden yet inevitable temporary windows
-        ;;+all             ; catch all popups that start with an asterix
-        +defaults)       ; default popup rules
+        +all             ; catch all popups that start with an asterix
+        +defaults        ; default popup rules
+       )
        ;; (pretty-code +pragmatic-pro)       ; replace bits of code with pretty symbols
        ;;tabs              ; an tab bar for Emacs
        treemacs          ; a project drawer, like neotree but cooler
        unicode           ; extended unicode support for various languages
-       vc-gutter         ; vcs diff in the fringe
-       vi-tilde-fringe   ; fringe tildes to mark beyond EOB
-       window-select     ; visually switch windows
+       ;;vc-gutter         ; vcs diff in the fringe
+       ;;vi-tilde-fringe   ; fringe tildes to mark beyond EOB
+       (window-select +numbers)     ; visually switch windows
        workspaces        ; tab emulation, persistence & separate workspaces
        ;;zen               ; distraction-free coding or writing
 
@@ -72,7 +76,7 @@
        dired             ; making dired pretty [functional]
        electric          ; smarter, keyword-based electric-indent
        ibuffer           ; interactive buffer management
-       vc                ; version-control and Emacs, sitting in a tree
+       ;;vc                ; version-control and Emacs, sitting in a tree
        undo
 
        :term
@@ -83,7 +87,7 @@
 
        :checkers
        syntax              ; tasing you for every semicolon you forget
-       ;;spell             ; tasing you for misspelling mispelling
+       spell            ; tasing you for misspelling mispelling
        ;;grammar           ; tasing grammar mistake every you make
 
        :tools
@@ -96,6 +100,9 @@
        (eval +overlay)     ; run code, run (also, repls)
        gist              ; interacting with github gists
        (lookup           ; helps you navigate your code and documentation
+        +dictionary
+        +offline
+        +xwidget
         +docsets)        ; ...or in Dash docsets locally
        (lsp +peek)
        macos             ; MacOS-specific commands
@@ -105,8 +112,8 @@
        pdf               ; pdf enhancements
        ;;prodigy           ; FIXME managing external services & code builders
        ;;rgb               ; creating color strings
-       terraform         ; infrastructure as code
-       tmux              ; an API for interacting with tmux
+       ;;terraform         ; infrastructure as code
+       ;;tmux              ; an API for interacting with tmux
        ;;upload            ; map local to remote projects via ssh/ftp
 
        :lang
@@ -137,7 +144,7 @@
        ;;lean
        ;;factor
        ;;ledger            ; an accounting system in Emacs
-       lua               ; one-based indices? one-based indices
+       ;;lua               ; one-based indices? one-based indices
        (markdown +pandoc)          ; writing docs for people to ignore
        ;;nim               ; python + lisp at the speed of c
        nix               ; I hereby declare "nix geht mehr!"
@@ -163,9 +170,9 @@
        ;;racket            ; a DSL for DSLs
        rest              ; Emacs as a REST client
        ;;rst               ; ReST in peace
-       ruby              ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
+       ;;ruby              ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
        (rust +lsp)              ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
-       (scala +lsp)             ; java, but good
+       ;;(scala +lsp)             ; java, but good
        ;;scheme            ; a fully conniving family of lisps
        sh                ; she sells {ba,z,fi}sh shells on the C xor
        ;;solidity          ; do you need a blockchain? No.
@@ -183,7 +190,7 @@
        :app
        calendar
        ;;irc               ; how neckbeards socialize
-       ;;(rss +org)        ; emacs as an RSS reader
+       (rss +org)        ; emacs as an RSS reader
        ;;twitter           ; twitter client https://twitter.com/vnought
 
        :config
