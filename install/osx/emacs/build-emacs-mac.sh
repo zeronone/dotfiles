@@ -2,31 +2,27 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-workingdir="$HOME/src/emacs"
+workingdir="$HOME/src/emacs-mac"
 
 mkdir -p $workingdir
-git clone https://github.com/emacs-mirror/emacs $workingdir || true
+git clone https://bitbucket.org/mituharu/emacs-mac.git $workingdir || true
 cd $workingdir
 git clean -fdx
 git checkout -- .
 git checkout master
-git branch -D feature/native-comp || true
+git branch -D work || true
 git pull
-git checkout --track origin/feature/native-comp
-
-# patches from emacs-head
-patch -g 0 -f -p1 -i $DIR/0001-No-frame-refocus-cocoa.patch
-patch -g 0 -f -p1 -i $DIR/0003-Pdumper-size-increase.patch
-#patch -g 0 -f -p1 -i $DIR/0005-Xwidgets-webkit-in-cocoa-pdumper.patch
+git checkout --track origin/work
 
 git status
 
-
-prefixdir=$HOME/gccemacs
+prefixdir=$HOME/emacs-mac
 if [ ! -d $prefixdir ]; then
-    echo "Creating gccemacs dir: $prefixdir"
+    echo "Creating emacs-mac dir: $prefixdir"
     mkdir -p $prefixdir
     mkdir -p $prefixdir/bin
+    mkdir -p $prefixdir/app
+    mkdir -p $prefixdir/share/emacs/site-lisp
 fi
 echo "Will install at ${prefixdir}"
 
@@ -34,8 +30,8 @@ libs=(
     /usr/local/opt/openssl@1.1
     /usr/local/opt/texinfo
     /usr/local/opt/gnu-sed
-    /usr/local/opt/gcc
     /usr/local/opt/libxml2
+    /usr/local/opt/imagemagick
     /usr/local/opt/giflib
     /usr/local/opt/jpeg
     /usr/local/opt/libtiff
@@ -48,12 +44,10 @@ libs=(
     /usr/local/opt/p11-kit
 )
 
-CFLAGS="-g3 "
+CFLAGS="-g -O3 -fobjc-arc "
 LDFLAGS=""
 PKG_CONFIG_PATH=""
 
-LDFLAGS="${LDFLAGS}-L/usr/local/lib/gcc/9 "
-PATH="$(brew --prefix gcc)/$(brew list --versions gcc | tr ' ' '\n' | tail -1)/bin:${PATH}"
 PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
 
 for dir in "${libs[@]}"; do
@@ -74,26 +68,28 @@ echo "$PKG_CONFIG_PATH"
 echo "$PATH"
 
 ./autogen.sh
-CC='clang' \
+CC="clang" \
 ./configure \
 --disable-silent-rules \
---without-dbus \
---without-imagemagick \
 --prefix=${prefixdir} \
---enable-locallisppath=/usr/local/share/emacs/site-lisp \
---with-nativecomp \
---with-ns \
 --disable-ns-self-contained \
+--enable-locallisppath="${prefixdir}/share/emacs/site-lisp" \
+--enable-link-time-optimization \
+--enable-mac-app=${prefixdir}/app \
+--with-mac \
+--with-mailutils \
 --with-gnutls \
 --with-modules \
+--with-rsvg \
+--with-pdumper \
 --with-xml2 \
 --with-json \
---with-cocoa
-#--with-xwidgets \
-#--without-x \
-#--with-x \
-#--with-harfbuzz \
-#--with-pdumper \
+--with-imagemagick \
+--with-dbus \
+--without-x
+
+# Adding the following breaks the build
+# --with-ns \
 
 
 function catch_errors() {
@@ -102,16 +98,7 @@ function catch_errors() {
 }
 trap catch_errors ERR;
 
-# make -j 8 NATIVE_FAST_BOOT=1 BYTE_COMPILE_EXTRA_FLAGS='--eval "(setq comp-speed 0)"'
-make -j 8 NATIVE_FAST_BOOT=1
+make -j 8
 make install
 
-# Currently this is failing, also need -g3 in CFLAGS
-dsymutil nextstep/Emacs.app/Contents/MacOS/Emacs
-
-rm -rf ${prefixdir}/Emacs.app
-cp -rf nextstep/Emacs.app  ${prefixdir}/Emacs.app
-
-# emacs binary is crated at ${prefixdir}/bin
-ls -l ${prefixdir}/bin
-
+echo "Finished"

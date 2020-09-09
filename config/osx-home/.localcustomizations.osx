@@ -29,13 +29,17 @@ function osxresync() {
 export PATH="/usr/local/opt/mysql@5.7/bin:$PATH"
 
 # for iterm integration
-test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+# Disable it is slow
+# test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
 
 # Minizinc
 export PATH="/Applications/MiniZincIDE.app/Contents/Resources:$PATH"
 export PATH="$HOME/bin:$PATH"
-export PATH="$HOME/gccemacs/bin:$PATH"
+
+# emacs
+#export PATH="$HOME/gccemacs/bin:$PATH"
+export PATH="$HOME/emacs-mac/bin:$PATH"
 
 
 # function demacs {

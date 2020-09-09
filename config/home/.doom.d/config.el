@@ -1,8 +1,16 @@
 ;;; config.el -*- lexical-binding: t; -*-
 
+;; (setq comp-deferred-compilation t)
+
+;;;
+;;; Eager load
+;;;
+
+(add-to-list 'load-path "~/.doom.d/local")
+
 ;; improve startup time
-(after! gcmh
-  (setq gcmh-high-cons-threshold (* 128 1024 1024)))
+;; (after! gcmh
+;;   (setq gcmh-high-cons-threshold (* 128 1024 1024)))
 (setq inhibit-compacting-font-caches t)
 
 ;; load all packages when in deamon mode
@@ -13,7 +21,7 @@
       x-alt-keysym   'alt)
 
 ;; no fringes
-(set-fringe-mode '(0 . 0))
+;; (set-fringe-mode '(0 . 0))
 
 ;; Initial frame size
 (when window-system (set-frame-size (selected-frame) 150 50))
@@ -34,6 +42,13 @@
 (setq-default
  user-full-name    "Arif Rezai"
  user-mail-address "me@arifrezai.com")
+
+(use-package! direnv
+  :when (executable-find "direnv")
+  :demand t
+  :mode ("\\.envrc\\'" . +direnv-rc-mode)
+  :config
+  (direnv-mode +1))
 
 ;; which-key
 (after! which-key
@@ -137,22 +152,37 @@
 ;; lang/org
 ;;;;;;;;;;;;;;;;;;;;;;;;
 
-
-;; Org default directory
 (setq org-directory (expand-file-name "~/Dropbox/orgs/"))
 (setq +org-dir (expand-file-name "~/Dropbox/orgs/"))
+
 (setq +org-export-directory (expand-file-name "~/Dropbox/orgs/.export"))
+
 (setq org-attach-id-dir (expand-file-name "~/Dropbox/orgs/.attach"))
 (setq org-download-image-dir (expand-file-name "~/Dropbox/orgs/.attach"))
+
 (setq org-roam-directory "~/Dropbox/orgs/mywiki")
-(setq org-journal-dir "~/Dropbox/orgs/mywiki/journal")
+
+(setq org-journal-file-format "%Y%m%d.org")
+(setq org-journal-dir "~/Dropbox/orgs/journal")
+(defun org-journal-file-header-func (time)
+  "Custom function to create journal header."
+  (concat
+    (pcase org-journal-file-type
+      (`daily "#+TITLE: Daily Journal (%Y%m%d)\n#+STARTUP: showall\n")
+      (`weekly "#+TITLE: Weekly Journal (%Y%m%d)\n#+STARTUP: showall\n")
+      (`monthly "#+TITLE: Monthly Journal (%Y%m)\n#+STARTUP: folded\n")
+      (`yearly "#+TITLE: Yearly Journal (%Y)\n#+STARTUP: folded\n"))))
+(setq org-journal-file-header 'org-journal-file-header-func)
+
 (setq org-noter-notes-search-path "~/Dropbox/orgs/mywiki/notes")
+
 (setq org-pdftools-search-string-separator "??")
 (setq org-ellipsis " ▼ ")
 (setq org-id-link-to-org-use-id t)
 
 ;; eldoc in org-mode src blocks recurses https://github.com/hlissner/doom-emacs/issues/2972
 (after! org-eldoc
+  (puthash "cpp" #'ignore org-eldoc-local-functions-cache)
   (puthash "python" #'ignore org-eldoc-local-functions-cache))
 
 
@@ -182,19 +212,6 @@
 
   ;; use python3 in org-babel
   (setq org-babel-python-command "python3")
-
-  ;; This should be put here rather than in (after! org-journal)
-  (defun +org-journal-find-location ()
-    ;; Open today's journal, but specify a non-nil prefix argument in order to
-    ;; inhibit inserting the heading; org-capture will insert the heading.
-    (org-journal-new-entry t)
-    ;; Position point on the journal's top-level heading so that org-capture
-    ;; will add the new entry as a child entry.
-    (goto-char (point-min)))
-  ;; org-capture-templates
-  (add-to-list 'org-capture-templates
-               '("j" "Journal entry" entry (function +org-journal-find-location)
-                 "* %(format-time-string org-journal-time-format)%^{Title}\n%i%?" :prepend t))
 
   (setq org-image-actual-width 400)
   (setq org-agenda-files (list "~/Dropbox/orgs/"
@@ -262,8 +279,12 @@
   (setq org-drill-add-random-noise-to-intervals-p t)
   (setq org-drill-adjust-intervals-for-early-and-late-repetitions-p t))
 
+;; elfeed
+(after! elfeed
+  (setq elfeed-search-filter "@1-month-ago +unread"))
+
 (use-package! hydra
-  :ensure t)
+  :demand t)
 
 (after! deft
   (add-to-list 'deft-extensions "md")
@@ -284,10 +305,26 @@
         org-icalendar-include-todo "all"
         org-icalendar-combined-agenda-file "~/Dropbox/orgs/org-journal.ics"))
 
+(after! pdf-view
+  (setq pdf-view-use-scaling t
+        pdf-view-use-imagemagick nil)
+  (advice-add 'pdf-view-mouse-set-region :override #'*pdf-view-mouse-set-region))
+(use-package! org-pdftools
+  :hook (org-load . org-pdftools-setup-link))
 (use-package! org-noter-pdftools
-  :after org-noter
-  (after! pdf-tools
-    (setq pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
+  :config
+  (after! pdf-annot
+    (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
+(after! org-noter
+  (map! :map org-noter-doc-mode-map
+        :vni "i" #'org-noter-insert-note
+        "M-i" #'org-noter-insert-precise-note
+        "M-p" #'org-noter-sync-prev-page-or-chapter
+        "M-." #'org-noter-sync-current-page-or-chapter
+        "M-p" #'org-noter-sync-next-page-or-chapter
+        "C-M-p" #'org-noter-sync-prev-note
+        "C-M-." #'org-noter-sync-current-note
+        "C-M-n" #'org-noter-sync-next-note))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -321,11 +358,22 @@
 (setq +magit-hub-enable-by-default nil)
 (setq +magit-hub-features nil)
 
+;; tabnine
+(use-package! company-tabnine)
+(use-package! company-try-hard
+  :config
+
+  (global-set-key (kbd "C-SPC") #'company-try-hard)
+  (define-key company-active-map (kbd "C-SPC") #'company-try-hard))
+
 ;; company
 (after! company
   ;;  original: (not erc-mode message-mode help-mode gud-mode eshell-mode)
   (setq company-global-modes '(not org-mode erc-mode message-mode help-mode gud-mode eshell-mode))
-  (setq company-idle-delay 0.2))
+  (setq company-idle-delay 0.2)
+
+  ;; defaults
+  (setq company-backends '(company-capf company-tabnine)))
 
 (after! company-box
   ;; trigger manually with C-h when completion box  is open
@@ -340,12 +388,26 @@
   (setq company-lsp-async t)
   (setq company-lsp-cache-candidates 'auto))
 
-(after! lsp-mode
-  (setq
-   ;; auto configure lsp-ui, lsp-company ...
-   lsp-auto-configure t
-   lsp-auto-require-clients nil
+(use-package! lsp-pyright)
 
+(after! lsp-mode
+
+  ;; Auto-configure features
+  (setq lsp-auto-configure t)
+  (setq lsp-auto-require-clients t)
+  (setq lsp-headerline-breadcrumb-enable t)
+  (setq lsp-modeline-code-actions-enable t)
+  (setq lsp-modeline-diagnostics-enable t)
+  (setq lsp-enable-dap-auto-configure t)
+  (setq lsp-lens-enable t)
+
+  (setq lsp-prefer-capf t)
+  (setq lsp-enable-semantic-highlighting t)
+  (setq lsp-enable-links t)
+
+  ;; (setq lsp-enable-file-watchers t)
+
+  (setq
    ;; https://github.com/hlissner/doom-emacs/issues/2060#issuecomment-554165917
    ;; lsp-prefer-flymake nil   ;; deprecated
    lsp-diagnostic-package :flycheck
@@ -353,11 +415,33 @@
    ;; for performance
    lsp-log-io nil)
 
+  ;; Workaround for issue #3274
+  (setq-hook! '(lsp-managed-mode-hook)
+    flycheck-disabled-checkers '(c/c++-clang c/c++-gcc))
+
+  ;; clangd
+  (setq lsp-clients-clangd-args '("--compile-commands-dir=build"
+                                  "--pch-storage=memory"
+                                  "--background-index"
+                                  "-j=4"))
+
+  (require 'lsp-treemacs)
+  (lsp-treemacs-sync-mode 1)
+
+  ;; additional clients
+  (require 'lsp-pyright)
+
+  (lsp-modeline-code-actions-mode +1)
+
   (set-popup-rules!
     '(("^\\*lsp-help\\*" :slot -1 :vslot -1 :size #'+popup-shrink-to-fit :select t :quit t :ttl 0))))
 
+(after! lsp-clients
+  (set-lsp-priority! 'clangd 1))
+
 ;; Automatically call dap-hydra when execution stopped
 (after! dap-mode
+  (dap-auto-configure-mode 1)
   (add-hook 'dap-stopped-hook
           (lambda (arg) (call-interactively #'dap-hydra))))
 
@@ -394,16 +478,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; pyvenv fix
-;; https://github.com/palantir/python-language-server/issues/431
-;; (after! pyvenv
-;;   (defun pyenv-venv-wrapper-act (&optional ARG PRED)
-;;     (setenv "VIRTUAL_ENV" (shell-command-to-string "_pyenv_virtualenv_hook; echo -n $VIRTUAL_ENV")))
-;;   (advice-add 'pyenv-mode-set :after 'pyenv-venv-wrapper-act)
-;;   (defun pyenv-venv-wrapper-deact (&optional ARG PRED)
-;;     (setenv "VIRTUAL_ENV"))
-;;   (advice-add 'pyenv-mode-unset :after 'pyenv-venv-wrapper-deact))
 
 ;; vterm colors fix
 ;; From: https://github.com/akermu/emacs-libvterm/issues/73
@@ -458,7 +532,6 @@ Other errors while reverting a buffer are reported only as messages."
 ;; format module is disabled
 ;; (setq-default +format-on-save-enabled-modes '(not emacs-lisp-mode rjsx-mode javascript-mode))
 
-(add-to-list 'load-path "~/.doom.d/local")
 (require 'minizinc-mode)
 (add-to-list 'auto-mode-alist '("\\.mzn\\'" . minizinc-mode))
 
@@ -480,15 +553,14 @@ Other errors while reverting a buffer are reported only as messages."
         modus-operandi-theme-visible-fringes t
         modus-operandi-theme-3d-modeline t
         modus-operandi-theme-subtle-diffs t
-        modus-operandi-theme-distinct-org-blocks t
+        modus-operandi-theme-org-blocks t
         modus-operandi-theme-scale-1 1.05
         modus-operandi-theme-scale-2 1.1
         modus-operandi-theme-scale-3 1.15
-        modus-operandi-theme-scale-4 1.2)
-  :ensure t)
+        modus-operandi-theme-scale-4 1.2))
 (use-package! modus-vivendi-theme
-  ;; disabled
   :init
+  ;; disabled
   (setq modus-vivendi-theme-rainbow-headings nil)
   (setq modus-vivendi-theme-proportional-fonts nil)
   (setq modus-vivendi-theme-scale-headings nil)
@@ -499,45 +571,49 @@ Other errors while reverting a buffer are reported only as messages."
         modus-vivendi-theme-visible-fringes t
         modus-vivendi-theme-3d-modeline t
         modus-vivendi-theme-subtle-diffs t
-        modus-vivendi-theme-distinct-org-blocks t
+        modus-vivendi-theme-org-blocks t
         modus-vivendi-theme-scale-1 1.05
         modus-vivendi-theme-scale-2 1.1
         modus-vivendi-theme-scale-3 1.15
-        modus-vivendi-theme-scale-4 1.2)
-  :ensure t)
+        modus-vivendi-theme-scale-4 1.2))
 
 ;; doom-theme
-(setq doom-theme 'modus-operandi)
+;; (setq doom-theme 'modus-operandi)
+(setq doom-theme 'doom-nord)
 ;; (setq doom-theme 'modus-vivendi)
 
-
 ;; disable smartparens, scrolling large org files is very slow
-;; smartparens is core package, so it should be disabled here
-;; https://github.com/Fuco1/smartparens/issues/464
-;; (after! smartparens
-;;   (add-hook 'org-mode-hook #'turn-off-smartparens-mode)
-;;   (sp-local-pair 'org-mode "*" nil))
-
-;; Custom functions
-(defun subtree-to-new-file ()
-  "Sloppily assists in moving an org subtree to a new file, if base-directory is defined it will be placed there"
-  (interactive)
-  (setq header-text (org-entry-get nil "ITEM"))
-  (org-copy-subtree nil t)
-  (setq new-filename (concat (s-snake-case header-text) ".org"))
-  (find-file-other-window (expand-file-name new-filename (or base-directory org-directory)))
-  (erase-buffer)
-  (insert (concat "#+TITLE: " header-text "\n"))
-  (insert "\n")
-  (org-paste-subtree)
-  (delete-window))
+;; (remove-hook 'doom-first-buffer-hook #'smartparens-global-mode)
 
 ;; file-templates
 (use-package! s
-  :ensure t)
+  :demand t)
 (defvar +private-file-templates-dir
   (expand-file-name "templates/" (file-name-directory load-file-name))
   "The path to a directory of yasnippet folders to use for file templates.")
 (after! yasnippets
   (add-to-list 'yas-snippet-dirs '+private-file-templates-dir 'append #'eq)
   (yas-reload-all))
+
+;; oj
+(setq oj-home-dir "~/Dropbox/oj")
+(use-package! oj
+  :init
+  (setq oj-default-online-judge 'codeforces)
+  :config
+  (set-popup-rules!
+    '(("^\\*oj - " :select nil :slot -1 :vslot -1 :size 0.3 :ttl 0))))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages '(package-lint)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+(use-package! package-lint)

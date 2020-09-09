@@ -128,3 +128,5 @@ brew install git-delta
 
 # gawk
 brew install gawk
+
+brew install gnu-time

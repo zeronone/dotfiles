@@ -1,105 +1,56 @@
-# for profiling (run: env ZSH_PROF= zsh -ic zprof)
-# if [[ -v ZSH_PROF ]]; then
-#   zmodload zsh/zprof
-# fi
+
+
+# Uncomment for profiling
+# set -xv
 
 # python
 # locale
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
-
-# Path to your oh-my-zsh installation.
-export ZSH=$HOME/.oh-my-zsh
-
-# Set name of the theme to load.
-# Look in ~/.oh-my-zsh/themes/
-# Optionally, if you set this to "random", it'll load a random theme each
-# time that oh-my-zsh is loaded.
-# if [ -n "$INSIDE_EMACS" ]; then
-#     ZSH_THEME="rawsyntax"
-# else
-#     ZSH_THEME="robbyrussell"
-# fi
-# ZSH_THEME="robbyrussell"
-# ZSH_THEME="spaceship"
-# ZSH_THEME="avit"
-
-# disable theme
-# we use pure (https://github.com/sindresorhus/pure)
-ZSH_THEME=""
-
-# needs: npm install --global pure-prompt
-autoload -U promptinit; promptinit
-prompt pure
-
-# spaceship customizations
-# SPACESHIP_PROMPT_ADD_NEWLINE="true"
-#SPACESHIP_CHAR_SYMBOL="\uf0e7"
-#SPACESHIP_CHAR_PREFIX="\uf296"
-# SPACESHIP_CHAR_SUFFIX=(" ")
-#SPACESHIP_CHAR_COLOR_SUCCESS="yellow"
-#SPACESHIP_PROMPT_DEFAULT_PREFIX="$USER"
-#SPACESHIP_PROMPT_FIRST_PREFIX_SHOW="true"
-#SPACESHIP_USER_SHOW="true"
-
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
-
-# Uncomment the following line to use hyphen-insensitive completion. Case
-# sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
-
-# Uncomment the following line to disable bi-weekly auto-update checks.
-# DISABLE_AUTO_UPDATE="true"
-
-# Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
-
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
-
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-# COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# The optional three formats: "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# HIST_STAMPS="mm/dd/yyyy"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
-# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-#plugins=(git rbenv rails)
-
-plugins=()
-
-
-source $ZSH/oh-my-zsh.sh
+export LANGUAGE=en_US.UTF-8
 
 alias ls="ls -alGh"
 alias gl="git log --graph --decorate --pretty=oneline --abbrev-commit"
 alias gll="git log --graph --abbrev-commit --decorate --date=relative --all"
+alias edit="~/bin/editor"
 
 # Don't share history betweend different sessions
 setopt noincappendhistory
 setopt nosharehistory
 
 alias sshu="ssh -Y -l ubuntu"
+
+function cmake_clang_init {
+    export LDFLAGS="-L/usr/local/opt/llvm/lib"
+    export CPPFLAGS="-I/usr/local/opt/llvm/include"
+
+    cmake -DCMAKE_BUILD_TYPE=Debug \
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
+        -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang \
+        -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang++ \
+        $1
+}
+
+function cmake_clang_init_llvm8 {
+    export LDFLAGS="-L/usr/local/opt/llvm@8/lib"
+    export CPPFLAGS="-I/usr/local/opt/llvm@8/include"
+
+    cmake -DCMAKE_BUILD_TYPE=Debug \
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
+        -DCMAKE_C_COMPILER="/usr/local/opt/llvm@8/bin/clang" \
+        -DCMAKE_CXX_COMPILER="/usr/local/opt/llvm@8/bin/clang++" \
+        $1
+}
+
+
+alias emacs_kill_daemon="emacsclient -nc -e '(save-buffers-kill-emacs)'"
+
+
+############
+# Nix
+#############
+# source /Users/st21371/.nix-profile/etc/profile.d/nix.sh
+
 
 #####################################################################
 # Helper functions
@@ -187,7 +138,14 @@ function install_python_dev_deps() {
 ########################################################
 ### The following didn't work when put in ~/.zshenv
 #########################################################
-export N_PREFIX="$HOME/n"; [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PREFIX/bin"  # Added by n-install (see http://git.io/n-install-repo).
+
+function load_n {
+    export N_PREFIX="$HOME/n";
+    [[ :$PATH: == *":$N_PREFIX/bin:"* ]] || PATH+=":$N_PREFIX/bin"  # Added by n-install (see http://git.io/n-install-repo).
+}
+
+load_n
+
 # python
 # to avoid loading inside nested shell
 function pyenv_init {
@@ -195,14 +153,19 @@ function pyenv_init {
     export PYENV_ROOT="$HOME/.pyenv"
     export PATH="$PYENV_ROOT/bin:$PATH"
 
+    echo "pyenv_init called"
+
     # enable pyenv-virtualenv
     if which pyenv > /dev/null; then
-        eval "$(pyenv init -)";
-        eval "$(pyenv virtualenv-init -)";
+        eval "$(pyenv init - --no-rehash)"
+        # following makes the prompt too slow
+        #eval "$(pyenv virtualenv-init -)";
     fi
 }
 if [[ -z "${PYENV_ROOT}" ]] || (( ${+TMUX} )); then
-    pyenv_init
+   if [[ -z "${INSIDE_EMACS}" ]]; then
+     pyenv_init
+   fi
 fi
 
 #########################################################
@@ -243,3 +206,22 @@ source ~/.secretsrc  # already in .zshenv
 for file in ~/.localcustomizations.*; do
     source "$file"
 done
+
+
+### python clean
+pyclean () {
+    find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
+}
+
+# go version manager (gvm)
+source $HOME/.gvm/scripts/gvm
+
+# nix
+# if [ -e /Users/st21371/.nix-profile/etc/profile.d/nix.sh ]; then . /Users/st21371/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+#export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+
+export PATH=$(consolidate-path.sh "$PATH")
