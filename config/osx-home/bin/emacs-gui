@@ -1,2 +1,2 @@
 #!/bin/bash
-~/emacs-mac/app/Emacs.app/Contents/MacOS/Emacs.sh --eval '(server-start)' $* &
+$HOME/emacs-mac/app/Emacs.app/Contents/MacOS/Emacs.sh "$@" &

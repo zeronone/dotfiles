@@ -59,3 +59,6 @@ export PATH=$HOME/bin:$PATH
 
 ## llvm (clangd)
 export PATH="/usr/local/opt/llvm/bin:$PATH"
+
+## BAT
+export BAT_THEME="Monokai Extended Light"

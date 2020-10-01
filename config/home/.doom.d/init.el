@@ -50,7 +50,7 @@
         +all             ; catch all popups that start with an asterix
         +defaults        ; default popup rules
        )
-       ;; (pretty-code +pragmatic-pro)       ; replace bits of code with pretty symbols
+       ligatures
        ;;tabs              ; an tab bar for Emacs
        treemacs          ; a project drawer, like neotree but cooler
        unicode           ; extended unicode support for various languages

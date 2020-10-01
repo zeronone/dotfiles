@@ -1,2 +1,2 @@
 #!/bin/bash
-emacsclient -n -a "~/bin/emacs-gui" "$@" & disown
+emacsclient -n -c -a "$HOME/bin/emacs-gui" "$@" & disown

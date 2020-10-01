@@ -62,6 +62,8 @@
 ;; booting up (when Doom is byte-compiled).
 (setq-default mode-line-format nil)
 
+(setq doom-modeline-buffer-file-name-style 'truncate-with-project)
+
 ;; (setq doom-font (font-spec :family "Input Mono Narrow" :size 14)
 ;;       doom-variable-pitch-font (font-spec :family "Noto Sans" :size 14)
 ;;       doom-big-font (font-spec :family "Fira Mono" :size 19))
@@ -109,6 +111,8 @@
  ;; lsp-enable-on-type-formatting nil
  ;; lsp-enable-symbol-highlighting nil
  ;; lsp-enable-file-watchers nil
+
+ lsp-headerline-breadcrumb-segments '(file symbols)
 )
 
 ;;; :editor evil
@@ -370,7 +374,7 @@
 (after! company
   ;;  original: (not erc-mode message-mode help-mode gud-mode eshell-mode)
   (setq company-global-modes '(not org-mode erc-mode message-mode help-mode gud-mode eshell-mode))
-  (setq company-idle-delay 0.2)
+  (setq company-idle-delay 0.3)
 
   ;; defaults
   (setq company-backends '(company-capf company-tabnine)))
@@ -401,7 +405,7 @@
   (setq lsp-enable-dap-auto-configure t)
   (setq lsp-lens-enable t)
 
-  (setq lsp-prefer-capf t)
+  (setq lsp-completion-provider :capf)
   (setq lsp-enable-semantic-highlighting t)
   (setq lsp-enable-links t)
 
@@ -410,7 +414,7 @@
   (setq
    ;; https://github.com/hlissner/doom-emacs/issues/2060#issuecomment-554165917
    ;; lsp-prefer-flymake nil   ;; deprecated
-   lsp-diagnostic-package :flycheck
+   lsp-diagnostics-provider :flycheck
 
    ;; for performance
    lsp-log-io nil)
@@ -443,15 +447,14 @@
 (after! dap-mode
   (dap-auto-configure-mode 1)
   (add-hook 'dap-stopped-hook
-          (lambda (arg) (call-interactively #'dap-hydra))))
+          (lambda (_arg) (call-interactively #'dap-hydra))))
 
 (after! lsp-ui
   (setq
-   ;; disable doc-mode
-   ;; lsp-ui-doc-enable nil
+   lsp-ui-doc-enable t
    ;; the max-width doesn't work for webkit
    ;; lsp-ui-doc-use-webkit t
-   lsp-ui-doc-use-childframe t
+   lsp-ui-doc-use-childframe nil
    lsp-ui-doc-alignment 'frame
    ;; avoid documentation being rednered as markdown
    lsp-ui-doc-render-function 'nil
@@ -460,12 +463,11 @@
    lsp-ui-doc-include-signature t
    lsp-ui-doc-max-height 45
    lsp-ui-doc-max-width 90
-   lsp-ui-doc-position 'bottom
+   lsp-ui-doc-position 'top
 
    lsp-ui-sideline-enable nil
-   lsp-ui-sideline-ignore-duplicate t
+   lsp-ui-sideline-ignore-duplicate t))
 
-   lsp-ui-peek-expand-function (lambda (xs) (mapcar #'car xs))))
 
 ;; requires (lsp +peek) flag
 (map! :after lsp-ui-peek
@@ -478,12 +480,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; vterm colors fix
-;; From: https://github.com/akermu/emacs-libvterm/issues/73
-;; (after! vterm
-;;   (setq ansi-color-names-vector
-;;         ["#202020" "#ff8272" "#b4fa72" "#fefdc2" "#a5d5fe" "#ff8ffd" "#d0d1fe" "#f1f1f1"]))
 
 
 ;; disable flycheck on escape key
@@ -578,8 +574,7 @@ Other errors while reverting a buffer are reported only as messages."
         modus-vivendi-theme-scale-4 1.2))
 
 ;; doom-theme
-;; (setq doom-theme 'modus-operandi)
-(setq doom-theme 'doom-nord)
+(setq doom-theme 'modus-operandi)
 ;; (setq doom-theme 'modus-vivendi)
 
 ;; disable smartparens, scrolling large org files is very slow
