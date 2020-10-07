@@ -104,15 +104,6 @@
  ;; disabling them outweighs the utility of always keeping them on.
  display-line-numbers-type nil
 
- ;; lsp-ui-sideline is redundant with eldoc and much more invasive, so
- ;; disable it by default.
- lsp-ui-sideline-enable nil
- lsp-enable-indentation nil
- ;; lsp-enable-on-type-formatting nil
- ;; lsp-enable-symbol-highlighting nil
- ;; lsp-enable-file-watchers nil
-
- lsp-headerline-breadcrumb-segments '(file symbols)
 )
 
 ;;; :editor evil
@@ -218,12 +209,14 @@
   (setq org-babel-python-command "python3")
 
   (setq org-image-actual-width 400)
-  (setq org-agenda-files (list "~/Dropbox/orgs/"
-                               "~/Dropbox/orgs/journal"
-                               "~/Dropbox/orgs/mywiki"
-                               "~/Dropbox/orgs/line"
-                               "~/Dropbox/orgs/verda"
-                               "~/Dropbox/orgs/toptal"))
+  (setq org-agenda-files (directory-files-recursively +org-dir "\\.org$"))
+  ;; (setq org-agenda-files (list "~/Dropbox/orgs"
+  ;;                              "~/Dropbox/orgs/archive"
+  ;;                              "~/Dropbox/orgs/journal"
+  ;;                              "~/Dropbox/orgs/mywiki"
+  ;;                              "~/Dropbox/orgs/line"
+  ;;                              "~/Dropbox/orgs/verda"
+  ;;                              "~/Dropbox/orgs/toptal"))
 
   (setq org-publish-project-alist
         '(("org-notes"
@@ -283,6 +276,20 @@
   (setq org-drill-add-random-noise-to-intervals-p t)
   (setq org-drill-adjust-intervals-for-early-and-late-repetitions-p t))
 
+(use-package! org-web-tools
+  :commands (org-web-tools-insert-link-for-url
+             org-web-tools-insert-web-page-as-entry
+             org-web-tools-read-url-as-org
+             org-web-tools-convert-links-to-page-entries
+             org-web-tools-archive-attach
+             org-web-tools-archive-view)
+  :after org
+  :config
+
+  (setq org-web-tools-archive-fn #'org-web-tools-archive--wget-tar)
+  (setq org-web-tools-archive-hostname "archive.vn")
+  (setq org-web-tools-archive-debug-level 'trace))
+
 ;; elfeed
 (after! elfeed
   (setq elfeed-search-filter "@1-month-ago +unread"))
@@ -329,6 +336,7 @@
         "C-M-p" #'org-noter-sync-prev-note
         "C-M-." #'org-noter-sync-current-note
         "C-M-n" #'org-noter-sync-next-note))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -388,36 +396,31 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
 
-(after! company-lsp
-  (setq company-lsp-async t)
-  (setq company-lsp-cache-candidates 'auto))
+(setq lsp-auto-configure t)
+(setq lsp-ui-doc-enable t)
+(setq lsp-headerline-breadcrumb-enable t)
+(setq lsp-modeline-code-actions-enable t)
+(setq lsp-modeline-diagnostics-enable t)
+(setq lsp-enable-dap-auto-configure t)
+(setq lsp-lens-enable t)
+(setq lsp-completion-provider :capf)
+(setq lsp-enable-semantic-highlighting t)
+(setq lsp-enable-links t)
+(setq lsp-headerline-breadcrumb-segments '(file symbols))
+(setq lsp-diagnostics-provider :flycheck)
+
+;; for performance
+(setq lsp-enable-file-watchers t)
+(setq lsp-ui-sideline-enable nil)
+(setq lsp-enable-indentation nil)
+(setq lsp-enable-on-type-formatting nil)
+(setq lsp-enable-symbol-highlighting nil)
+(setq lsp-enable-file-watchers nil)
+(setq lsp-log-io nil)
 
 (use-package! lsp-pyright)
 
 (after! lsp-mode
-
-  ;; Auto-configure features
-  (setq lsp-auto-configure t)
-  (setq lsp-auto-require-clients t)
-  (setq lsp-headerline-breadcrumb-enable t)
-  (setq lsp-modeline-code-actions-enable t)
-  (setq lsp-modeline-diagnostics-enable t)
-  (setq lsp-enable-dap-auto-configure t)
-  (setq lsp-lens-enable t)
-
-  (setq lsp-completion-provider :capf)
-  (setq lsp-enable-semantic-highlighting t)
-  (setq lsp-enable-links t)
-
-  ;; (setq lsp-enable-file-watchers t)
-
-  (setq
-   ;; https://github.com/hlissner/doom-emacs/issues/2060#issuecomment-554165917
-   ;; lsp-prefer-flymake nil   ;; deprecated
-   lsp-diagnostics-provider :flycheck
-
-   ;; for performance
-   lsp-log-io nil)
 
   ;; Workaround for issue #3274
   (setq-hook! '(lsp-managed-mode-hook)
@@ -435,8 +438,6 @@
   ;; additional clients
   (require 'lsp-pyright)
 
-  (lsp-modeline-code-actions-mode +1)
-
   (set-popup-rules!
     '(("^\\*lsp-help\\*" :slot -1 :vslot -1 :size #'+popup-shrink-to-fit :select t :quit t :ttl 0))))
 
@@ -450,24 +451,29 @@
           (lambda (_arg) (call-interactively #'dap-hydra))))
 
 (after! lsp-ui
+  ;; default lsp disables it
+  (setq lsp-ui-doc-enable t)
+
   (setq
-   lsp-ui-doc-enable t
    ;; the max-width doesn't work for webkit
    ;; lsp-ui-doc-use-webkit t
-   lsp-ui-doc-use-childframe nil
+
+   ;; only when position is top or bottom
+   lsp-ui-doc-use-childframe t
    lsp-ui-doc-alignment 'frame
-   ;; avoid documentation being rednered as markdown
-   lsp-ui-doc-render-function 'nil
-   lsp-ui-doc-delay 0.5
+
+   ;; avoid documentation being rendered as markdown
+   ;; lsp-ui-doc-render-function 'nil
+
+   lsp-ui-doc-delay 3.0
    lsp-ui-doc-header nil
    lsp-ui-doc-include-signature t
-   lsp-ui-doc-max-height 45
+   lsp-ui-doc-max-height 60
    lsp-ui-doc-max-width 90
    lsp-ui-doc-position 'top
 
    lsp-ui-sideline-enable nil
    lsp-ui-sideline-ignore-duplicate t))
-
 
 ;; requires (lsp +peek) flag
 (map! :after lsp-ui-peek
@@ -480,7 +486,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
-
 
 ;; disable flycheck on escape key
 (setq +flycheck-on-escape nil)

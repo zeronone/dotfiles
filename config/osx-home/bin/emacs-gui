@@ -1,2 +1,0 @@
-#!/bin/bash
-$HOME/emacs-mac/app/Emacs.app/Contents/MacOS/Emacs.sh "$@" &

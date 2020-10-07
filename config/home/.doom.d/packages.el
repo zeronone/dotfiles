@@ -26,7 +26,9 @@
 ;; org noter
 (package! org-pdftools :recipe (:host github :repo "fuxialexander/org-pdftools" :files ("org-pdftools.el")))
 (package! org-noter-pdftools :recipe (:host github :repo "fuxialexander/org-pdftools" :files ("org-noter-pdftools.el")))
-(package! org-noter-pdftools)
+
+;; org-web-tools
+(package! org-web-tools :recipe (:host github :repo "zeronone/org-web-tools"))
 
 ;; SRS in org
 (package! org-drill :recipe (:host github :repo "zeronone/org-drill"))
