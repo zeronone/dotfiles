@@ -46,12 +46,6 @@ function cmake_clang_init_llvm8 {
 alias emacs_kill_daemon="emacsclient -nc -e '(save-buffers-kill-emacs)'"
 
 
-############
-# Nix
-#############
-# source /Users/st21371/.nix-profile/etc/profile.d/nix.sh
-
-
 #####################################################################
 # Helper functions
 #####################################################################
@@ -216,8 +210,6 @@ pyclean () {
 # go version manager (gvm)
 source $HOME/.gvm/scripts/gvm
 
-# nix
-# if [ -e /Users/st21371/.nix-profile/etc/profile.d/nix.sh ]; then . /Users/st21371/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 #export SDKMAN_DIR="$HOME/.sdkman"

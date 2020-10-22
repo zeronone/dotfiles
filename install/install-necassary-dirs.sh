@@ -1,6 +1,7 @@
 #!/bin/sh
 
 cd $HOME
+mkdir -p $HOME/bin
 mkdir -p $HOME/.m2
 mkdir -p $HOME/.ssh
 mkdir -p $HOME/.config

@@ -1,6 +1,9 @@
 " Copied from https://github.com/jessfraz/.vim/blob/master/vimrc
 " Copied at 2019/02/15
 
+scriptencoding utf-8
+set encoding=utf-8
+
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
