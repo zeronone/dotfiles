@@ -128,8 +128,11 @@
    (:prefix "g"
      :desc "Magit branches"        :n "B" #'magit-branch-popup)))
 
-(setq treemacs-git-mode nil)
-(setq +treemacs-git-mode nil)
+(setq +treemacs-git-mode 'simple)
+(after! treemacs
+  (setq treemacs-position 'right)
+  (setq treemacs-width 60))
+
 ;; treemacs
 (after! treemacs-evil
   (define-key! treemacs-mode-map
@@ -143,43 +146,39 @@
     "h" nil
     "l" nil))
 
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;; lang/org
 ;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setq org-directory (expand-file-name "~/Dropbox/orgs/"))
 (setq +org-dir (expand-file-name "~/Dropbox/orgs/"))
-
 (setq +org-export-directory (expand-file-name "~/Dropbox/orgs/.export"))
-
 (setq org-attach-id-dir (expand-file-name "~/Dropbox/orgs/.attach"))
 (setq org-download-image-dir (expand-file-name "~/Dropbox/orgs/.attach"))
-
 (setq org-roam-directory "~/Dropbox/orgs/mywiki")
-
 (setq org-journal-file-format "%Y%m%d.org")
 (setq org-journal-dir "~/Dropbox/orgs/journal")
 (defun org-journal-file-header-func (time)
   "Custom function to create journal header."
   (concat
     (pcase org-journal-file-type
-      (`daily "#+TITLE: Daily Journal (%Y%m%d)\n#+STARTUP: showall\n")
-      (`weekly "#+TITLE: Weekly Journal (%Y%m%d)\n#+STARTUP: showall\n")
-      (`monthly "#+TITLE: Monthly Journal (%Y%m)\n#+STARTUP: folded\n")
-      (`yearly "#+TITLE: Yearly Journal (%Y)\n#+STARTUP: folded\n"))))
+      (`daily "#+TITLE: Daily Journal (%Y%m%d)\n#+STARTUP: showall\n\n\n")
+      (`weekly "#+TITLE: Weekly Journal (%Y%m%d)\n#+STARTUP: showall\n\n\n")
+      (`monthly "#+TITLE: Monthly Journal (%Y%m)\n#+STARTUP: folded\n\n\n")
+      (`yearly "#+TITLE: Yearly Journal (%Y)\n#+STARTUP: folded\n\n\n"))))
 (setq org-journal-file-header 'org-journal-file-header-func)
 
 (setq org-noter-notes-search-path "~/Dropbox/orgs/mywiki/notes")
-
 (setq org-pdftools-search-string-separator "??")
-(setq org-ellipsis " ▼ ")
+(setq org-ellipsis " >")
 (setq org-id-link-to-org-use-id t)
 
 ;; eldoc in org-mode src blocks recurses https://github.com/hlissner/doom-emacs/issues/2972
 (after! org-eldoc
   (puthash "cpp" #'ignore org-eldoc-local-functions-cache)
   (puthash "python" #'ignore org-eldoc-local-functions-cache))
-
 
 (after! org
   ;; scrolling in large org files is too slow if enabled
@@ -209,14 +208,10 @@
   (setq org-babel-python-command "python3")
 
   (setq org-image-actual-width 400)
-  (setq org-agenda-files (directory-files-recursively +org-dir "\\.org$"))
-  ;; (setq org-agenda-files (list "~/Dropbox/orgs"
-  ;;                              "~/Dropbox/orgs/archive"
-  ;;                              "~/Dropbox/orgs/journal"
-  ;;                              "~/Dropbox/orgs/mywiki"
-  ;;                              "~/Dropbox/orgs/line"
-  ;;                              "~/Dropbox/orgs/verda"
-  ;;                              "~/Dropbox/orgs/toptal"))
+  (setq org-agenda-files
+        (append
+         (directory-files-recursively (expand-file-name "projects-gtd" +org-dir) "\\.org$")
+         (list +org-dir)))
 
   (setq org-publish-project-alist
         '(("org-notes"
@@ -241,13 +236,94 @@
           ("org-all"
            :components ("org-notes" "org-static" "org-attachments"))))
 
-
-  (setq org-refile-additional-targets-a '("~/Dropbox/orgs/verda"))
+  (setq org-refile-additional-targets-a
+        (directory-files-recursively (expand-file-name "archive" +org-dir) "\\.org$"))
   (setq org-refile-targets '((nil :maxlevel . 9)
                              (org-refile-additional-targets-a :maxlevel . 9)
                              (org-agenda-files :maxlevel . 9)))
   (setq org-outline-path-complete-in-steps nil)
-  (setq org-refile-use-outline-path t))
+  (setq org-refile-use-outline-path t)
+  (setq org-refile-use-cache t)
+  (run-with-idle-timer 300 t (lambda ()
+                               (org-refile-cache-clear)
+                               (org-refile-get-targets)))
+
+
+  ;; GTD
+  (defun my/org-journal-find-location ()
+    ;; Open today's journal, but specify a non-nil prefix argument in order to
+    ;; inhibit inserting the heading; org-capture will insert the heading.
+    (org-journal-new-entry t)
+    (org-narrow-to-subtree)
+    (goto-char (point-max)))
+  (setq +org-capture-projects-base-directory (expand-file-name "projects-gtd" org-directory))
+  (defun my/org-capture-refile-pending-file ()
+    (expand-file-name "refile-pending.org" org-directory))
+  (defun my/org-capture-project-todo-file ()
+    (expand-file-name "todo.org" (expand-file-name (doom-project-name) +org-capture-projects-base-directory)))
+  (defun my/org-capture-project-notes-file ()
+    (expand-file-name "notes.org" (expand-file-name (doom-project-name) +org-capture-projects-base-directory)))
+  (defun my/org-capture-project-changelog-file ()
+    (expand-file-name "changelog.org" (expand-file-name (doom-project-name) +org-capture-projects-base-directory)))
+  (defun my/org-capture-study-file ()
+    (expand-file-name "study.org" org-directory))
+  (setq org-default-notes-file
+        (expand-file-name +org-capture-notes-file org-directory)
+        +org-capture-journal-file
+        (expand-file-name +org-capture-journal-file org-directory)
+        org-capture-templates
+        '(("t" "Personal todo" entry
+           (file+headline +org-capture-todo-file "Inbox")
+           "* TODO %?\n%i\n%a" :prepend t)
+          ("n" "Personal note" entry
+           (file+headline +org-capture-notes-file "Inbox")
+           "* %u %?\n%i\n%a" :prepend t)
+          ("s" "Study" entry
+           (file+headline my/org-capture-study-file "Inbox")
+           "* %u %?\n%i\n%a" :prepend t)
+          ("r" "Add pending refile" entry
+           (file+headline my/org-capture-refile-pending-file "Inbox")
+           "* %u %?\n%i\n%a" :prepend t)
+          ("j" "Journal entry" plain
+           (function my/org-journal-find-location)
+           "** %(format-time-string org-journal-time-format)%^{Title}\n%i%?"
+           :jump-to-captured t
+           :immediate-finish t)
+
+          ("p" "Templates for projects")
+          ("pt" "Project-local todo" entry  ; {project-root}/todo.org
+           (file+headline my/org-capture-project-todo-file "Inbox")
+           "* TODO %?\n%i\n%a" :prepend t)
+          ("pn" "Project-local notes" entry  ; {project-root}/notes.org
+           (file+headline my/org-capture-project-notes-file "Inbox")
+           "* %U %?\n%i\n%a" :prepend t)
+          ("pc" "Project-local changelog" entry  ; {project-root}/changelog.org
+           (file+headline my/org-capture-project-changelog-file "Unreleased")
+           "* %U %?\n%i\n%a" :prepend t)
+
+          ;; Will use {org-directory}/{+org-capture-projects-file} and store
+          ;; these under {ProjectName}/{Tasks,Notes,Changelog} headings. They
+          ;; support `:parents' to specify what headings to put them under, e.g.
+          ;; :parents ("Projects")
+          ("o" "Centralized templates for projects")
+          ("ot" "Project todo" entry
+           (function +org-capture-central-project-todo-file)
+           "* TODO %?\n %i\n %a"
+           :heading "Tasks"
+           :prepend nil)
+          ("on" "Project notes" entry
+           (function +org-capture-central-project-notes-file)
+           "* %U %?\n %i\n %a"
+           :heading "Notes"
+           :prepend t)
+          ("oc" "Project changelog" entry
+           (function +org-capture-central-project-changelog-file)
+           "* %U %?\n %i\n %a"
+           :heading "Changelog"
+           :prepend t))))
+
+(use-package! org-sidebar
+  :after org)
 
 (use-package! org-drill
   :after org
@@ -290,6 +366,55 @@
   (setq org-web-tools-archive-hostname "archive.vn")
   (setq org-web-tools-archive-debug-level 'trace))
 
+;; From: https://www.rousette.org.uk/archives/doom-emacs-tweaks-org-journal-and-org-super-agenda/
+(use-package! org-super-agenda
+  :after org-agenda
+  :init
+  (setq org-agenda-skip-scheduled-if-done t
+        org-agenda-skip-deadline-if-done t
+        org-agenda-include-deadlines t
+        org-agenda-block-separator nil
+        org-agenda-compact-blocks t
+        org-agenda-start-day nil ;; i.e. today
+        org-agenda-span 1
+        org-agenda-start-on-weekday nil)
+  (setq org-agenda-custom-commands
+        '(("c" "Super view"
+           ((agenda "" ((org-agenda-overriding-header "")
+                        (org-super-agenda-groups
+                         '((:name "Today"
+                            :time-grid t
+                            :date today
+                            :order 1)))))
+            (alltodo "" ((org-agenda-overriding-header "")
+                         (org-super-agenda-groups
+                          '((:log t)
+                            (:name "To refile"
+                             :file-path "refile-pending\\.org")
+                            (:name "Next to do"
+                             :todo "NEXT"
+                             :order 1)
+                            (:name "Important"
+                             :priority "A"
+                             :order 6)
+                            (:name "Today's tasks"
+                             :file-path "journal/")
+                            (:name "Due Today"
+                             :deadline today
+                             :order 2)
+                            (:name "Scheduled Soon"
+                             :scheduled future
+                             :order 8)
+                            (:name "Overdue"
+                             :deadline past
+                             :order 7)
+                            (:name "Meetings"
+                             :and (:todo "MEET" :scheduled future)
+                             :order 10)
+                            (:discard (:not (:todo "TODO")))))))))))
+  :config
+  (org-super-agenda-mode))
+
 ;; elfeed
 (after! elfeed
   (setq elfeed-search-filter "@1-month-ago +unread"))
@@ -320,12 +445,7 @@
   (setq pdf-view-use-scaling t
         pdf-view-use-imagemagick nil)
   (advice-add 'pdf-view-mouse-set-region :override #'*pdf-view-mouse-set-region))
-(use-package! org-pdftools
-  :hook (org-load . org-pdftools-setup-link))
-(use-package! org-noter-pdftools
-  :config
-  (after! pdf-annot
-    (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
+
 (after! org-noter
   (map! :map org-noter-doc-mode-map
         :vni "i" #'org-noter-insert-note
@@ -337,6 +457,11 @@
         "C-M-." #'org-noter-sync-current-note
         "C-M-n" #'org-noter-sync-next-note))
 
+(use-package! org-noter-pdftools
+  :after org-noter
+  :config
+  (after! pdf-annot
+    (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -388,8 +513,8 @@
   (setq company-backends '(company-capf company-tabnine)))
 
 (after! company-box
-  ;; trigger manually with C-h when completion box  is open
-  (setq company-box-doc-enable nil))
+  (setq company-box-doc-enable t)
+  (setq company-box-doc-delay 0.1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;; lsp customizations
@@ -418,7 +543,10 @@
 (setq lsp-enable-file-watchers nil)
 (setq lsp-log-io nil)
 
-(use-package! lsp-pyright)
+(setq lsp-treemacs-theme "Idea")
+
+(use-package! lsp-pyright
+  :defer t)
 
 (after! lsp-mode
 
@@ -432,17 +560,31 @@
                                   "--background-index"
                                   "-j=4"))
 
+  ;; Don't render documentation in minibuffer
+  (setq lsp-signature-render-documentation nil)
+
+  ;; details while completion
+  (setq lsp-completion-show-detail nil)
+  (setq lsp-completion-show-kind nil)
+
   (require 'lsp-treemacs)
   (lsp-treemacs-sync-mode 1)
+
+  ;; to enable the lenses
+  (add-hook 'lsp-mode-hook #'lsp-lens-mode)
 
   ;; additional clients
   (require 'lsp-pyright)
 
+  ;; java
+  (require 'lsp-java)
+  (require 'lsp-jt)
+  ;;(require 'lsp-java-boot)
+  (add-hook 'java-mode-hook #'lsp-java-lens-mode)
+  ;;(add-hook 'java-mode-hook #'lsp-java-boot-lens-mode)
+
   (set-popup-rules!
     '(("^\\*lsp-help\\*" :slot -1 :vslot -1 :size #'+popup-shrink-to-fit :select t :quit t :ttl 0))))
-
-(after! lsp-clients
-  (set-lsp-priority! 'clangd 1))
 
 ;; Automatically call dap-hydra when execution stopped
 (after! dap-mode
@@ -617,3 +759,10 @@ Other errors while reverting a buffer are reported only as messages."
  )
 
 (use-package! package-lint)
+
+;; ws-butler
+;; Trim extra whitespace from modified lines
+(setq ws-butler-keep-whitespace-before-point nil)
+
+;; safe vars
+(put 'lsp-java-vmargs 'safe-local-variable (lambda (_) t))

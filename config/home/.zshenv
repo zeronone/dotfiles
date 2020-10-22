@@ -62,3 +62,6 @@ export PATH="/usr/local/opt/llvm/bin:$PATH"
 
 ## BAT
 export BAT_THEME="Monokai Extended Light"
+
+## Java
+export MAVEN_OPTS="-Dmaven.artifact.threads=30"

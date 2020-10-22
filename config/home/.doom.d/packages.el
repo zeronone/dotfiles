@@ -16,10 +16,6 @@
 (package! modus-operandi-theme)
 (package! modus-vivendi-theme)
 
-;; disable org-superstar
-;; instead use: (remove-hook 'org-mode-hook #'org-superstar-mode)
-;; (package! org-superstar :disable t)
-
 ;; s for string modifications
 (package! s)
 
@@ -27,8 +23,10 @@
 (package! org-pdftools :recipe (:host github :repo "fuxialexander/org-pdftools" :files ("org-pdftools.el")))
 (package! org-noter-pdftools :recipe (:host github :repo "fuxialexander/org-pdftools" :files ("org-noter-pdftools.el")))
 
-;; org-web-tools
+;; by alphapapa
 (package! org-web-tools :recipe (:host github :repo "zeronone/org-web-tools"))
+(package! org-super-agenda)
+(package! org-sidebar :recipe (:host github :repo "alphapapa/org-sidebar"))
 
 ;; SRS in org
 (package! org-drill :recipe (:host github :repo "zeronone/org-drill"))
@@ -45,8 +43,9 @@
 ;; package-lint
 (package! package-lint)
 
-;; local
 (package! lsp-pyright :recipe (:host github :repo "emacs-lsp/lsp-pyright"))
-(package! lsp-mode :pin "f6317d74c54b0ee4ba4d1743f798ba595e07be78")
-
 (package! direnv)
+
+;; unpins
+(unpin! dap-mode lsp-mode lsp-pyright lsp-java treemacs)
+
