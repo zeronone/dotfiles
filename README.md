@@ -24,16 +24,17 @@ $ cd $DOTFILES_DIR/config/home && stow -t ~ .
 # other directories based on the environment
 # $ cd ubuntu && stow -t ~ .
 
+$ cd $DOTFILES_DIR/config/root && sudo stow -t / .
+
 # Install VIM config
 $ cd $DOTFILES_DIR/install
 $ ./install-vim-config.sh
 
 # Install EMACS config
 $ cd $HOME
-$ git clone https://github.com/hlissner/doom-emacs.git $HOME/.emacs.d --recursive
+$ git clone https://github.com/hlissner/doom-emacs.git $HOME/.emacs.d --depth 1
 $ cd $HOME/.emacs.d
-$ git checkout --track origin/develop
-$ make
+$ doom install
 # Consider M-x install-all-fonts && M-x unicode-fonts-setup
 # Install Fira Mono / Hack fonts
 

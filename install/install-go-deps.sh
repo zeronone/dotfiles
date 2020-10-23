@@ -1,12 +1,5 @@
 #!/bin/sh
 
-brew uninstall go --force
-
-# install gvm
-curl -s -S -L https://raw.githubusercontent.com/moovweb/gvm/master/binscripts/gvm-installer | zsh
-source $HOME/.gvm/scripts/gvm
-gvm install go1.13.4 -B && gvm use go1.13.4 --default
-
 go version
 
 go get -u github.com/motemen/gore/cmd/gore

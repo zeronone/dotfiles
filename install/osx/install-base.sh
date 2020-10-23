@@ -6,13 +6,12 @@
 ## Terminal
 # install oh-my-zsh
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
 brew install zsh-syntax-highlighting zsh-completions
 
 # spaceship theme
 git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt"
 ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH/themes/spaceship.zsh-theme"
-
 
 # Java
 brew cask install adoptopenjdk
@@ -65,7 +64,7 @@ brew install libvterm
 # mtr
 brew install mtr
 sudo mkdir -p /usr/local/sbin
-sudo chown $(whoami) /usr/local/sbin
+sudo chown "$(whoami)" /usr/local/sbin
 brew link mtr
 
 # sqlite3 (emacs + Dash docsets)
@@ -81,9 +80,6 @@ brew install kubernetes-helm
 
 # jq
 brew install jq
-
-# ccls
-brew install ccls
 
 # direnv
 curl -sfL https://direnv.net/install.sh | bash
@@ -128,5 +124,10 @@ brew install git-delta
 
 # gawk
 brew install gawk
-
 brew install gnu-time
+
+# ccls
+brew install ccls
+
+# editorconfig
+brew install editorconfig

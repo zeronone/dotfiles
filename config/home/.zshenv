@@ -20,17 +20,9 @@ export PATH=$HOME/.emacs.d/bin:$PATH
 # https://github.com/ohmyzsh/ohmyzsh/issues/6411
 export EMACS="*term*"
 
-# coreutils
-export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
-# gnu time
-PATH="/usr/local/opt/gnu-time/libexec/gnubin:$PATH"
 
 # Include scripts folder
 export PATH=$HOME/scripts:$PATH
-
-export ANDROID_HOME=/Users/$USER/Library/Android/sdk
-export PATH=${PATH}:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools
-
 
 # RUST_SRC_PATH
 export RUST_SRC_PATH="$(rustc --print sysroot)/lib/rustlib/src/rust/src"
@@ -41,7 +33,6 @@ export PATH=$GEM_HOME/bin:$PATH
 
 # Golang
 export GOPATH=$HOME/go
-export PATH=$PATH:/usr/local/opt/go/libexec/bin
 export PATH=$PATH:$GOPATH/bin
 
 # brew install bintuils

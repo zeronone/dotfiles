@@ -1,4 +1,4 @@
-
+#!/bin/sh
 
 yay -S --noconfirm \
 	ttf-koruri \
@@ -7,7 +7,8 @@ yay -S --noconfirm \
 	ttf-vlgothic \
 	ttf-iosevka \
 	ttf-monaco \
-	ttf-mononoki
-
-
-
+	ttf-mononoki \
+	fontconfig-ubuntu \
+	cairo-ubuntu \
+	wofi \
+	nodejs-n

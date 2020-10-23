@@ -96,38 +96,6 @@ function confirm_yes {
 
 ########################################################################
 
-function install_python_dev_deps() {
-    echo "$(python --version)"
-    echo "$(pip --version)"
-    echo "$(easy_install --version)"
-
-    confirm || return 1
-
-    echo "Will install python dev dependencies"
-
-    # lsp
-    echo "Installing python lsp"
-    pip install 'python-language-server[all]'
-
-    # flake8
-    echo "Installing flake8"
-    pip install flake8
-
-    # pylint
-    echo "Installing pylint"
-    pip install pylint
-
-    # mypy
-    echo "Installing mypy/MokeyType"
-    pip install mypy
-    pip install MonkeyType
-
-    # pep8
-    pip install pep8
-
-    # ptvsd
-    pip install ptvsd
-}
 
 ########################################################
 ### The following didn't work when put in ~/.zshenv
@@ -142,18 +110,16 @@ load_n
 
 # python
 # to avoid loading inside nested shell
+# Don't use pyenv-virutualenv it makes the shell too slow
 function pyenv_init {
-    # pyenv / pyenv-virtualenv
+    # pyenv
     export PYENV_ROOT="$HOME/.pyenv"
     export PATH="$PYENV_ROOT/bin:$PATH"
 
     echo "pyenv_init called"
 
-    # enable pyenv-virtualenv
     if which pyenv > /dev/null; then
         eval "$(pyenv init - --no-rehash)"
-        # following makes the prompt too slow
-        #eval "$(pyenv virtualenv-init -)";
     fi
 }
 if [[ -z "${PYENV_ROOT}" ]] || (( ${+TMUX} )); then
@@ -206,9 +172,6 @@ done
 pyclean () {
     find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
 }
-
-# go version manager (gvm)
-source $HOME/.gvm/scripts/gvm
 
 
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!

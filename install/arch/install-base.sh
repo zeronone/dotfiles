@@ -27,7 +27,31 @@ sudo pacman -S --noconfirm \
 	ttf-fira-mono \
 	otf-fira-mono \
 	ttf-hack \
-	htop
+	noto-fonts \
+	htop \
+	openssh \
+	cmake \
+	i3status-rust \
+	ttf-font-awesome \
+	redshift \
+	firefox \
+	aspell \
+	aspell-en \
+	shellcheck \
+	jdk-openjdk \
+	openjdk-doc \
+	openjdk-src \
+	iwd \
+	ethtool \
+	editorconfig-core-c \
+	pandoc \
+	graphviz \
+	go \
+	pyenv \
+	sbcl \
+	ccls \
+	glslang \
+	discord
 
 
 # AUR Repositories

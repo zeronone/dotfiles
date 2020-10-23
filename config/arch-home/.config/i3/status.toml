@@ -1,0 +1,55 @@
+icons = "awesome"
+
+[theme]
+name = "gruvbox-dark"
+[theme.overrides]
+separator = "|"
+
+[[block]]
+block = "backlight"
+
+#[[block]]
+#block = "hueshift"
+#hue_shifter = "redshift"
+#step = 50
+#click_temp = 3500
+
+[[block]]
+block = "memory"
+display_type = "memory"
+format_mem = "{Mup}%"
+format_swap = "{SUp}%"
+
+[[block]]
+block = "cpu"
+interval = 1
+
+[[block]]
+block = "load"
+interval = 1
+format = "{1m}"
+
+[[block]]
+block = "sound"
+
+[[block]]
+block = "net"
+device = "wlan0"
+#format = "{speed_up} {speed_down}"
+interval = 5
+use_bits = false
+
+#[[block]]
+#block = "keyboard_layout"
+#driver = "setxkbmap"
+#interval = 15
+
+[[block]]
+block = "battery"
+interval = 30
+format = "{percentage}% {time}"
+
+[[block]]
+block = "time"
+interval = 60
+format = "%a %d/%m %R"
