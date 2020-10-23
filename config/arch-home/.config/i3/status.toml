@@ -1,9 +1,9 @@
 icons = "awesome"
 
 [theme]
-name = "gruvbox-dark"
-[theme.overrides]
-separator = "|"
+name = "plain"
+#[theme.overrides]
+#separator = "|"
 
 [[block]]
 block = "backlight"

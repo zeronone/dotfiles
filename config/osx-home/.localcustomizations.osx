@@ -15,6 +15,17 @@ export JAVA_HOME=$JAVA_11_HOME
 # export PS1="[osx] $PS1"
 
 
+# brew install bintuils
+export PATH="/usr/local/opt/binutils/bin:$PATH"
+
+# manpth
+export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:${MANPATH-/usr/share/man}"
+export MANPATH="$HOME/man/linux-kernel:${MANPATH-/usr/share/man}"
+export PATH="/usr/local/opt/curl/bin:$PATH"
+
+## llvm (clangd)
+export PATH="/usr/local/opt/llvm/bin:$PATH"
+
 # coreutils
 export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 # gnu time
@@ -52,6 +63,28 @@ function emstop {
         echo "killing emacs daemon process"
         $EMACS_BIN_DIR/emacsclient -e "(kill-emacs)"
     fi
+}
+
+function cmake_clang_init {
+    export LDFLAGS="-L/usr/local/opt/llvm/lib"
+    export CPPFLAGS="-I/usr/local/opt/llvm/include"
+
+    cmake -DCMAKE_BUILD_TYPE=Debug \
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
+        -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang \
+        -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang++ \
+        $1
+}
+
+function cmake_clang_init_llvm8 {
+    export LDFLAGS="-L/usr/local/opt/llvm@8/lib"
+    export CPPFLAGS="-I/usr/local/opt/llvm@8/include"
+
+    cmake -DCMAKE_BUILD_TYPE=Debug \
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
+        -DCMAKE_C_COMPILER="/usr/local/opt/llvm@8/bin/clang" \
+        -DCMAKE_CXX_COMPILER="/usr/local/opt/llvm@8/bin/clang++" \
+        $1
 }
 
 

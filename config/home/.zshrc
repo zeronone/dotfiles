@@ -1,5 +1,4 @@
 
-
 # Uncomment for profiling
 # set -xv
 
@@ -9,6 +8,8 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
 
+PROMPT='%(?.%F{green}√.%F{red}?%?)%f %B%F{240}%1~%f%b %# '
+
 alias ls="ls -alGh"
 alias gl="git log --graph --decorate --pretty=oneline --abbrev-commit"
 alias gll="git log --graph --abbrev-commit --decorate --date=relative --all"
@@ -17,31 +18,6 @@ alias edit="~/bin/editor"
 # Don't share history betweend different sessions
 setopt noincappendhistory
 setopt nosharehistory
-
-alias sshu="ssh -Y -l ubuntu"
-
-function cmake_clang_init {
-    export LDFLAGS="-L/usr/local/opt/llvm/lib"
-    export CPPFLAGS="-I/usr/local/opt/llvm/include"
-
-    cmake -DCMAKE_BUILD_TYPE=Debug \
-        -DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
-        -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang \
-        -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang++ \
-        $1
-}
-
-function cmake_clang_init_llvm8 {
-    export LDFLAGS="-L/usr/local/opt/llvm@8/lib"
-    export CPPFLAGS="-I/usr/local/opt/llvm@8/include"
-
-    cmake -DCMAKE_BUILD_TYPE=Debug \
-        -DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
-        -DCMAKE_C_COMPILER="/usr/local/opt/llvm@8/bin/clang" \
-        -DCMAKE_CXX_COMPILER="/usr/local/opt/llvm@8/bin/clang++" \
-        $1
-}
-
 
 alias emacs_kill_daemon="emacsclient -nc -e '(save-buffers-kill-emacs)'"
 

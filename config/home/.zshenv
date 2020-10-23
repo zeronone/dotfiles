@@ -35,21 +35,11 @@ export PATH=$GEM_HOME/bin:$PATH
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
 
-# brew install bintuils
-export PATH="/usr/local/opt/binutils/bin:$PATH"
-
-# manpth
-export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:${MANPATH-/usr/share/man}"
-export MANPATH="$HOME/man/linux-kernel:${MANPATH-/usr/share/man}"
-export PATH="/usr/local/opt/curl/bin:$PATH"
 
 # dotfiles common bin
 export PATH=$PATH:$HOME/myfiles/dotfiles/bin
 export PATH=$HOME/bin:$PATH
 
-
-## llvm (clangd)
-export PATH="/usr/local/opt/llvm/bin:$PATH"
 
 ## BAT
 export BAT_THEME="Monokai Extended Light"
