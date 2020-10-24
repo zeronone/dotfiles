@@ -578,7 +578,7 @@
 
   ;; java
   (require 'lsp-java)
-  (require 'lsp-jt)
+  ;;(require 'lsp-jt)
   ;;(require 'lsp-java-boot)
   (add-hook 'java-mode-hook #'lsp-java-lens-mode)
   ;;(add-hook 'java-mode-hook #'lsp-java-boot-lens-mode)
@@ -607,7 +607,7 @@
    ;; avoid documentation being rendered as markdown
    ;; lsp-ui-doc-render-function 'nil
 
-   lsp-ui-doc-delay 3.0
+   lsp-ui-doc-delay 2.0
    lsp-ui-doc-header nil
    lsp-ui-doc-include-signature t
    lsp-ui-doc-max-height 60

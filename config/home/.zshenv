@@ -24,9 +24,6 @@ export EMACS="*term*"
 # Include scripts folder
 export PATH=$HOME/scripts:$PATH
 
-# RUST_SRC_PATH
-export RUST_SRC_PATH="$(rustc --print sysroot)/lib/rustlib/src/rust/src"
-
 ### Ruby Gems
 export GEM_HOME=$HOME/.gem
 export PATH=$GEM_HOME/bin:$PATH

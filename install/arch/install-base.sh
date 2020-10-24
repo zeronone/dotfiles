@@ -51,7 +51,9 @@ sudo pacman -S --noconfirm \
 	sbcl \
 	ccls \
 	glslang \
-	discord
+	discord \
+	ripgrep \
+	sqlite
 
 
 # AUR Repositories
