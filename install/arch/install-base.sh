@@ -53,7 +53,14 @@ sudo pacman -S --noconfirm \
 	glslang \
 	discord \
 	ripgrep \
-	sqlite
+	sqlite \
+	usbutils \
+	vlc \
+	xorg-server-xwayland \
+	fprintd \
+	imagemagick \
+	wmname \
+	qt5-wayland
 
 
 # AUR Repositories

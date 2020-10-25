@@ -5,12 +5,12 @@ output eDP-1 {
 }
 
 output DP-1 {
-    scale 1.75
+    scale 1.5
     scale_filter smart
 }
 
 output DP-2 {
-    scale 1.75
+    scale 1.5
     scale_filter smart
 }
 
