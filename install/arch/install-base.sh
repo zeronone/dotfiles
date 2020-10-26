@@ -18,8 +18,11 @@ sudo pacman -S --noconfirm \
 	zsh \
 	curl \
 	wget \
+	adobe-source-han-sans-otc-fonts \
+	adobe-source-han-serif-otc-fonts \
 	adobe-source-han-sans-jp-fonts \
 	adobe-source-han-serif-jp-fonts \
+	adobe-source-han-sans-kr-fonts \
 	otf-ipafont \
 	ttf-hanazono \
 	ttf-sazanami \
@@ -28,6 +31,8 @@ sudo pacman -S --noconfirm \
 	otf-fira-mono \
 	ttf-hack \
 	noto-fonts \
+	noto-fonts-cjk \
+	ttf-baekmuk \
 	htop \
 	openssh \
 	cmake \
@@ -60,7 +65,10 @@ sudo pacman -S --noconfirm \
 	fprintd \
 	imagemagick \
 	wmname \
-	qt5-wayland
+	qt5-wayland \
+	pulseaudio-bluetooth \
+	pulseaudio-alsa \
+	bluez-utils
 
 
 # AUR Repositories
