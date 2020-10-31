@@ -7,8 +7,15 @@ yay -S --noconfirm \
 	ttf-iosevka \
 	ttf-monaco \
 	ttf-mononoki \
-	fontconfig-ubuntu \
-	cairo-ubuntu \
 	wofi \
 	nodejs-n \
-	wordnet-cli
+	wordnet-cli \
+	pandoc-bin \
+	shellcheck-bin \
+	spotify \
+	wdisplays \
+	wl-clipboard-x11 \
+	ttf-computer-modern-fonts \
+	ttf-cm-unicode \
+	fedora-firefox-wayland-bin \
+	zoom

@@ -18,3 +18,5 @@ set listchars=eol:⏎,tab:␉·,trail:␠,nbsp:⎵
 set colorcolumn=120
 
 set nofixendofline
+
+syntax on

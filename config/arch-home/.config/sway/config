@@ -20,7 +20,7 @@ set $term alacritty
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
 # on the original workspace that the command was run on.
-set $menu dmenu_path | wofi --show drun -i | xargs swaymsg exec --
+# set $menu dmenu_path | wofi --show drun -i | xargs swaymsg exec --
 
 ### Output configuration
 #
@@ -38,8 +38,8 @@ output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
 #
 # Example configuration:
 exec swayidle -w \
-         timeout 300 'swaylock -f -c 000000' \
-         timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+         timeout 1200 'swaylock -f -c 000000' \
+         timeout 1500 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
          before-sleep 'swaylock -f -c 000000'
 
 # This will lock your screen after 300 seconds of inactivity, then turn off
@@ -216,10 +216,10 @@ bindsym $mod+r mode "resize"
 #    }
 #}
 bar {
-    font pango:Monaco, Font Awesome 5 Free
-    position bottom
-    status_command i3status-rs $HOME/.config/i3/status.toml
+    swaybar_command waybar
 }
 
 include $HOME/.config/sway/*.customization
 include /etc/sway/config.d/*
+
+exec --no-startup-id fcitx -d

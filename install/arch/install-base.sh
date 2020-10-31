@@ -2,14 +2,13 @@
 
 # might need to install sudo netctl beforehand
 
-sudo pacman -S --noconfirm \
+sudo pacman -Syu --noconfirm \
 	netctl \
 	dhcpcd \
 	stow \
 	man \
 	vim \
 	git \
-	sway \
 	swaylock \
 	swayidle \
 	rofi \
@@ -36,20 +35,16 @@ sudo pacman -S --noconfirm \
 	htop \
 	openssh \
 	cmake \
-	i3status-rust \
 	ttf-font-awesome \
 	redshift \
-	firefox \
 	aspell \
 	aspell-en \
-	shellcheck \
 	jdk-openjdk \
 	openjdk-doc \
 	openjdk-src \
 	iwd \
 	ethtool \
 	editorconfig-core-c \
-	pandoc \
 	graphviz \
 	go \
 	pyenv \
@@ -61,15 +56,62 @@ sudo pacman -S --noconfirm \
 	sqlite \
 	usbutils \
 	vlc \
-	xorg-server-xwayland \
 	fprintd \
 	imagemagick \
 	wmname \
 	qt5-wayland \
 	pulseaudio-bluetooth \
 	pulseaudio-alsa \
-	bluez-utils
+	alsa-utils \
+	bluez-utils \
+	throttled \
+	fcitx-im \
+	fcitx-configtool \
+	fcitx-mozc \
+	waybar \
+	cantarell-fonts \
+	awesome-terminal-fonts \
+	brightnessctl \
+	light \
+	intellij-idea-community-edition \
+	code \
+	pipewire \
+	pipewire-alsa \
+	pipewire-pulse \
+	pipewire-docs \
+	mako \
+	grim \
+	slurp \
+	xdg-desktop-portal-wlr \
+	xdg-desktop-portal \
+	libpipewire02 \
+	wf-recorder \
+	jq \
+	xdg-user-dirs \
+	noto-fonts-emoji \
+	chromium \
+	eog \
+	linux-headers \
+	qt5-webengine v4l2loopback-dkms \
+	firefox
 
+
+#	sway \
+#	xorg-server-xwayland \
+
+# pipewire and xdg-desktop-portal is not compatible with our current wlroots branch
+#   systemctl --user mask pipewire.socket
+#   systemctl --user mask pipewire.service
+#   systemctl --user mask xdg-desktop-portal
+#   systemctl --user mask xdg-desktop-portal-gtk
+#   systemctl --user mask xdg-desktop-portal-wlr
+
+# zoom
+# https://hugo.barrera.io/journal/2020/06/14/zoom-screensharing-on-archlinux/
+
+# we need to setuid for light
+# sudo usermod -aG video arif
+# sudo chmod +s /usr/bin/light
 
 # AUR Repositories
 sudo pacman -S --needed --noconfirm base-devel

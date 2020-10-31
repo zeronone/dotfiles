@@ -1,4 +1,10 @@
 
+
+xwayland force scale 2
+exec xsettingsd
+
+set $menu dmenu_path | rofi -dpi 210 -show drun -i | xargs swaymsg exec --
+
 output eDP-1 {
     scale 1.75
     scale_filter smart
