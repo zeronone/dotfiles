@@ -60,11 +60,8 @@ sudo pacman -Syu --noconfirm \
 	imagemagick \
 	wmname \
 	qt5-wayland \
-	pulseaudio-bluetooth \
-	pulseaudio-alsa \
 	alsa-utils \
 	bluez-utils \
-	throttled \
 	fcitx-im \
 	fcitx-configtool \
 	fcitx-mozc \
@@ -75,10 +72,8 @@ sudo pacman -Syu --noconfirm \
 	light \
 	intellij-idea-community-edition \
 	code \
-	pipewire \
-	pipewire-alsa \
-	pipewire-pulse \
-	pipewire-docs \
+	pulseaudio \
+	pipewire pipewire-alsa pipewire-pulse pipewire-jack pipewire-docs \
 	mako \
 	grim \
 	slurp \
@@ -93,18 +88,10 @@ sudo pacman -Syu --noconfirm \
 	eog \
 	linux-headers \
 	qt5-webengine v4l2loopback-dkms \
-	firefox
-
+	bat
 
 #	sway \
 #	xorg-server-xwayland \
-
-# pipewire and xdg-desktop-portal is not compatible with our current wlroots branch
-#   systemctl --user mask pipewire.socket
-#   systemctl --user mask pipewire.service
-#   systemctl --user mask xdg-desktop-portal
-#   systemctl --user mask xdg-desktop-portal-gtk
-#   systemctl --user mask xdg-desktop-portal-wlr
 
 # zoom
 # https://hugo.barrera.io/journal/2020/06/14/zoom-screensharing-on-archlinux/
@@ -116,4 +103,8 @@ sudo pacman -Syu --noconfirm \
 # AUR Repositories
 sudo pacman -S --needed --noconfirm base-devel
 
+
+# Following should be disabled, started from sway
+#   systemctl --user disable pipewire.socket pipewire.service
+#   systemctl --user disable xdg-desktop-portal xdg-desktop-portal-gtk xdg-desktop-wlr
 

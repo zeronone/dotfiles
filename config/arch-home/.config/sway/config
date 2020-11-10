@@ -22,6 +22,7 @@ set $term alacritty
 # on the original workspace that the command was run on.
 # set $menu dmenu_path | wofi --show drun -i | xargs swaymsg exec --
 
+
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
@@ -136,6 +137,18 @@ exec swayidle -w \
     bindsym $mod+Shift+0 move container to workspace number 10
     # Note: workspaces can have any name you want, not just numbers.
     # We just use 1-10 as the default.
+    bindsym $mod+control+$left move container to workspace next, workspace next
+    bindsym $mod+control+Left move container to workspace next, workspace next
+    bindsym $mod+control+$right move container to workspace next, workspace next
+    bindsym $mod+control+Right move container to workspace next, workspace next
+
+
+# Disable titlebar everywhere also in tabbed mode
+# https://github.com/swaywm/sway/issues/1286
+font pango:monospace 0
+titlebar_border_thickness 0
+titlebar_padding 0
+
 #
 # Layout stuff:
 #
@@ -222,4 +235,13 @@ bar {
 include $HOME/.config/sway/*.customization
 include /etc/sway/config.d/*
 
+######
+#firefox screen capture indicator
+for_window [app_id="firefox" title="Firefox - Sharing Indicator"] floating enable; sticky enable;
+for_window [floating] floating_maximum_size 800 x 600
+
 exec --no-startup-id fcitx -d
+exec systemctl --user import-environment
+
+# screenshare workaround
+exec systemctl --user start xdg-desktop-portal xdg-desktop-portal-wlr

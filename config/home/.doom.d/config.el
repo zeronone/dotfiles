@@ -8,6 +8,9 @@
 
 (add-to-list 'load-path "~/.doom.d/local")
 
+;; yank hangs in Arch Linux Wayland
+(setq xclip-method 'wl-copy)
+
 ;; improve startup time
 ;; (after! gcmh
 ;;   (setq gcmh-high-cons-threshold (* 128 1024 1024)))
@@ -571,7 +574,7 @@
   (lsp-treemacs-sync-mode 1)
 
   ;; to enable the lenses
-  (add-hook 'lsp-mode-hook #'lsp-lens-mode)
+  ;; (add-hook 'lsp-mode-hook #'lsp-lens-mode)
 
   ;; additional clients
   (require 'lsp-pyright)

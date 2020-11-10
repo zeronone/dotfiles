@@ -2,6 +2,7 @@
 
 ## Starts, stops and shows status for screensharing
 
+sudo modprobe v4l2loopback
 
 geometry() {
   windowGeometries=$(
@@ -32,7 +33,13 @@ geometry() {
     if ! pgrep wf-recorder >/dev/null; then
       geometry=$(geometry) || exit $?
       unset SDL_VIDEODRIVER
-      wf-recorder -c rawvideo -x yuv420p -m avi -f >(ffplay -window_title Screenshare -f avi -) --geometry="$geometry" &
+      # wf-recorder -c rawvideo -x yuv420p -m avi -f >(ffplay -window_title Screenshare -f avi -) --geometry="$geometry" &
+      wf-recorder -o "eDP-1" -c rawvideo -x yuv420p -m avi -f >(ffplay -window_title Screenshare -f avi -)
+
+      # Bottleneck is in Firefox capturing from a window
+      #wf-recorder -c rawvideo -x yuv420p -m v4l2 -f /dev/video2 --geometry="$geometry" &
+      #sleep 0.5
+      #ffplay -window_title Screenshare -f v4l2 /dev/video2 &
       sleep 0.5
       # a hack so FPS is not dropping
       swaymsg [title=Screenshare] floating enable, move position 1800 900

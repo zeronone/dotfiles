@@ -6,11 +6,11 @@ alias ls="ls -alGh --color"
 export MOZ_ENABLE_WAYLAND=1
 export SAL_USE_VCLPUGIN=gtk3
 export XDG_SESSION_TYPE=wayland
-export QT_QPA_PLATFORM=wayland-egl
+export QT_QPA_PLATFORM=wayland
 export QT_WAYLAND_FORCE_DPI=physical
 export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
-export ECORE_EVAS_ENGINE=wayland_egl
-export ELM_ENGINE=wayland_egl
+export ECORE_EVAS_ENGINE=wayland
+export ELM_ENGINE=wayland
 export SDL_VIDEODRIVER=wayland
 export _JAVA_AWT_WM_NONREPARENTING=1
 

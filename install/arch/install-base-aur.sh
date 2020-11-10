@@ -19,3 +19,7 @@ yay -S --noconfirm \
 	ttf-cm-unicode \
 	fedora-firefox-wayland-bin \
 	zoom
+
+
+
+#	pipewire-pulse-dropin pipewire-jack-dropin
