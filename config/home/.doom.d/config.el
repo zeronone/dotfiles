@@ -8,44 +8,67 @@
 
 (add-to-list 'load-path "~/.doom.d/local")
 
-;; yank hangs in Arch Linux Wayland
-(setq xclip-method 'wl-copy)
+;;
+;; OS specific settings
 
-;; improve startup time
-;; (after! gcmh
-;;   (setq gcmh-high-cons-threshold (* 128 1024 1024)))
-(setq inhibit-compacting-font-caches t)
+;; yank hangs in Arch Linux Wayland
+(when IS-LINUX
+  (setq xclip-method 'wl-copy))
+
+
+;;
+;; Emacs startup
+;;
 
 ;; load all packages when in deamon mode
 (setq use-package-always-demand (daemonp))
 
-;; I've swapped these keys on my keyboard
+;; improve startup time
+(setq inhibit-compacting-font-caches t)
+
 (setq x-super-keysym 'meta
       x-alt-keysym   'alt)
-
-;; no fringes
-;; (set-fringe-mode '(0 . 0))
 
 ;; Initial frame size
 (when window-system (set-frame-size (selected-frame) 150 50))
 
-;; Fancy look
+;; looks
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 (add-to-list 'default-frame-alist '(ns-appearance . dark))
+(menu-bar-mode -1)
+
+;;
+;; Editor Defaults
+;;
 
 ;; Disable visual line mode
 (visual-line-mode -1)
 (setq truncate-lines nil)
 
 ;; default indent
-(setq-default tab-width 4)
+(setq-default tab-width 2)
 
-(setq straight-vc-git-default-clone-depth 10)
+(setq-default user-full-name    "Arif Rezai"
+              user-mail-address "me@arifrezai.com")
 
-(setq-default
- user-full-name    "Arif Rezai"
- user-mail-address "me@arifrezai.com")
+(setq
+ ;; Line numbers are pretty slow all around. The performance boost of
+ ;; disabling them outweighs the utility of always keeping them on.
+ display-line-numbers-type nil)
 
+;;
+;; Definitions
+;;
+(defun arif/keymap--empty-command()
+  "Keymap empty command."
+  (interactive))
+
+
+;;
+;; Eagerly loaded packages
+;;
+
+;; lazy load for direnv was too late
 (use-package! direnv
   :when (executable-find "direnv")
   :demand t
@@ -53,23 +76,45 @@
   :config
   (direnv-mode +1))
 
+(use-package! hydra)
+(use-package! major-mode-hydra
+  :demand t
+  :config
+  (map! "M-SPC" #'major-mode-hydra))
+(use-package! pretty-hydra)
+
+
+;;
 ;; which-key
+;;
 (after! which-key
+  (setq which-key-show-early-on-C-h t)          ;; Bind C-h to show help
+  (setq which-key-idle-delay 10000)             ;; don't show
+  (setq which-key-idle-secondary-delay 0.05)
   (which-key-setup-side-window-right-bottom))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; doom-ui
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Modeline rightside cutoff
+;; https://github.com/hlissner/doom-emacs/issues/2967
+(setq all-the-icons-scale-factor 1.0)
+(after! doom-modeline
+  (doom-modeline-def-modeline 'main
+    '(bar workspace-name window-number modals matches buffer-info remote-host buffer-position word-count parrot selection-info)
+    '(objed-state misc-info persp-name battery grip irc mu4e gnus github debug repl lsp minor-modes input-method indent-info buffer-encoding major-mode process vcs checker)))
+(custom-set-faces!
+  '(mode-line :family "Noto Sans" :height 1.0)
+  '(mode-line-inactive :family "Noto Sans" :height 1.0))
+
 
 ;; An extra measure to prevent the flash of unstyled mode-line while Emacs is
 ;; booting up (when Doom is byte-compiled).
 (setq-default mode-line-format nil)
 
 (setq doom-modeline-buffer-file-name-style 'truncate-with-project)
-
-;; (setq doom-font (font-spec :family "Input Mono Narrow" :size 14)
-;;       doom-variable-pitch-font (font-spec :family "Noto Sans" :size 14)
-;;       doom-big-font (font-spec :family "Fira Mono" :size 19))
 
 (setq doom-font (font-spec :family "Hack" :size 14)
       doom-variable-pitch-font (font-spec :family "Noto Sans" :size 14)
@@ -82,37 +127,14 @@
 (add-hook! doom-big-font-mode
   (setq +doom-modeline-height (if doom-big-font-mode 37 29)))
 
-;; doom-modeline is disabled currently
-;; doom-modeline
-;; (setq doom-modeline-buffer-file-name-style 'truncate-with-project)
-;; (setq doom-modeline-persp-name t)
-;; (setq show-trailing-whitespace t)
-;; (setq doom-modeline-buffer-state-icon nil)
-;; (after! doom-modeline
-;;  (remove-hook 'doom-modeline-mode-hook #'size-indication-mode) ; filesize in modeline
-;;  (line-number-mode -1))
-
-;; (setq-default +pretty-code-enabled-modes '(emacs-lisp-mode org-mode))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (add-hook! '(minibuffer-setup-hook doom-popup-mode-hook)
   (setq-local show-trailing-whitespace nil))
 
-;; From hlissner private config
-(setq
- ;; Line numbers are pretty slow all around. The performance boost of
- ;; disabling them outweighs the utility of always keeping them on.
- display-line-numbers-type nil
-
-)
-
 ;;; :editor evil
 (setq evil-split-window-below t
       evil-vsplit-window-right t)
-
 ;;
 ;; Keybindings
 (map!
@@ -120,16 +142,11 @@
  :n "C-h"   #'evil-window-left
  :n "C-j"   #'evil-window-down
  :n "C-k"   #'evil-window-up
- :n "C-l"   #'evil-window-right
+ :n "C-l"   #'evil-window-right)
 
- (:after treemacs-evil
-   (:map evil-treemacs-state-map
-     "C-h" #'evil-window-left
-     "C-l" #'evil-window-right))
-
- (:leader
-   (:prefix "g"
-     :desc "Magit branches"        :n "B" #'magit-branch-popup)))
+;;
+;; Treemacs
+;;
 
 (setq +treemacs-git-mode 'simple)
 (after! treemacs
@@ -147,9 +164,13 @@
 
   (define-key! evil-treemacs-state-map
     "h" nil
-    "l" nil))
+    "l" nil)
 
-
+  (map!
+   (:after treemacs-evil
+    (:map evil-treemacs-state-map
+     "C-h" #'evil-window-left
+     "C-l" #'evil-window-right))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;; lang/org
@@ -161,17 +182,23 @@
 (setq org-attach-id-dir (expand-file-name "~/Dropbox/orgs/.attach"))
 (setq org-download-image-dir (expand-file-name "~/Dropbox/orgs/.attach"))
 (setq org-roam-directory "~/Dropbox/orgs/mywiki")
+
+;; org-journal
+(setq org-journal-file-type 'weekly)
+(setq org-journal-carryover-items t)
 (setq org-journal-file-format "%Y%m%d.org")
 (setq org-journal-dir "~/Dropbox/orgs/journal")
 (defun org-journal-file-header-func (time)
   "Custom function to create journal header."
   (concat
-    (pcase org-journal-file-type
-      (`daily "#+TITLE: Daily Journal (%Y%m%d)\n#+STARTUP: showall\n\n\n")
-      (`weekly "#+TITLE: Weekly Journal (%Y%m%d)\n#+STARTUP: showall\n\n\n")
-      (`monthly "#+TITLE: Monthly Journal (%Y%m)\n#+STARTUP: folded\n\n\n")
-      (`yearly "#+TITLE: Yearly Journal (%Y)\n#+STARTUP: folded\n\n\n"))))
+   (format-time-string (pcase org-journal-file-type
+                         (`daily "#+TITLE: Daily Journal (%Y%m%d)\n#+STARTUP: showall\n\n\n")
+                         (`weekly "#+TITLE: Weekly Journal (%Y%m%d)\n#+STARTUP: showall\n\n\n")
+                         (`monthly "#+TITLE: Monthly Journal (%Y%m)\n#+STARTUP: folded\n\n\n")
+                         (`yearly "#+TITLE: Yearly Journal (%Y)\n#+STARTUP: folded\n\n\n"))
+                       (org-journal--convert-time-to-file-type-time time))))
 (setq org-journal-file-header 'org-journal-file-header-func)
+(setq org-journal-enable-agenda-integration t)
 
 (setq org-noter-notes-search-path "~/Dropbox/orgs/mywiki/notes")
 (setq org-pdftools-search-string-separator "??")
@@ -250,7 +277,6 @@
   (run-with-idle-timer 300 t (lambda ()
                                (org-refile-cache-clear)
                                (org-refile-get-targets)))
-
 
   ;; GTD
   (defun my/org-journal-find-location ()
@@ -422,9 +448,6 @@
 (after! elfeed
   (setq elfeed-search-filter "@1-month-ago +unread"))
 
-(use-package! hydra
-  :demand t)
-
 (after! deft
   (add-to-list 'deft-extensions "md")
   (setq deft-recursive t)
@@ -433,16 +456,6 @@
 
   (map! :map deft-mode-map
         [escape] #'quit-window))
-
-;; org-journal
-(after! org-journal
-  (setq org-journal-file-type 'weekly)
-  (setq org-journal-carryover-items t)
-
-  (setq org-journal-enable-agenda-integration t
-        org-icalendar-store-UID t
-        org-icalendar-include-todo "all"
-        org-icalendar-combined-agenda-file "~/Dropbox/orgs/org-journal.ics"))
 
 (after! pdf-view
   (setq pdf-view-use-scaling t
@@ -497,10 +510,27 @@
 ;; magit
 (setq +magit-hub-enable-by-default nil)
 (setq +magit-hub-features nil)
+(after! magit
+  (when IS-MAC
+    (setq magit-git-executable "/usr/local/bin/git"))
+
+  ;; https://jakemccrary.com/blog/2020/11/14/speeding-up-magit/
+  (remove-hook 'magit-status-sections-hook 'magit-insert-tags-header)
+  (remove-hook 'magit-status-sections-hook 'magit-insert-status-headers)
+  (remove-hook 'magit-status-sections-hook 'magit-insert-unpushed-to-pushremote)
+  (remove-hook 'magit-status-sections-hook 'magit-insert-unpulled-from-pushremote)
+  (remove-hook 'magit-status-sections-hook 'magit-insert-unpulled-from-upstream)
+  (remove-hook 'magit-status-sections-hook 'magit-insert-unpushed-to-upstream-or-recent))
+
+;;
+;; Company
+;;
 
 ;; tabnine
-(use-package! company-tabnine)
+(use-package! company-tabnine
+  :after company)
 (use-package! company-try-hard
+  :after company
   :config
 
   (global-set-key (kbd "C-SPC") #'company-try-hard)
@@ -510,14 +540,21 @@
 (after! company
   ;;  original: (not erc-mode message-mode help-mode gud-mode eshell-mode)
   (setq company-global-modes '(not org-mode erc-mode message-mode help-mode gud-mode eshell-mode))
-  (setq company-idle-delay 0.3)
+  (setq company-idle-delay 0)
 
   ;; defaults
   (setq company-backends '(company-capf company-tabnine)))
 
 (after! company-box
   (setq company-box-doc-enable t)
-  (setq company-box-doc-delay 0.1))
+  (setq company-box-doc-delay 0.5))
+
+;;
+;; help
+;;
+
+;; enable word-wrap in help buffers
+(add-hook! help-mode visual-line-mode)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;; lsp customizations
@@ -528,28 +565,96 @@
 (setq lsp-ui-doc-enable t)
 (setq lsp-headerline-breadcrumb-enable t)
 (setq lsp-modeline-code-actions-enable t)
-(setq lsp-modeline-diagnostics-enable t)
+(setq lsp-modeline-diagnostics-enable nil)   ;; we already have flycheck in modeline
+(setq lsp-modeline-diagnostics-scope :file)
 (setq lsp-enable-dap-auto-configure t)
 (setq lsp-lens-enable t)
 (setq lsp-completion-provider :capf)
 (setq lsp-enable-semantic-highlighting t)
-(setq lsp-enable-links t)
+(setq lsp-enable-links nil)
 (setq lsp-headerline-breadcrumb-segments '(file symbols))
 (setq lsp-diagnostics-provider :flycheck)
 
 ;; for performance
-(setq lsp-enable-file-watchers t)
 (setq lsp-ui-sideline-enable nil)
 (setq lsp-enable-indentation nil)
 (setq lsp-enable-on-type-formatting nil)
 (setq lsp-enable-symbol-highlighting nil)
 (setq lsp-enable-file-watchers nil)
 (setq lsp-log-io nil)
+(setq lsp-idle-delay 0.5)
+(setq lsp-ui-sideline-delay 1.0)
+(setq lsp-print-performance nil)
 
 (setq lsp-treemacs-theme "Idea")
 
 (use-package! lsp-pyright
   :defer t)
+
+(after! lsp-java
+  (add-hook 'java-mode-hook #'lsp-java-lens-mode)
+
+  ;; entry command is lsp-jt-browser
+  (require 'lsp-jt)
+  (add-hook 'lsp-jt-mode-hook #'lsp-jt-lens-mode)
+  ;; somehow the keymap doesn't work, so reapply
+  ;; map! doesn't work
+  (define-key! lsp-jt-mode-map
+    "x" #'lsp-jt-run
+    "d" #'lsp-jt-debug
+    "R" #'lsp-jt-browser-refresh)
+
+  ;; Requiring lsp-java-boot doesn't work
+  ;; (require 'lsp-java-boot)
+  ;; (add-hook 'java-mode-hook #'lsp-java-boot-lens-mode)
+
+  (setq lsp-java-java-path "java"
+        lsp-java-import-gradle-enabled t
+        lsp-java-import-maven-enabled t
+        lsp-java-maven-download-sources t
+        lsp-java-references-code-lens-enabled t
+        lsp-java-signature-help-enabled t
+        lsp-java-implementations-code-lens-enabled t
+        lsp-java-format-enabled t
+        lsp-java-save-actions-organize-imports t
+        lsp-java-autobuild-enabled t
+        lsp-java-completion-enabled t
+        lsp-java-completion-overwrite t
+        lsp-java-completion-guess-method-arguments t
+        lsp-java-format-comments-enabled t
+        lsp-java-code-generation-use-blocks t
+        lsp-java-code-generation-generate-comments t
+        lsp-java-code-generation-to-string-limit-elements 0
+        lsp-java-inhibit-message t)
+
+  ;; taken from vwiss emacs config
+  (major-mode-hydra-define java-mode nil
+                           ("General"
+                            (("ESC" arif/keymap--empty-command "Quit" :exit t)
+                             ("l" lsp-java-lens-mode "Java Lens" :toggle t)
+                             ("S" lsp-java-spring-initializr "Spring Initializr" :color teal)
+                             ("o" lsp-java-organize-imports "Organize imports" :color teal)
+                             ("B" lsp-java-build-project "Build projects" :color teal)
+                             ("u" lsp-java-update-project-configuration "Update project configuration" :color teal)
+                             ("n" lsp-java-actionable-notifications "Actionable notifications" :color teal)
+                             ("y" lsp-java-update-user-settings "Update user settings" :color teal)
+                             ("s" lsp-java-update-server "Update server instalation" :color teal)
+                             ("d" lsp-java-dependency-list "View java dependencies" :color teal)
+                             )
+                            ""
+                            (
+                             ("z" lsp-java-generate-to-string "Generate toString" :color teal)
+                             ("h" lsp-java-generate-equals-and-hash-code "Generate equals and hashCode" :color teal)
+                             ("R" lsp-java-generate-overrides "Generate method overrides" :color teal)
+                             ("g" lsp-java-generate-getters-and-setters "Generate getters and setters" :color teal)
+                             ("c" lsp-java-extract-to-constant "Extract constant" :color teal)
+                             ("a" lsp-java-add-unimplemented-methods "Add Unimplemented" :color teal)
+                             ("p" lsp-java-create-parameter "Create parameter" :color teal)
+                             ("f" lsp-java-create-field "Create field" :color teal)
+                             ("k" lsp-java-create-local "Create local" :color teal)
+                             ("m" lsp-java-extract-method "Extract" :color teal)
+                             ("i" lsp-java-add-import "Add missing import" :color teal)
+                             ))))
 
 (after! lsp-mode
 
@@ -573,18 +678,9 @@
   (require 'lsp-treemacs)
   (lsp-treemacs-sync-mode 1)
 
-  ;; to enable the lenses
-  ;; (add-hook 'lsp-mode-hook #'lsp-lens-mode)
-
   ;; additional clients
   (require 'lsp-pyright)
-
-  ;; java
   (require 'lsp-java)
-  ;;(require 'lsp-jt)
-  ;;(require 'lsp-java-boot)
-  (add-hook 'java-mode-hook #'lsp-java-lens-mode)
-  ;;(add-hook 'java-mode-hook #'lsp-java-boot-lens-mode)
 
   (set-popup-rules!
     '(("^\\*lsp-help\\*" :slot -1 :vslot -1 :size #'+popup-shrink-to-fit :select t :quit t :ttl 0))))
@@ -672,12 +768,6 @@ Other errors while reverting a buffer are reported only as messages."
   ;; 'rust-analyzer is not ready yet
   (setq rustic-lsp-server 'rust-analyzer))
 
-;; Disable title bars
-;; (setq default-frame-alist '((undecorated . t)))
-
-;; format module is disabled
-;; (setq-default +format-on-save-enabled-modes '(not emacs-lisp-mode rjsx-mode javascript-mode))
-
 (require 'minizinc-mode)
 (add-to-list 'auto-mode-alist '("\\.mzn\\'" . minizinc-mode))
 
@@ -748,18 +838,6 @@ Other errors while reverting a buffer are reported only as messages."
   :config
   (set-popup-rules!
     '(("^\\*oj - " :select nil :slot -1 :vslot -1 :size 0.3 :ttl 0))))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages '(package-lint)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
 
 (use-package! package-lint)
 

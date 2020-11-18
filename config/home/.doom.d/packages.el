@@ -16,6 +16,10 @@
 (package! modus-operandi-theme)
 (package! modus-vivendi-theme)
 
+;; hydra
+(package! pretty-hydra)
+(package! major-mode-hydra)
+
 ;; s for string modifications
 (package! s)
 
@@ -47,5 +51,4 @@
 (package! direnv)
 
 ;; unpins
-(unpin! dap-mode lsp-mode lsp-pyright lsp-java treemacs)
-
+(unpin! dap-mode lsp-mode lsp-pyright lsp-java)

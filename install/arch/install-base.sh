@@ -88,7 +88,8 @@ sudo pacman -Syu --noconfirm \
 	eog \
 	linux-headers \
 	qt5-webengine v4l2loopback-dkms \
-	bat
+	bat \
+	zathura zathura-cb zathura-djvu zathura-pdf-mupdf zathura-ps
 
 #	sway \
 #	xorg-server-xwayland \
@@ -107,4 +108,7 @@ sudo pacman -S --needed --noconfirm base-devel
 # Following should be disabled, started from sway
 #   systemctl --user disable pipewire.socket pipewire.service
 #   systemctl --user disable xdg-desktop-portal xdg-desktop-portal-gtk xdg-desktop-wlr
+
+
+# xdg-mime default org.pwmt.zathura.desktop application/pdf
 

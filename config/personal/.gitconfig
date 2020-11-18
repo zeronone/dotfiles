@@ -40,3 +40,5 @@
 [http]
   version = HTTP/1.1
 	postBuffer = 524288000
+[pull]
+	ff = only

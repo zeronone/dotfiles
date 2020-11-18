@@ -14,6 +14,15 @@
 ;;      Alternatively, press 'gd' (or 'C-c g d') on a module to browse its
 ;;      directory (for easy access to its source code).
 
+;; Package overrides
+;; (use-package-hook! lsp-mode
+;;   :pre-init
+;;   (setq lsp-use-plists nil)
+;;   t)
+(use-package-hook! evil
+  :pre-init
+  (setq evil-respect-visual-line-mode t) ;; sane j and k behavior
+  t)
 
 (doom! :input
        ;;chinese
@@ -22,7 +31,7 @@
 
        :completion
        (company
-         +childframe          ; the ultimate code completion backend
+        ;; +childframe          ; the ultimate code completion backend
        )
        ;;helm              ; the *other* search engine for love and life
        ;;ido               ; the other *other* search engine...
@@ -44,7 +53,6 @@
        ;;(modeline +light) ; snazzy, Atom-inspired modeline, plus API
        modeline          ; snazzy, Atom-inspired modeline, plus API
        nav-flash         ; blink the current line after jumping
-       ;;neotree           ; a project drawer, like NERDTree for vim
        ophints           ; highlight the region an operation acts on
        (popup            ; tame sudden yet inevitable temporary windows
         +all             ; catch all popups that start with an asterix
@@ -52,6 +60,7 @@
        )
        ligatures
        ;;tabs              ; an tab bar for Emacs
+       ;;neotree           ; a project drawer, like NERDTree for vim
        treemacs          ; a project drawer, like neotree but cooler
        unicode           ; extended unicode support for various languages
        ;;vc-gutter         ; vcs diff in the fringe
@@ -161,7 +170,6 @@
         +dragndrop       ; drag & drop files/images into org buffers
         ;;+hugo            ; use Emacs for hugo blogging
         +journal
-        +jupyter
         +pandoc
         +pomodoro
         +present
