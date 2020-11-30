@@ -1,11 +1,8 @@
 ;;; config.el -*- lexical-binding: t; -*-
 
-;; (setq comp-deferred-compilation t)
-
 ;;;
-;;; Eager load
+;;; Load path
 ;;;
-
 (add-to-list 'load-path "~/.doom.d/local")
 
 ;;
@@ -14,7 +11,6 @@
 ;; yank hangs in Arch Linux Wayland
 (when IS-LINUX
   (setq xclip-method 'wl-copy))
-
 
 ;;
 ;; Emacs startup
@@ -41,6 +37,14 @@
 ;; Editor Defaults
 ;;
 
+;; Default 16 MB doesn't seem to be enough
+(setq gcmh-verbose nil)
+(setq-default gcmh-high-cons-threshold (* 64 1024 1024))
+
+;; substitue-command-keys shows very high memory usage,
+;; override it to id function
+(defun substitute-command-keys (string) string)
+
 ;; Disable visual line mode
 (visual-line-mode -1)
 (setq truncate-lines nil)
@@ -63,6 +67,17 @@
   "Keymap empty command."
   (interactive))
 
+;; Found online
+(defun arif/garbage-collect ()
+  "Run `garbage-collect' and print stats about memory usage."
+  (interactive)
+  (message (cl-loop for (type size used free) in (garbage-collect)
+                    for used = (* used size)
+                    for free = (* (or free 0) size)
+                    for total = (file-size-human-readable (+ used free))
+                    for used = (file-size-human-readable used)
+                    for free = (file-size-human-readable free)
+                    concat (format "%s: %s + %s = %s\n" type used free total))))
 
 ;;
 ;; Eagerly loaded packages
@@ -116,9 +131,15 @@
 
 (setq doom-modeline-buffer-file-name-style 'truncate-with-project)
 
-(setq doom-font (font-spec :family "Hack" :size 14)
-      doom-variable-pitch-font (font-spec :family "Noto Sans" :size 14)
-      doom-big-font (font-spec :family "Hack" :size 19))
+(when IS-MAC
+  (setq doom-font (font-spec :family "Hack" :size 14)
+        doom-variable-pitch-font (font-spec :family "Noto Sans" :size 14)
+        doom-big-font (font-spec :family "Hack" :size 19)))
+
+(when IS-LINUX
+  (setq doom-font (font-spec :family "Hack" :size 24)
+        doom-variable-pitch-font (font-spec :family "Noto Sans" :size 24)
+        doom-big-font (font-spec :family "Hack" :size 32)))
 
 ;; Fira Mono doesn't have italics, so we highlight it instead.
 (add-hook! doom-post-init
@@ -150,6 +171,9 @@
 
 (setq +treemacs-git-mode 'simple)
 (after! treemacs
+  (setq treemacs-collapse-dirs 3)
+  (setq treemacs-indentation 1)
+  (setq treemacs-is-never-other-window nil)
   (setq treemacs-position 'right)
   (setq treemacs-width 60))
 
@@ -200,8 +224,6 @@
 (setq org-journal-file-header 'org-journal-file-header-func)
 (setq org-journal-enable-agenda-integration t)
 
-(setq org-noter-notes-search-path "~/Dropbox/orgs/mywiki/notes")
-(setq org-pdftools-search-string-separator "??")
 (setq org-ellipsis " >")
 (setq org-id-link-to-org-use-id t)
 
@@ -366,12 +388,9 @@
   (setq org-drill-leech-failure-threshold 40)
 
   (set-popup-rules!
-    '(("^\\*Org-Drill\\*$" :side bottom :size 3 :select t :quit nil :ttl 0)))
+    '(("^\\*Org-Drill\\*$" :side bottom :size 3 :select t :quit nil :ttl nil)))
 
-  ;; (unmap! :map org-drill-response-mode-map
-  ;;   [return] "RET")
   (map! :map org-drill-response-mode-map
-        [return] nil
         "C-c C-c" #'org-drill-response-rtn)
 
   (setq org-drill-presentation-prompt-with-typing t)
@@ -459,25 +478,7 @@
 
 (after! pdf-view
   (setq pdf-view-use-scaling t
-        pdf-view-use-imagemagick nil)
-  (advice-add 'pdf-view-mouse-set-region :override #'*pdf-view-mouse-set-region))
-
-(after! org-noter
-  (map! :map org-noter-doc-mode-map
-        :vni "i" #'org-noter-insert-note
-        "M-i" #'org-noter-insert-precise-note
-        "M-p" #'org-noter-sync-prev-page-or-chapter
-        "M-." #'org-noter-sync-current-page-or-chapter
-        "M-p" #'org-noter-sync-next-page-or-chapter
-        "C-M-p" #'org-noter-sync-prev-note
-        "C-M-." #'org-noter-sync-current-note
-        "C-M-n" #'org-noter-sync-next-note))
-
-(use-package! org-noter-pdftools
-  :after org-noter
-  :config
-  (after! pdf-annot
-    (add-hook 'pdf-annot-activate-handler-functions #'org-noter-pdftools-jump-to-note)))
+        pdf-view-use-imagemagick nil))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -604,9 +605,22 @@
     "d" #'lsp-jt-debug
     "R" #'lsp-jt-browser-refresh)
 
-  ;; Requiring lsp-java-boot doesn't work
-  ;; (require 'lsp-java-boot)
-  ;; (add-hook 'java-mode-hook #'lsp-java-boot-lens-mode)
+  ;; Disabled by default, each project should set it in .dir-locals
+  (setq lsp-java-boot-enabled nil)
+  (require 'lsp-java-boot)
+  (define-minor-mode +lsp-java-boot-lens-mode
+    "Toggle code-lens overlays for bootls conditionally."
+    :group 'lsp-java-boot
+    :global nil
+    :init-value nil
+    :lighter "+BLens"
+    (cond
+     (+lsp-java-boot-lens-mode
+      (when lsp-java-boot-enabled
+        (lsp-java-boot-lens-mode +lsp-java-boot-lens-mode)))
+     (lsp-java-boot-lens-mode
+      (lsp-java-boot-lens-mode +lsp-java-boot-lens-mode))))
+  (add-hook 'java-mode-hook #'+lsp-java-boot-lens-mode)
 
   (setq lsp-java-java-path "java"
         lsp-java-import-gradle-enabled t

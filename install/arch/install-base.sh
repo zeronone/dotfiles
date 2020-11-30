@@ -17,6 +17,7 @@ sudo pacman -Syu --noconfirm \
 	zsh \
 	curl \
 	wget \
+	ibus ibus-hangul \
 	adobe-source-han-sans-otc-fonts \
 	adobe-source-han-serif-otc-fonts \
 	adobe-source-han-sans-jp-fonts \
@@ -62,9 +63,6 @@ sudo pacman -Syu --noconfirm \
 	qt5-wayland \
 	alsa-utils \
 	bluez-utils \
-	fcitx-im \
-	fcitx-configtool \
-	fcitx-mozc \
 	waybar \
 	cantarell-fonts \
 	awesome-terminal-fonts \
@@ -89,7 +87,8 @@ sudo pacman -Syu --noconfirm \
 	linux-headers \
 	qt5-webengine v4l2loopback-dkms \
 	bat \
-	zathura zathura-cb zathura-djvu zathura-pdf-mupdf zathura-ps
+	zathura zathura-cb zathura-djvu zathura-pdf-mupdf zathura-ps \
+	mosh
 
 #	sway \
 #	xorg-server-xwayland \

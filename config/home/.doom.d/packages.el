@@ -23,10 +23,6 @@
 ;; s for string modifications
 (package! s)
 
-;; org noter
-(package! org-pdftools :recipe (:host github :repo "fuxialexander/org-pdftools" :files ("org-pdftools.el")))
-(package! org-noter-pdftools :recipe (:host github :repo "fuxialexander/org-pdftools" :files ("org-noter-pdftools.el")))
-
 ;; by alphapapa
 (package! org-web-tools :recipe (:host github :repo "zeronone/org-web-tools"))
 (package! org-super-agenda)

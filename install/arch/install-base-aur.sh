@@ -7,6 +7,7 @@ yay -S --noconfirm \
 	ttf-iosevka \
 	ttf-monaco \
 	ttf-mononoki \
+	ibus-mozc \      # just choose mozc and ibus-mozc default ones no ut2
 	wofi \
 	nodejs-n \
 	wordnet-cli \
