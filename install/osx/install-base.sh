@@ -14,13 +14,13 @@ git clone https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/theme
 ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH/themes/spaceship.zsh-theme"
 
 # Java
-brew cask install adoptopenjdk
-brew tap AdoptOpenJDK/openjdk
-brew cask install adoptopenjdk8
-brew cask install adoptopenjdk9
+#brew cask install adoptopenjdk
+#brew tap AdoptOpenJDK/openjdk
+#brew cask install adoptopenjdk8
+#brew cask install adoptopenjdk9
 
 # install sdkman
-curl -s https://get.sdkman.io | bash
+#curl -s https://get.sdkman.io | bash
 
 # Tools
 brew install git vim
@@ -31,7 +31,7 @@ brew install tldr
 # emacs railwaycat (27.x)
 # brew tap railwaycat/emacsmacport
 # brew install emacs-mac --with-imagemagick --with-glib --with-modules --with-xml2 --with-ctags --with-dbus --HEAD
-brew install emacs-mac --HEAD --with-jansson --with-xml2 --with-rsvg --with-modules --with-glib --with-ctags --with-dbus --with-imagemagick --with-emacs-sexy-icon
+#brew install emacs-mac --HEAD --with-jansson --with-xml2 --with-rsvg --with-modules --with-glib --with-ctags --with-dbus --with-imagemagick --with-emacs-sexy-icon
 
 # from HEAD (28.x)
 # brew tap daviderestivo/emacs-head
@@ -43,8 +43,8 @@ brew install emacs-mac --HEAD --with-jansson --with-xml2 --with-rsvg --with-modu
 brew install the_silver_searcher
 
 # iOS
-brew install carthage
-gem install cocoapods --user-install
+#brew install carthage
+#gem install cocoapods --user-install
 
 # fd (faster find)
 brew install fd
@@ -53,7 +53,7 @@ brew install fd
 brew install iproute2mac
 
 # osquery
-brew install osquery
+#brew install osquery
 
 # wireshark and tshark
 brew cask install wireshark
@@ -131,3 +131,6 @@ brew install ccls
 
 # editorconfig
 brew install editorconfig
+
+# groovy
+brew install groovysdk

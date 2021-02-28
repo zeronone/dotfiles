@@ -33,6 +33,9 @@
 (add-to-list 'default-frame-alist '(ns-appearance . dark))
 (menu-bar-mode -1)
 
+(setq window-divider-default-bottom-width 4)
+(setq window-divider-default-right-width 4)
+
 ;;
 ;; Editor Defaults
 ;;
@@ -98,7 +101,6 @@
   (map! "M-SPC" #'major-mode-hydra))
 (use-package! pretty-hydra)
 
-
 ;;
 ;; which-key
 ;;
@@ -116,13 +118,13 @@
 ;; Modeline rightside cutoff
 ;; https://github.com/hlissner/doom-emacs/issues/2967
 (setq all-the-icons-scale-factor 1.0)
-(after! doom-modeline
-  (doom-modeline-def-modeline 'main
-    '(bar workspace-name window-number modals matches buffer-info remote-host buffer-position word-count parrot selection-info)
-    '(objed-state misc-info persp-name battery grip irc mu4e gnus github debug repl lsp minor-modes input-method indent-info buffer-encoding major-mode process vcs checker)))
-(custom-set-faces!
-  '(mode-line :family "Noto Sans" :height 1.0)
-  '(mode-line-inactive :family "Noto Sans" :height 1.0))
+;; (after! doom-modeline
+;;   (doom-modeline-def-modeline 'main
+;;     '(bar workspace-name window-number modals matches buffer-info remote-host buffer-position word-count parrot selection-info)
+;;     '(objed-state misc-info persp-name battery grip irc mu4e gnus github debug repl lsp minor-modes input-method indent-info buffer-encoding major-mode process vcs checker)))
+;; (custom-set-faces!
+;;   '(mode-line :family "Noto Sans" :height 1.0)
+;;   '(mode-line-inactive :family "Noto Sans" :height 1.0))
 
 
 ;; An extra measure to prevent the flash of unstyled mode-line while Emacs is
@@ -164,6 +166,9 @@
  :n "C-j"   #'evil-window-down
  :n "C-k"   #'evil-window-up
  :n "C-l"   #'evil-window-right)
+
+;; window-select (ace-window)
+(global-set-key (kbd "M-o") #'ace-window)
 
 ;;
 ;; Treemacs
@@ -212,14 +217,23 @@
 (setq org-journal-carryover-items t)
 (setq org-journal-file-format "%Y%m%d.org")
 (setq org-journal-dir "~/Dropbox/orgs/journal")
+(setq +org-journal-common-headers "#+STARTUP: showall
+#+STARTUP: inlineimages
+#+STARTUP: logreschedule
+#+STARTUP: logdone
+#+STARTUP: logrefile
+#+STARTUP: logdeadline
+
+
+")
 (defun org-journal-file-header-func (time)
   "Custom function to create journal header."
   (concat
    (format-time-string (pcase org-journal-file-type
-                         (`daily "#+TITLE: Daily Journal (%Y%m%d)\n#+STARTUP: showall\n\n\n")
-                         (`weekly "#+TITLE: Weekly Journal (%Y%m%d)\n#+STARTUP: showall\n\n\n")
-                         (`monthly "#+TITLE: Monthly Journal (%Y%m)\n#+STARTUP: folded\n\n\n")
-                         (`yearly "#+TITLE: Yearly Journal (%Y)\n#+STARTUP: folded\n\n\n"))
+                         (`daily (concat "#+TITLE: Daily Journal (%Y%m%d)\n" +org-journal-common-headers))
+                         (`weekly (concat "#+TITLE: Weekly Journal (%Y%m%d)\n" +org-journal-common-headers))
+                         (`monthly (concat "#+TITLE: Monthly Journal (%Y%m)\n" +org-journal-common-headers))
+                         (`yearly (concat "#+TITLE: Yearly Journal (%Y)\n" +org-journal-common-headers)))
                        (org-journal--convert-time-to-file-type-time time))))
 (setq org-journal-file-header 'org-journal-file-header-func)
 (setq org-journal-enable-agenda-integration t)
@@ -260,6 +274,8 @@
   (setq org-babel-python-command "python3")
 
   (setq org-image-actual-width 400)
+  ;; (setq org-agenda-files (directory-files-recursively +org-dir "\\.org$"))
+
   (setq org-agenda-files
         (append
          (directory-files-recursively (expand-file-name "projects-gtd" +org-dir) "\\.org$")
@@ -516,12 +532,14 @@
     (setq magit-git-executable "/usr/local/bin/git"))
 
   ;; https://jakemccrary.com/blog/2020/11/14/speeding-up-magit/
-  (remove-hook 'magit-status-sections-hook 'magit-insert-tags-header)
-  (remove-hook 'magit-status-sections-hook 'magit-insert-status-headers)
-  (remove-hook 'magit-status-sections-hook 'magit-insert-unpushed-to-pushremote)
-  (remove-hook 'magit-status-sections-hook 'magit-insert-unpulled-from-pushremote)
-  (remove-hook 'magit-status-sections-hook 'magit-insert-unpulled-from-upstream)
-  (remove-hook 'magit-status-sections-hook 'magit-insert-unpushed-to-upstream-or-recent))
+  ;; (remove-hook 'magit-status-sections-hook 'magit-insert-tags-header)
+  ;; (remove-hook 'magit-status-sections-hook 'magit-insert-status-headers)
+  ;; (remove-hook 'magit-status-sections-hook 'magit-insert-unpushed-to-pushremote)
+  ;; (remove-hook 'magit-status-sections-hook 'magit-insert-unpulled-from-pushremote)
+  ;; (remove-hook 'magit-status-sections-hook 'magit-insert-unpulled-from-upstream)
+  ;; (remove-hook 'magit-status-sections-hook 'magit-insert-unpushed-to-upstream-or-recent)
+
+  )
 
 ;;
 ;; Company
@@ -563,15 +581,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setq lsp-auto-configure t)
-(setq lsp-ui-doc-enable t)
-(setq lsp-headerline-breadcrumb-enable t)
-(setq lsp-modeline-code-actions-enable t)
+(setq lsp-ui-doc-enable nil)
+(setq lsp-headerline-breadcrumb-enable nil)
+(setq lsp-modeline-code-actions-enable nil)
 (setq lsp-modeline-diagnostics-enable nil)   ;; we already have flycheck in modeline
 (setq lsp-modeline-diagnostics-scope :file)
 (setq lsp-enable-dap-auto-configure t)
-(setq lsp-lens-enable t)
+(setq lsp-lens-enable nil)
 (setq lsp-completion-provider :capf)
-(setq lsp-enable-semantic-highlighting t)
+(setq lsp-enable-semantic-highlighting nil)
 (setq lsp-enable-links nil)
 (setq lsp-headerline-breadcrumb-segments '(file symbols))
 (setq lsp-diagnostics-provider :flycheck)
@@ -707,7 +725,7 @@
 
 (after! lsp-ui
   ;; default lsp disables it
-  (setq lsp-ui-doc-enable t)
+  (setq lsp-ui-doc-enable nil)
 
   (setq
    ;; the max-width doesn't work for webkit
@@ -828,8 +846,8 @@ Other errors while reverting a buffer are reported only as messages."
         modus-vivendi-theme-scale-4 1.2))
 
 ;; doom-theme
-(setq doom-theme 'modus-operandi)
-;; (setq doom-theme 'modus-vivendi)
+;; (setq doom-theme 'modus-operandi)
+(setq doom-theme 'modus-vivendi)
 
 ;; disable smartparens, scrolling large org files is very slow
 ;; (remove-hook 'doom-first-buffer-hook #'smartparens-global-mode)

@@ -51,7 +51,7 @@
        hydra
        indent-guides     ; highlighted indent columns
        ;;(modeline +light) ; snazzy, Atom-inspired modeline, plus API
-       modeline          ; snazzy, Atom-inspired modeline, plus API
+       ;;modeline          ; snazzy, Atom-inspired modeline, plus API
        nav-flash         ; blink the current line after jumping
        ophints           ; highlight the region an operation acts on
        (popup            ; tame sudden yet inevitable temporary windows
@@ -65,7 +65,7 @@
        unicode           ; extended unicode support for various languages
        ;;vc-gutter         ; vcs diff in the fringe
        ;;vi-tilde-fringe   ; fringe tildes to mark beyond EOB
-       (window-select +numbers)     ; visually switch windows
+       window-select     ; visually switch windows
        workspaces        ; tab emulation, persistence & separate workspaces
        ;;zen               ; distraction-free coding or writing
 
@@ -114,7 +114,7 @@
         +dictionary
         +offline
         +docsets)        ; ...or in Dash docsets locally
-       (lsp +peek)
+       lsp
        magit             ; a git porcelain for Emacs
        make              ; run make tasks from Emacs
        ;;pass              ; password manager for nerds
@@ -193,7 +193,7 @@
        ;;swift             ; who asked for emoji variables?
        ;;terra             ; Earth and Moon in alignment for performance.
        web               ; the tubes
-       (yaml +lsp)
+       yaml
 
        :os
        macos             ; MacOS-specific commands

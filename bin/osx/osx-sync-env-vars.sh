@@ -1,11 +1,11 @@
 #!/bin/zsh
 
-set -x
+# set -x
 
 for i in $(export); do
 	var=$(echo $i|sed 's/=.*//')
 	val=$(echo $i|sed 's/^[^=]*=//')
-	[[ $val != "" ]] && {
+	[[ $val != "" ]] && [[ $var != "_"* ]] && {
 		launchctl setenv $var $val
     }
 done

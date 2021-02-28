@@ -2,6 +2,7 @@
 # Uncomment for profiling
 # set -xv
 
+
 # python
 # locale
 export LC_ALL=en_US.UTF-8
@@ -20,6 +21,23 @@ setopt noincappendhistory
 setopt nosharehistory
 
 alias emacs_kill_daemon="emacsclient -nc -e '(save-buffers-kill-emacs)'"
+function emacshere {
+
+  if test "$#" -ne 1; then
+    echo "Usage: emacshere <DIR>"
+    return 1
+  fi
+
+  local curr_dir_full=$(readlink -f $1)
+  local curr_dir=$(basename $curr_dir_full)
+
+  echo "Starting emacs with session=$curr_dir"
+
+  emacs --bg-daemon=$(basename $curr_dir)
+  emacsclient -t -s $(basename $curr_dir) $curr_dir
+
+  ps aux | grep emacs | grep bg-daemon | grep $curr_dir | tr -s [:blank:] | cut -d' ' -f 2 | xargs -L 1 kill -9
+}
 
 
 #####################################################################
@@ -120,9 +138,6 @@ fi
 # starship
 # eval "$(starship init zsh)"
 
-#### direnv
-eval "$(direnv hook zsh)"
-
 #### tmux
 function tmux_cp_loop {
     while true; do
@@ -138,21 +153,35 @@ unsetopt AUTO_CD
 
 # Already done in ~/.zshenv
 # source local customizations and passwords
-source ~/.secretsrc  # already in .zshenv
+. ~/.secretsrc  # already in .zshenv
 for file in ~/.localcustomizations.*; do
-    source "$file"
+    . "$file"
 done
-
 
 ### python clean
 pyclean () {
     find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
 }
 
-
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 #export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
 
-
 export PATH=$(consolidate-path.sh "$PATH")
+
+#### direnv
+eval "$(direnv hook zsh)"
+# BEGIN env Setup -- Managed by Ansible DO NOT EDIT.
+# BEGIN env Setup -- Managed by Ansible DO NOT EDIT.
+
+# Setup INDEED_ENV_DIR earlier.
+if [ -z "${INDEED_ENV_DIR}" ]; then
+    export INDEED_ENV_DIR="${HOME}/env/"
+fi
+
+# Single-brace syntax because this is required in bash and sh alike
+if [ -e "${INDEED_ENV_DIR}/etc/indeedrc" ]; then
+    . "${INDEED_ENV_DIR}/etc/indeedrc"
+fi
+
+# END env Setup -- Managed by Ansible DO NOT EDIT.

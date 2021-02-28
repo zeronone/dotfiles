@@ -15,6 +15,7 @@
 ;; themes
 (package! modus-operandi-theme)
 (package! modus-vivendi-theme)
+(package! darktooth-theme)
 
 ;; hydra
 (package! pretty-hydra)

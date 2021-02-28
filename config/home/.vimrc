@@ -17,6 +17,8 @@ set list
 set listchars=eol:⏎,tab:␉·,trail:␠,nbsp:⎵
 set colorcolumn=120
 
+set backspace=indent,eol,start  " more powerful backspacing
+
 set nofixendofline
 
 syntax on

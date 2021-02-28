@@ -1,0 +1,12 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =2
+let g:netrw_dirhist_2='/Users/arezai/.emacs.d/modules/tools/lsp'
+let g:netrw_dirhist_1='/Users/arezai/indeed/arif/cvm-setup/roles/cvm-common-deps/tasks'
+let g:netrw_dirhist_0='/Users/arezai/indeed/arif/cvm-setup/roles/cvm-common-scripts/meta'
+let g:netrw_dirhist_9='/Users/arezai/indeed/arif/cvm-setup/roles/cvm-common-deps/tasks'
+let g:netrw_dirhist_8='/Users/arezai/indeed/arif/cvm-setup/roles/cvm-common-deps'
+let g:netrw_dirhist_7='/Users/arezai/indeed/arif/cvm-setup/roles/cvm-common-deps/templates'
+let g:netrw_dirhist_6='/Users/arezai/indeed/arif/cvm-setup/roles/cvm-common-deps'
+let g:netrw_dirhist_5='/Users/arezai/indeed/arif/cvm-setup/roles/cvm-common-deps/meta'
+let g:netrw_dirhist_4='/Users/arezai/indeed/arif/cvm-setup/roles/common-deps/tasks'
+let g:netrw_dirhist_3='/Users/arezai/indeed/arif/cvm-setup/roles/common-deps/vars'

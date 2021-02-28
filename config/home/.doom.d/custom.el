@@ -3,16 +3,60 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(elfeed-feeds
-   '("http://ifeanyi.co/feed.xml" "http://byorgey.wordpress.com/feed/" "http://danluu.com/atom.xml" "http://www.bfilipek.com/feeds/posts/default" "https://lexi-lambda.github.io/feeds/all.atom.xml" "http://www.the-paper-trail.org/index.xml" "http://rachelbythebay.com/w/atom.xml" "https://matklad.github.io/feed.xml" "https://vorpus.org/blog/feeds/atom.xml" "http://thume.ca/atom.xml" "http://yunazuno.hatenablog.com/feed" "https://rushter.com/blog/feed/" "http://aturon.github.io/atom.xml" "http://this-week-in-rust.org/atom.xml" "http://antirez.com/rss" "https://blog.jessfraz.com/index.xml" "http://dave.cheney.net/feed" "https://fasterthanli.me/index.xml" "https://mpickering.github.io/atom.xml" "https://free.cofree.io/atom.xml" "https://jaspervdj.be/rss.xml" "http://blog.rust-lang.org/feed.xml" "https://www.python.org/dev/peps/peps.rss/" "https://blog.rust-lang.org/inside-rust/feed.xml" "http://feedpress.me/chosenplaintext" "https://www.youtube.com/feeds/videos.xml?channel_id=UCfbSz1B68ytEKX0D6AFdddQ" "https://xenaproject.wordpress.com/feed/" "http://graphicallinearalgebra.net/feed/" "http://centerofmathematics.blogspot.com/feeds/posts/default" "https://algorithmsandme.com/feed/" "https://www.youtube.com/feeds/videos.xml?channel_id=UCBLr7ISa_YDy5qeATupf26w" "https://rng-58.blogspot.com/feeds/posts/default" "http://feeds2.feedburner.com/PetrMitrichev" "http://blog.indeed.com/feed/" "https://www.nayuki.io/rss20.xml" "http://mindyourdecisions.com/blog/feed/" "http://emacsninja.com/feed.atom" "https://old.reddit.com/r/gwern/search.rss?q=flair:'Gwern'&sort=new&restrict_sr=on" "http://emacsredux.com/atom.xml" "https://buttondown.email/hillelwayne/rss" "https://www.joshwcomeau.com/rss.xml" "https://www.geoffreylitt.com/feed.xml" "http://www.allthingsdistributed.com/atom.xml" "http://blog.acolyer.org/feed/" "http://ericlippert.com/feed/" "https://www.rfc-editor.org/feed/" "https://thehikaku.net/rss20.xml" "http://blog.quarkslab.com/feeds/all.rss.xml" "https://microkerneldude.wordpress.com/feed/" "https://eng.uber.com/feed/" "http://fedoramagazine.org/feed/" "https://engineering.fb.com/feed/" "http://blog.cloudflare.com/rss/" "https://blog.packagecloud.io/feed.xml" "https://people.kernel.org/read/feed/" "https://vincent.bernat.ch/en/blog/atom.xml" "http://cumulusnetworks.com/blog/feed/" "https://github.blog/feed/" "https://www.fastly.com/blog_rss.xml" "http://feeds.feedburner.com/PackagecloudBlog" "https://haskell.libhunt.com/newsletter/feed" "https://python.libhunt.com/newsletter/feed" "https://rust.libhunt.com/newsletter/feed" "https://cpp.libhunt.com/newsletter/feed"))
+ '(ansi-color-faces-vector
+   [default bold shadow italic underline success warning error])
+ '(ansi-color-names-vector
+   ["#F5F5F9" "#D70000" "#005F00" "#AF8700" "#1F55A0" "#AF005F" "#007687" "#0F1019"])
+ '(custom-safe-themes
+   '("be9645aaa8c11f76a10bcf36aaf83f54f4587ced1b9b679b55639c87404e2499" "f2927d7d87e8207fa9a0a003c0f222d45c948845de162c885bf6ad2a255babfd" "4bca89c1004e24981c840d3a32755bf859a6910c65b829d9441814000cf6c3d0" "990e24b406787568c592db2b853aa65ecc2dcd08146c0d22293259d400174e37" default))
+ '(fci-rule-color "#4E4E4E")
+ '(flymake-error-bitmap '(flymake-double-exclamation-mark modus-theme-fringe-red))
+ '(flymake-note-bitmap '(exclamation-mark modus-theme-fringe-cyan))
+ '(flymake-warning-bitmap '(exclamation-mark modus-theme-fringe-yellow))
+ '(highlight-tail-colors '(("#2f4a00" . 0) ("#00415e" . 20)))
+ '(ibuffer-deletion-face 'modus-theme-mark-del)
+ '(ibuffer-marked-face 'modus-theme-mark-sel)
+ '(ibuffer-title-face 'modus-theme-header)
+ '(jdee-db-active-breakpoint-face-colors (cons "#D0D0E3" "#009B7C"))
+ '(jdee-db-requested-breakpoint-face-colors (cons "#D0D0E3" "#005F00"))
+ '(jdee-db-spec-breakpoint-face-colors (cons "#D0D0E3" "#4E4E4E"))
+ '(objed-cursor-color "#D70000")
  '(org-agenda-files
-   '("/home/arif/Dropbox/orgs/projects-gtd/fabriclb-playbook/todo.org" "/home/arif/Dropbox/orgs/projects-gtd/fabriclb/todo.org" "/home/arif/Dropbox/orgs/Getting Started with Orgzly.org" "/home/arif/Dropbox/orgs/diary.org" "/home/arif/Dropbox/orgs/elfeed.org" "/home/arif/Dropbox/orgs/habits.org" "/home/arif/Dropbox/orgs/notes.org" "/home/arif/Dropbox/orgs/projects.org" "/home/arif/Dropbox/orgs/refile-pending.org" "/home/arif/Dropbox/orgs/study.org" "/home/arif/Dropbox/orgs/todo.org" "/home/arif/Dropbox/orgs/work.org" "/home/arif/Dropbox/orgs/journal/20201116.org"))
- '(package-selected-packages '(package-lint))
- '(safe-local-variable-values '((lsp-java-boot-enabled . t))))
+   '("/Users/arezai/Dropbox/orgs/projects-gtd/fabriclb-playbook/todo.org" "/Users/arezai/Dropbox/orgs/projects-gtd/fabriclb/todo.org" "/Users/arezai/Dropbox/orgs/diary.org" "/Users/arezai/Dropbox/orgs/elfeed.org" "/Users/arezai/Dropbox/orgs/habits.org" "/Users/arezai/Dropbox/orgs/notes.org" "/Users/arezai/Dropbox/orgs/projects.org" "/Users/arezai/Dropbox/orgs/refile-pending.org" "/Users/arezai/Dropbox/orgs/study.org" "/Users/arezai/Dropbox/orgs/todo.org" "/Users/arezai/Dropbox/orgs/work.org" "/Users/arezai/Dropbox/orgs/journal/20210222.org"))
+ '(pdf-view-midnight-colors (cons "#0F1019" "#F5F5F9"))
+ '(rustic-ansi-faces
+   ["#F5F5F9" "#D70000" "#005F00" "#AF8700" "#1F55A0" "#AF005F" "#007687" "#0F1019"])
+ '(safe-local-variable-values '((git-commit-major-mode . git-commit-elisp-text-mode)))
+ '(vc-annotate-background "#F5F5F9")
+ '(vc-annotate-background-mode nil)
+ '(vc-annotate-color-map
+   (list
+    (cons 20 "#005F00")
+    (cons 40 "#3a6c00")
+    (cons 60 "#747900")
+    (cons 80 "#AF8700")
+    (cons 100 "#bc7900")
+    (cons 120 "#c96c00")
+    (cons 140 "#D75F00")
+    (cons 160 "#c93f1f")
+    (cons 180 "#bc1f3f")
+    (cons 200 "#AF005F")
+    (cons 220 "#bc003f")
+    (cons 240 "#c9001f")
+    (cons 260 "#D70000")
+    (cons 280 "#b41313")
+    (cons 300 "#922727")
+    (cons 320 "#703a3a")
+    (cons 340 "#4E4E4E")
+    (cons 360 "#4E4E4E")))
+ '(vc-annotate-very-old-color nil)
+ '(xterm-color-names
+   ["#000000" "#ff8059" "#44bc44" "#eecc00" "#29aeff" "#feacd0" "#00d3d0" "#a8a8a8"])
+ '(xterm-color-names-bright
+   ["#181a20" "#f4923b" "#80d200" "#cfdf30" "#72a4ff" "#f78fe7" "#4ae8fc" "#ffffff"]))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(mode-line ((t (:family "Noto Sans" :height 1.0))))
- '(mode-line-inactive ((t (:family "Noto Sans" :height 1.0)))))
+ )
