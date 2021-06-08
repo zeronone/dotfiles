@@ -163,6 +163,16 @@ pyclean () {
     find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
 }
 
+### pet
+function pet-select() {
+  BUFFER=$(pet search --query "$LBUFFER")
+  CURSOR=$#BUFFER
+  zle redisplay
+}
+zle -N pet-select
+stty -ixon
+bindkey '^s' pet-select
+
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 #export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
@@ -176,12 +186,11 @@ eval "$(direnv hook zsh)"
 
 # Setup INDEED_ENV_DIR earlier.
 if [ -z "${INDEED_ENV_DIR}" ]; then
-    export INDEED_ENV_DIR="${HOME}/env/"
+    export INDEED_ENV_DIR="/Users/arezai/env"
 fi
 
 # Single-brace syntax because this is required in bash and sh alike
 if [ -e "${INDEED_ENV_DIR}/etc/indeedrc" ]; then
     . "${INDEED_ENV_DIR}/etc/indeedrc"
 fi
-
 # END env Setup -- Managed by Ansible DO NOT EDIT.

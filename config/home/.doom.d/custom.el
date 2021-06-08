@@ -7,6 +7,7 @@
    [default bold shadow italic underline success warning error])
  '(ansi-color-names-vector
    ["#F5F5F9" "#D70000" "#005F00" "#AF8700" "#1F55A0" "#AF005F" "#007687" "#0F1019"])
+ '(custom-enabled-themes '(wheatgrass))
  '(custom-safe-themes
    '("be9645aaa8c11f76a10bcf36aaf83f54f4587ced1b9b679b55639c87404e2499" "f2927d7d87e8207fa9a0a003c0f222d45c948845de162c885bf6ad2a255babfd" "4bca89c1004e24981c840d3a32755bf859a6910c65b829d9441814000cf6c3d0" "990e24b406787568c592db2b853aa65ecc2dcd08146c0d22293259d400174e37" default))
  '(fci-rule-color "#4E4E4E")
@@ -14,7 +15,28 @@
  '(flymake-note-bitmap '(exclamation-mark modus-theme-fringe-cyan))
  '(flymake-warning-bitmap '(exclamation-mark modus-theme-fringe-yellow))
  '(highlight-tail-colors '(("#2f4a00" . 0) ("#00415e" . 20)))
+ '(hl-sexp-background-color "#efebe9")
+ '(hl-todo-keyword-faces
+   '(("HOLD" . "#cfdf30")
+     ("TODO" . "#feacd0")
+     ("NEXT" . "#b6a0ff")
+     ("THEM" . "#f78fe7")
+     ("PROG" . "#00d3d0")
+     ("OKAY" . "#4ae8fc")
+     ("DONT" . "#80d200")
+     ("FAIL" . "#ff8059")
+     ("BUG" . "#ff8059")
+     ("DONE" . "#44bc44")
+     ("NOTE" . "#f0ce43")
+     ("KLUDGE" . "#eecc00")
+     ("HACK" . "#eecc00")
+     ("TEMP" . "#ffcccc")
+     ("FIXME" . "#ff9977")
+     ("XXX+" . "#f4923b")
+     ("REVIEW" . "#6ae4b9")
+     ("DEPRECATED" . "#bfd9ff")))
  '(ibuffer-deletion-face 'modus-theme-mark-del)
+ '(ibuffer-filter-group-name-face 'modus-theme-mark-symbol)
  '(ibuffer-marked-face 'modus-theme-mark-sel)
  '(ibuffer-title-face 'modus-theme-header)
  '(jdee-db-active-breakpoint-face-colors (cons "#D0D0E3" "#009B7C"))
@@ -22,7 +44,7 @@
  '(jdee-db-spec-breakpoint-face-colors (cons "#D0D0E3" "#4E4E4E"))
  '(objed-cursor-color "#D70000")
  '(org-agenda-files
-   '("/Users/arezai/Dropbox/orgs/projects-gtd/fabriclb-playbook/todo.org" "/Users/arezai/Dropbox/orgs/projects-gtd/fabriclb/todo.org" "/Users/arezai/Dropbox/orgs/diary.org" "/Users/arezai/Dropbox/orgs/elfeed.org" "/Users/arezai/Dropbox/orgs/habits.org" "/Users/arezai/Dropbox/orgs/notes.org" "/Users/arezai/Dropbox/orgs/projects.org" "/Users/arezai/Dropbox/orgs/refile-pending.org" "/Users/arezai/Dropbox/orgs/study.org" "/Users/arezai/Dropbox/orgs/todo.org" "/Users/arezai/Dropbox/orgs/work.org" "/Users/arezai/Dropbox/orgs/journal/20210222.org"))
+   '("/Users/arezai/Dropbox/orgs/diary.org" "/Users/arezai/Dropbox/orgs/elfeed.org" "/Users/arezai/Dropbox/orgs/habits.org" "/Users/arezai/Dropbox/orgs/notes.org" "/Users/arezai/Dropbox/orgs/projects.org" "/Users/arezai/Dropbox/orgs/refile-pending.org" "/Users/arezai/Dropbox/orgs/study.org" "/Users/arezai/Dropbox/orgs/todo.org" "/Users/arezai/Dropbox/orgs/work.org" "/Users/arezai/Dropbox/orgs/journal/20210607.org"))
  '(pdf-view-midnight-colors (cons "#0F1019" "#F5F5F9"))
  '(rustic-ansi-faces
    ["#F5F5F9" "#D70000" "#005F00" "#AF8700" "#1F55A0" "#AF005F" "#007687" "#0F1019"])
@@ -60,3 +82,4 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+(put 'customize-themes 'disabled nil)

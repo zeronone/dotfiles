@@ -10,9 +10,7 @@ cd $workingdir
 git clean -fdx
 git checkout -- .
 git checkout master
-git branch -D feature/native-comp || true
 git pull
-git checkout --track origin/feature/native-comp
 
 # patches from emacs-head
 #patch -g 0 -f -p1 -i $DIR/0001-No-frame-refocus-cocoa.patch
@@ -51,10 +49,10 @@ libs=(
 
 CFLAGS="-g3 -O3 -mtune=native -march=native -fomit-frame-pointer "
 # libgccgit lib dir is a bit nested
-LDFLAGS="-L/usr/local/opt/libgccjit/lib/gcc/10 "
+LDFLAGS="-L/usr/local/opt/libgccjit/lib/gcc/11 "
 PKG_CONFIG_PATH=""
 
-PATH="$(brew --prefix gcc@10)/bin:${PATH}"
+PATH="$(brew --prefix gcc@11)/bin:${PATH}"
 PATH="$(brew --prefix gnu-sed)/libexec/gnubin:$PATH"
 
 for dir in "${libs[@]}"; do
@@ -75,8 +73,8 @@ echo "LDFLAS=$LDFLAGS"
 echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH"
 echo "PATH=$PATH"
 
-export CC="/usr/local/bin/gcc-10"
-export CXX="/usr/local/bin/g++-10"
+export CC="/usr/local/bin/gcc-11"
+export CXX="/usr/local/bin/g++-11"
 
 ./autogen.sh
 ./configure \
@@ -98,7 +96,7 @@ export CXX="/usr/local/bin/g++-10"
 #--with-harfbuzz \
 #--with-cairo
 #--with-x \
-#--with-ns                # can't use gcc-10, only clang
+#--with-ns                # can't use gcc-1, only clang
 #--with-cocoa
 #--with-xwidgets \
 
@@ -110,8 +108,7 @@ function catch_errors() {
 trap catch_errors ERR;
 
 # make -j 8 NATIVE_FAST_BOOT=1 BYTE_COMPILE_EXTRA_FLAGS='--eval "(setq comp-speed 0)"'
-make -j 8 NATIVE_FAST_BOOT=1
-# make -j 8
+make -j $(nproc) NATIVE_FAST_BOOT=1
 make install
 
 #### GUI

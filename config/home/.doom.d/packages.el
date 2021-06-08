@@ -38,7 +38,7 @@
 (package! pipenv :disable t)
 
 ;; tabnine completion
-(package! company-tabnine)
+;;(package! company-tabnine)
 (package! company-try-hard)
 
 ;; package-lint

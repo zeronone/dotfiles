@@ -268,41 +268,45 @@
 
   ;; html export
   (setq-default org-html-htmlize-output-type 'css)
-  (setq-default org-html-head "<link rel=\"stylesheet\" href=\"http://dakrone.github.io/org.css\" type=\"text/css\" />")
+  (setq org-export-use-babel nil)
+  ;; From http://dakrone.github.io/org.css
+  (setq-default org-html-head "<link rel=\"stylesheet\" href=\"/styles/styles.css\" type=\"text/css\" />")
 
   ;; use python3 in org-babel
   (setq org-babel-python-command "python3")
 
   (setq org-image-actual-width 400)
-  ;; (setq org-agenda-files (directory-files-recursively +org-dir "\\.org$"))
-
   (setq org-agenda-files
         (append
-         (directory-files-recursively (expand-file-name "projects-gtd" +org-dir) "\\.org$")
-         (list +org-dir)))
+          (directory-files-recursively (expand-file-name "projects-gtd" +org-dir) "\\.org$")
+          (list +org-dir)))
+
+
+  (setq org-agenda-files '(+org-dir))
 
   (setq org-publish-project-alist
-        '(("org-notes"
+        '(("org-docs"
            :base-directory "~/Dropbox/orgs"
            :base-extension "org"
-           :publishing-directory "~/myfiles/orgs_published/"
+           :publishing-directory "~/Dropbox/orgs_published/"
            :recursive t
            :publishing-function org-html-publish-to-html
            :headline-levels 4             ; Just the default for this project.
            :auto-preamble t)
           ("org-static"
-           :base-directory "~/Dropbox/orgs"
+           :base-directory "~/Dropbox/orgs/publish_static"
            :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
-           :publishing-directory "~/myfiles/orgs_published/"
+           :publishing-directory "~/Dropbox/orgs_published/"
            :recursive t
            :publishing-function org-publish-attachment)
           ("org-attachments"
-           :base-directory "~/Dropbox/.attach"
-           :publishing-directory "~/myfiles/orgs_published/"
+           :base-directory "~/Dropbox/orgs/.attach"
+           :publishing-directory "~/Dropbox/orgs_published/.attach"
+           :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
            :recursive t
            :publishing-function org-publish-attachment)
           ("org-all"
-           :components ("org-notes" "org-static" "org-attachments"))))
+           :components ("org-docs" "org-static" "org-attachments"))))
 
   (setq org-refile-additional-targets-a
         (directory-files-recursively (expand-file-name "archive" +org-dir) "\\.org$"))
@@ -546,8 +550,8 @@
 ;;
 
 ;; tabnine
-(use-package! company-tabnine
-  :after company)
+;;(use-package! company-tabnine
+;;  :after company)
 (use-package! company-try-hard
   :after company
   :config
@@ -689,7 +693,6 @@
                              ))))
 
 (after! lsp-mode
-
   ;; Workaround for issue #3274
   (setq-hook! '(lsp-managed-mode-hook)
     flycheck-disabled-checkers '(c/c++-clang c/c++-gcc))
@@ -713,6 +716,7 @@
   ;; additional clients
   (require 'lsp-pyright)
   (require 'lsp-java)
+  (require 'lsp-go)
 
   (set-popup-rules!
     '(("^\\*lsp-help\\*" :slot -1 :vslot -1 :size #'+popup-shrink-to-fit :select t :quit t :ttl 0))))
@@ -800,8 +804,12 @@ Other errors while reverting a buffer are reported only as messages."
   ;; 'rust-analyzer is not ready yet
   (setq rustic-lsp-server 'rust-analyzer))
 
+;; minizinc
 (require 'minizinc-mode)
 (add-to-list 'auto-mode-alist '("\\.mzn\\'" . minizinc-mode))
+
+(after! proof-general
+  (require 'coq-inferior))
 
 (after! org-src
   ;; ~/.doom.d/local/ob-minizinc.el
@@ -847,7 +855,8 @@ Other errors while reverting a buffer are reported only as messages."
 
 ;; doom-theme
 ;; (setq doom-theme 'modus-operandi)
-(setq doom-theme 'modus-vivendi)
+;; (setq doom-theme 'modus-vivendi)
+(setq doom-theme 'wheatgrass)
 
 ;; disable smartparens, scrolling large org files is very slow
 ;; (remove-hook 'doom-first-buffer-hook #'smartparens-global-mode)

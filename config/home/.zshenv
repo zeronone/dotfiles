@@ -43,3 +43,4 @@ export BAT_THEME="Monokai Extended Light"
 
 ## Java
 export MAVEN_OPTS="-Dmaven.artifact.threads=30"
+. "$HOME/.cargo/env"
