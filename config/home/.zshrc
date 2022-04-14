@@ -173,6 +173,13 @@ zle -N pet-select
 stty -ixon
 bindkey '^s' pet-select
 
+### urlencode/urldecode
+alias urldecode='python3 -c "import sys, urllib.parse as ul; \
+    print(ul.unquote_plus(sys.argv[1]))"'
+
+alias urlencode='python3 -c "import sys, urllib.parse as ul; \
+    print (ul.quote_plus(sys.argv[1]))"'
+
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 #export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
@@ -181,6 +188,15 @@ export PATH=$(consolidate-path.sh "$PATH")
 
 #### direnv
 eval "$(direnv hook zsh)"
+
+### CS
+eval "$(cs install --env)"
+
+### cargo
+. "$HOME/.cargo/env"
+
+
+
 # BEGIN env Setup -- Managed by Ansible DO NOT EDIT.
 # BEGIN env Setup -- Managed by Ansible DO NOT EDIT.
 

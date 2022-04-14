@@ -13,8 +13,7 @@
 ;; (package! minizinc-mode :load-path "~/.doom.d/local/minizinc-mode.el")
 
 ;; themes
-(package! modus-operandi-theme)
-(package! modus-vivendi-theme)
+(package! modus-themes)
 (package! darktooth-theme)
 
 ;; hydra
@@ -24,28 +23,45 @@
 ;; s for string modifications
 (package! s)
 
+;; dash
+(package! dash)
+
 ;; by alphapapa
 (package! org-web-tools :recipe (:host github :repo "zeronone/org-web-tools"))
 (package! org-super-agenda)
 (package! org-sidebar :recipe (:host github :repo "alphapapa/org-sidebar"))
+(package! org-ql)
 
 ;; SRS in org
 (package! org-drill :recipe (:host github :repo "zeronone/org-drill"))
 
+;; org-modern
+(package! org-modern)
+
+;; oj
 (package! oj)
 
 ;; disable  pipenv
 (package! pipenv :disable t)
 
 ;; tabnine completion
-;;(package! company-tabnine)
-(package! company-try-hard)
+;; (package! company-tabnine)
+;; (package! company-try-hard)
+
+;; corfu instead of company
+(package! corfu)
 
 ;; package-lint
 (package! package-lint)
 
-(package! lsp-pyright :recipe (:host github :repo "emacs-lsp/lsp-pyright"))
+;; direnv
 (package! direnv)
 
+;; lsp
+(package! lsp-pyright :recipe (:host github :repo "emacs-lsp/lsp-pyright"))
 ;; unpins
-(unpin! dap-mode lsp-mode lsp-pyright lsp-java)
+(unpin! dap-mode lsp-mode lsp-pyright lsp-java lsp-ui rustic org-roam)
+;; (package! lsp-ui :recipe (:host github :repo "zeronone/lsp-ui"))
+
+;; devdocs
+(package! devdocs-browser)

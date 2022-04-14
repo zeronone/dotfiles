@@ -19,14 +19,13 @@
 ;; load all packages when in deamon mode
 (setq use-package-always-demand (daemonp))
 
-;; improve startup time
-(setq inhibit-compacting-font-caches t)
-
-(setq x-super-keysym 'meta
-      x-alt-keysym   'alt)
 
 ;; Initial frame size
 (when window-system (set-frame-size (selected-frame) 150 50))
+
+;; Emacs 29 on mac supports precision scroll mode
+(when EMACS29+
+  (pixel-scroll-precision-mode +1))
 
 ;; looks
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
@@ -36,21 +35,25 @@
 (setq window-divider-default-bottom-width 4)
 (setq window-divider-default-right-width 4)
 
+
+;; https://github.com/hlissner/doom-emacs/issues/5160
+(setq doom-emoji-fallback-font-families nil)
+
+;; requires
+(require 's)
+(require 'dash)
+
 ;;
 ;; Editor Defaults
 ;;
 
 ;; Default 16 MB doesn't seem to be enough
-(setq gcmh-verbose nil)
-(setq-default gcmh-high-cons-threshold (* 64 1024 1024))
+;; (setq gcmh-verbose nil)
+;; (setq-default gcmh-high-cons-threshold (* 64 1024 1024))
 
-;; substitue-command-keys shows very high memory usage,
-;; override it to id function
-(defun substitute-command-keys (string) string)
-
-;; Disable visual line mode
-(visual-line-mode -1)
-(setq truncate-lines nil)
+;; Disable auto-save
+(setq auto-save-default nil)
+(setq make-backup-files nil)
 
 ;; default indent
 (setq-default tab-width 2)
@@ -66,12 +69,12 @@
 ;;
 ;; Definitions
 ;;
-(defun arif/keymap--empty-command()
+(defun my/keymap--empty-command()
   "Keymap empty command."
   (interactive))
 
 ;; Found online
-(defun arif/garbage-collect ()
+(defun my/garbage-collect ()
   "Run `garbage-collect' and print stats about memory usage."
   (interactive)
   (message (cl-loop for (type size used free) in (garbage-collect)
@@ -133,10 +136,12 @@
 
 (setq doom-modeline-buffer-file-name-style 'truncate-with-project)
 
+;; Iosevka Fixed,Iosevka Fixed Medium:style=Medium,Regular
 (when IS-MAC
-  (setq doom-font (font-spec :family "Hack" :size 14)
-        doom-variable-pitch-font (font-spec :family "Noto Sans" :size 14)
-        doom-big-font (font-spec :family "Hack" :size 19)))
+  (setq doom-unicode-font (font-spec :family "Cascadia Code PL"))
+  (setq doom-font (font-spec :family "Cascadia Code PL" :size 16)
+        doom-variable-pitch-font (font-spec :family "Cascadia Code PL" :size 16)
+        doom-big-font (font-spec :family "Cascadia Code PL" :size 22)))
 
 (when IS-LINUX
   (setq doom-font (font-spec :family "Hack" :size 24)
@@ -168,6 +173,7 @@
  :n "C-l"   #'evil-window-right)
 
 ;; window-select (ace-window)
+(require 'ace-window)
 (global-set-key (kbd "M-o") #'ace-window)
 
 ;;
@@ -176,6 +182,10 @@
 
 (setq +treemacs-git-mode 'simple)
 (after! treemacs
+  ;; too slow on TRAMP connections
+  (setq treemacs-eldoc-display 'nil)
+
+  (setq treemacs-user-mode-line-format 'none)
   (setq treemacs-collapse-dirs 3)
   (setq treemacs-indentation 1)
   (setq treemacs-is-never-other-window nil)
@@ -253,12 +263,13 @@
   ;; for performance
   ;; https://github.com/hlissner/doom-emacs/blob/develop/docs/faq.org#why-is-scrolling-slow-in-emacsdoom
   (remove-hook 'org-mode-hook #'org-superstar-mode)
-  (setq org-fontify-quote-and-verse-blocks nil)
-  (setq org-fontify-whole-heading-line nil)
-  (setq org-hide-leading-stars nil)
+  ;; (setq org-fontify-quote-and-verse-blocks nil)
+  ;; (setq org-fontify-whole-heading-line nil)
+  ;; (setq org-hide-leading-stars nil)
   ;; (setq org-startup-indented nil)
 
-  (setq org-image-actual-width (/ (display-pixel-width) 3))
+  ;; (setq org-image-actual-width (/ (display-pixel-width) 3))
+  (setq org-image-actual-width 400)
 
   (setq-default org-cycle-separator-lines 0)
   (setq-default org-agenda-inhibit-startup nil)
@@ -275,14 +286,11 @@
   ;; use python3 in org-babel
   (setq org-babel-python-command "python3")
 
-  (setq org-image-actual-width 400)
-  (setq org-agenda-files
-        (append
-          (directory-files-recursively (expand-file-name "projects-gtd" +org-dir) "\\.org$")
-          (list +org-dir)))
 
-
-  (setq org-agenda-files '(+org-dir))
+  (setq org-agenda-files (list
+                          +org-dir
+                          (expand-file-name "projects-gtd" +org-dir)
+                          (expand-file-name "journal" +org-dir)))
 
   (setq org-publish-project-alist
         '(("org-docs"
@@ -437,51 +445,76 @@
 ;; From: https://www.rousette.org.uk/archives/doom-emacs-tweaks-org-journal-and-org-super-agenda/
 (use-package! org-super-agenda
   :after org-agenda
+  :hook (org-mode . org-super-agenda-mode)
   :init
   (setq org-agenda-skip-scheduled-if-done t
         org-agenda-skip-deadline-if-done t
         org-agenda-include-deadlines t
+        org-agenda-include-diary t
         org-agenda-block-separator nil
         org-agenda-compact-blocks t
-        org-agenda-start-day nil ;; i.e. today
-        org-agenda-span 1
-        org-agenda-start-on-weekday nil)
-  (setq org-agenda-custom-commands
-        '(("c" "Super view"
-           ((agenda "" ((org-agenda-overriding-header "")
-                        (org-super-agenda-groups
-                         '((:name "Today"
-                            :time-grid t
-                            :date today
-                            :order 1)))))
-            (alltodo "" ((org-agenda-overriding-header "")
-                         (org-super-agenda-groups
-                          '((:log t)
-                            (:name "To refile"
-                             :file-path "refile-pending\\.org")
-                            (:name "Next to do"
-                             :todo "NEXT"
-                             :order 1)
-                            (:name "Important"
-                             :priority "A"
-                             :order 6)
-                            (:name "Today's tasks"
-                             :file-path "journal/")
-                            (:name "Due Today"
-                             :deadline today
-                             :order 2)
-                            (:name "Scheduled Soon"
-                             :scheduled future
-                             :order 8)
-                            (:name "Overdue"
-                             :deadline past
-                             :order 7)
-                            (:name "Meetings"
-                             :and (:todo "MEET" :scheduled future)
-                             :order 10)
-                            (:discard (:not (:todo "TODO")))))))))))
-  :config
-  (org-super-agenda-mode))
+        org-agenda-span 'today
+        org-agenda-start-on-weekday nil
+        org-agenda-start-with-log-mode t)
+  (setq org-agenda-time-grid '((daily today require-timed) "----------------------" nil))
+
+  ;; Make evil keybindings in org-super-agenda headers
+  ;; https://github.com/alphapapa/org-super-agenda/issues/50#issuecomment-817432643
+  (after! evil-org-agenda
+    (setq org-super-agenda-header-map evil-org-agenda-mode-map))
+
+  (setq org-super-agenda-groups
+        '((:name "Today"
+           :time-grid t
+           :date today
+           :todo "TODAY"
+           :scheduled today
+           :order 1)
+          (:log t)
+          (:name "To refile"
+           :file-path "refile-pending\\.org")
+          (:name "Next to do"
+           :todo "NEXT"
+           :order 1)
+          (:name "Important"
+           :priority "A"
+           :order 6)
+          (:name "Today's tasks"
+           :file-path "journal/")
+          (:name "Due Today"
+           :deadline today
+           :order 2)
+          (:name "Scheduled Soon"
+           :scheduled future
+           :order 8)
+          (:name "Overdue"
+           :deadline past
+           :order 7)
+          (:name "Meetings"
+           :and (:todo "MEET" :scheduled future)
+           :order 10)
+          (:discard (:not (:todo "TODO"))))))
+
+
+;; org-modern
+;; https://github.com/minad/org-modern
+(use-package! org-modern
+  :after org
+  :hook (org-mode . org-modern-mode)
+  :init
+  (setq
+   ;; Edit settings
+   org-auto-align-tags nil
+   org-tags-column 0
+   org-catch-invisible-edits 'show-and-error
+   org-special-ctrl-a/e t
+   org-insert-heading-respect-content t
+
+   ;; Org styling, hide markup etc.
+   org-hide-emphasis-markers t
+   org-pretty-entities t
+   org-ellipsis "…"))
+
 
 ;; elfeed
 (after! elfeed
@@ -545,39 +578,38 @@
 
   )
 
-;;
-;; Company
-;;
+;; (setq auth-sources '("~/.authinfo" "~/.authinfo.gpg" "~/.netrc"))
+;; (after! forge
+;;   ;; indeed
+;;   (add-to-list 'forge-alist '("code.corp.indeed.com" "code.corp.indeed.com/api/v4" "code.corp.indeed.com" forge-gitlab-repository)))
 
-;; tabnine
-;;(use-package! company-tabnine
-;;  :after company)
-(use-package! company-try-hard
-  :after company
-  :config
 
-  (global-set-key (kbd "C-SPC") #'company-try-hard)
-  (define-key company-active-map (kbd "C-SPC") #'company-try-hard))
+;; Completion
 
-;; company
-(after! company
-  ;;  original: (not erc-mode message-mode help-mode gud-mode eshell-mode)
-  (setq company-global-modes '(not org-mode erc-mode message-mode help-mode gud-mode eshell-mode))
-  (setq company-idle-delay 0)
+;; Corfu (vertico equivalent for company)
 
-  ;; defaults
-  (setq company-backends '(company-capf company-tabnine)))
+(use-package! corfu
+  :demand t
 
-(after! company-box
-  (setq company-box-doc-enable t)
-  (setq company-box-doc-delay 0.5))
+  :init
+  (setq corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+  (setq corfu-auto t)                 ;; Enable auto completion
+  (setq corfu-commit-predicate nil)   ;; Do not commit selected candidates on next input
+  (setq corfu-quit-at-boundary t)     ;; Automatically quit at word boundary
+  (setq corfu-quit-no-match t)        ;; Automatically quit if there is no match
+  (setq corfu-echo-documentation t)   ;; Show documentation in the echo area
+
+  (corfu-global-mode))
+
 
 ;;
 ;; help
 ;;
 
 ;; enable word-wrap in help buffers
-(add-hook! help-mode visual-line-mode)
+;; visual-linde-mode is nil
+;;(unless EMACS29+
+;;  (add-hook! help-mode visual-line-mode))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;; lsp customizations
@@ -585,31 +617,39 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setq lsp-auto-configure t)
-(setq lsp-ui-doc-enable nil)
-(setq lsp-headerline-breadcrumb-enable nil)
-(setq lsp-modeline-code-actions-enable nil)
+(setq lsp-headerline-breadcrumb-enable t)
+(setq lsp-modeline-code-actions-enable t)
 (setq lsp-modeline-diagnostics-enable nil)   ;; we already have flycheck in modeline
 (setq lsp-modeline-diagnostics-scope :file)
 (setq lsp-enable-dap-auto-configure t)
-(setq lsp-lens-enable nil)
+(setq lsp-lens-enable t)
 (setq lsp-completion-provider :capf)
 (setq lsp-enable-semantic-highlighting nil)
-(setq lsp-enable-links nil)
+(setq lsp-enable-links t)
 (setq lsp-headerline-breadcrumb-segments '(file symbols))
 (setq lsp-diagnostics-provider :flycheck)
 
 ;; for performance
-(setq lsp-ui-sideline-enable nil)
+;; (setq lsp-ui-sideline-enable nil)
 (setq lsp-enable-indentation nil)
 (setq lsp-enable-on-type-formatting nil)
 (setq lsp-enable-symbol-highlighting nil)
 (setq lsp-enable-file-watchers nil)
 (setq lsp-log-io nil)
-(setq lsp-idle-delay 0.5)
-(setq lsp-ui-sideline-delay 1.0)
+(setq lsp-idle-delay 0.3)
+;; (setq lsp-ui-sideline-delay 1.0)
 (setq lsp-print-performance nil)
 
 (setq lsp-treemacs-theme "Idea")
+(setq lsp-server-install-dir "/Users/arezai/bin/lsp")
+
+;; Currently ccls-code-lens-mode is enabled in all lsp languages
+;; which causes multiple code actions to appear in some langauges (i.e rust)
+;; However the ccls implementation is not eligible with other langs
+;; Until this is fixed: https://github.com/hlissner/doom-emacs/pull/4233
+(after! lsp-mode
+  (remove-hook 'lsp-lens-mode-hook #'ccls-code-lens-mode)
+  (ccls-code-lens-mode -1))
 
 (use-package! lsp-pyright
   :defer t)
@@ -644,7 +684,30 @@
       (lsp-java-boot-lens-mode +lsp-java-boot-lens-mode))))
   (add-hook 'java-mode-hook #'+lsp-java-boot-lens-mode)
 
-  (setq lsp-java-java-path "java"
+  (setq lsp-java-configuration-runtimes
+        (lsp-ht ("name" "java_home")
+                ("default" t)
+                ("path" (getenv "JAVA_HOME"))
+                ("sources" (concat (getenv "JAVA_HOME") "/src.zip"))))
+  (setq lsp-java-import-gradle-java-home (getenv "JAVA_HOME"))
+
+  (setq lsp-java-workspace-dir (expand-file-name "~/.lsp/java-workspace")
+        lsp-java-workspace-cache-dir (expand-file-name ".cache" lsp-java-workspace-dir))
+
+  ;; Slightly better defaults
+  (setq lsp-java-vmargs '("-noverify"
+                          "-XX:+UseG1GC"
+                          "-XX:+UseStringDeduplication"
+                          "-Dsun.zip.disableMemoryMapping=true"
+                          "-Xmx3G"
+                          "-Xms256m"))
+
+  ;; decompiler
+  (setq lsp-java-content-provider-preferred "fernflower")
+
+  ;; lsp-java requires JDK11
+  (setq lsp-java-java-path "/Library/Java/JavaVirtualMachines/jdk11.0.10_9.jdk/Contents/Home/bin/java"
+        lsp-java-java-path (concat (string-trim-right (shell-command-to-string "/usr/libexec/java_home -v 11")) "/bin/java")
         lsp-java-import-gradle-enabled t
         lsp-java-import-maven-enabled t
         lsp-java-maven-download-sources t
@@ -661,36 +724,8 @@
         lsp-java-code-generation-use-blocks t
         lsp-java-code-generation-generate-comments t
         lsp-java-code-generation-to-string-limit-elements 0
-        lsp-java-inhibit-message t)
+        lsp-java-inhibit-message t))
 
-  ;; taken from vwiss emacs config
-  (major-mode-hydra-define java-mode nil
-                           ("General"
-                            (("ESC" arif/keymap--empty-command "Quit" :exit t)
-                             ("l" lsp-java-lens-mode "Java Lens" :toggle t)
-                             ("S" lsp-java-spring-initializr "Spring Initializr" :color teal)
-                             ("o" lsp-java-organize-imports "Organize imports" :color teal)
-                             ("B" lsp-java-build-project "Build projects" :color teal)
-                             ("u" lsp-java-update-project-configuration "Update project configuration" :color teal)
-                             ("n" lsp-java-actionable-notifications "Actionable notifications" :color teal)
-                             ("y" lsp-java-update-user-settings "Update user settings" :color teal)
-                             ("s" lsp-java-update-server "Update server instalation" :color teal)
-                             ("d" lsp-java-dependency-list "View java dependencies" :color teal)
-                             )
-                            ""
-                            (
-                             ("z" lsp-java-generate-to-string "Generate toString" :color teal)
-                             ("h" lsp-java-generate-equals-and-hash-code "Generate equals and hashCode" :color teal)
-                             ("R" lsp-java-generate-overrides "Generate method overrides" :color teal)
-                             ("g" lsp-java-generate-getters-and-setters "Generate getters and setters" :color teal)
-                             ("c" lsp-java-extract-to-constant "Extract constant" :color teal)
-                             ("a" lsp-java-add-unimplemented-methods "Add Unimplemented" :color teal)
-                             ("p" lsp-java-create-parameter "Create parameter" :color teal)
-                             ("f" lsp-java-create-field "Create field" :color teal)
-                             ("k" lsp-java-create-local "Create local" :color teal)
-                             ("m" lsp-java-extract-method "Extract" :color teal)
-                             ("i" lsp-java-add-import "Add missing import" :color teal)
-                             ))))
 
 (after! lsp-mode
   ;; Workaround for issue #3274
@@ -717,9 +752,36 @@
   (require 'lsp-pyright)
   (require 'lsp-java)
   (require 'lsp-go)
+  (require 'lsp-metals)
+  (require 'lsp-javascript)
+  (require 'lsp-haskell)
+
+  ;;(defun lsp-register-remote-client (based-on &rest args)
+  ;;  ;; Create a copy of based-on client
+  ;;  (let ((client (copy-lsp--client (gethash based-on lsp-clients))))
+  ;;    ;; Set a default server id and set remote
+  ;;    (setf (lsp--client-server-id client) (make-symbol (format "%s-remote" based-on))
+  ;;          (lsp--client-remote? client) t)
+  ;;    (cl-loop for (prop val) on args by 'cddr do
+  ;;             (let* ((slot-sym (intern (substring (symbol-name prop) 1)))
+  ;;                    (slot (ignore-error 'cl-struct-unknown-slot
+  ;;                            (cl-struct-slot-value 'lsp--client slot-sym client))))
+  ;;               (when slot
+  ;;                 (setf slot val))))
+  ;;    (lsp-register-client client)))
+
+  ;; not working currently, need to debug
+  ;;(lsp-register-remote-client
+  ;; 'ts-ls
+  ;; :new-connection (lsp-tramp-connection '("typescript-language-server" "--stdio"))
+  ;; :major-modes '(js-mode typescript-mode typescript-tsx-mode))
 
   (set-popup-rules!
     '(("^\\*lsp-help\\*" :slot -1 :vslot -1 :size #'+popup-shrink-to-fit :select t :quit t :ttl 0))))
+
+;; lsp-metals
+(setq lsp-metals-server-command "metals-emacs")
+
 
 ;; Automatically call dap-hydra when execution stopped
 (after! dap-mode
@@ -729,28 +791,36 @@
 
 (after! lsp-ui
   ;; default lsp disables it
-  (setq lsp-ui-doc-enable nil)
+  (setq lsp-ui-doc-enable t)
+
+  ;; only show documentation with mouse
+  (setq lsp-ui-doc-show-with-cursor nil)
+  (setq lsp-ui-doc-show-with-mouse t)
 
   (setq
-   ;; the max-width doesn't work for webkit
-   ;; lsp-ui-doc-use-webkit t
+   lsp-ui-doc-use-webkit t        ;; webkit renders badly for some langs
+   lsp-ui-doc-position 'at-point
 
-   ;; only when position is top or bottom
-   lsp-ui-doc-use-childframe t
-   lsp-ui-doc-alignment 'frame
-
-   ;; avoid documentation being rendered as markdown
-   ;; lsp-ui-doc-render-function 'nil
-
-   lsp-ui-doc-delay 2.0
+   lsp-ui-doc-delay 0.3
    lsp-ui-doc-header nil
    lsp-ui-doc-include-signature t
    lsp-ui-doc-max-height 60
-   lsp-ui-doc-max-width 90
-   lsp-ui-doc-position 'top
+   lsp-ui-doc-max-width 120)
 
-   lsp-ui-sideline-enable nil
-   lsp-ui-sideline-ignore-duplicate t))
+  ;; lsp-ui-sideline
+  (setq
+   lsp-ui-sideline-enable t
+   lsp-ui-sideline-delay 0.5
+   lsp-ui-sideline-show-diagnostics nil
+   lsp-ui-sideline-show-hover nil
+   lsp-ui-sideline-show-code-actions t
+   lsp-ui-sideline-ignore-duplicate t)
+
+  ;; from lsp-java
+  ;; lsp-ui does not display all of the actions on the current point (e. g "Extract constant")?
+  ;; LSP UI by default sends current line bounds for action region which breaks,
+  ;; and forces JDT server to return only "Extract method action."
+  (setq lsp-ui-sideline-update-mode 'point))
 
 ;; requires (lsp +peek) flag
 (map! :after lsp-ui-peek
@@ -770,10 +840,12 @@
 
   (setq flycheck-check-syntax-automatically '(save))
 
-  (set-popup-rules!
-    '(("^\\*Flycheck errors\\*"
-       :modeline nil :select nil :quit current
-       :side bottom :slot 9999 :vslot 9999))))
+  ;; (set-popup-rules!
+  ;;   '(("^\\*Flycheck errors\\*"
+  ;;      :modeline nil :select nil :quit current
+  ;;      :side bottom :slot 9999 :vslot 9999)))
+
+  )
 
 ;;;;;;;;; Custom functions
 (defun revert-all-no-confirm ()
@@ -808,55 +880,56 @@ Other errors while reverting a buffer are reported only as messages."
 (require 'minizinc-mode)
 (add-to-list 'auto-mode-alist '("\\.mzn\\'" . minizinc-mode))
 
-(after! proof-general
-  (require 'coq-inferior))
+;; (after! proof-general
+;;   (require 'coq-inferior))
 
 (after! org-src
   ;; ~/.doom.d/local/ob-minizinc.el
   (require 'ob-minizinc))
 
+;; Haskell
+(after! haskell
+  (after! lsp-mode
+    ;; will define elisp functions for the given lsp code actions, prefixing the
+    ;; given function names with "lsp"
+    (lsp-make-interactive-code-action wingman-fill-hole "refactor.wingman.fillHole")
+    (lsp-make-interactive-code-action wingman-case-split "refactor.wingman.caseSplit")
+    (lsp-make-interactive-code-action wingman-refine "refactor.wingman.refine")
+    (lsp-make-interactive-code-action wingman-split-func-args "refactor.wingman.spltFuncArgs")
+    (lsp-make-interactive-code-action wingman-use-constructor "refactor.wingman.useConstructor")
+
+    ;; example key bindings
+    (define-key haskell-mode-map (kbd "C-c d") #'lsp-wingman-case-split)
+    (define-key haskell-mode-map (kbd "C-c n") #'lsp-wingman-fill-hole)
+    (define-key haskell-mode-map (kbd "C-c r") #'lsp-wingman-refine)
+    (define-key haskell-mode-map (kbd "C-c c") #'lsp-wingman-use-constructor)
+    (define-key haskell-mode-map (kbd "C-c a") #'lsp-wingman-split-func-args))
+
+  ;; Disable as it is annoying when using DataKinds
+  (after! smartparens
+    (sp-local-pair 'haskell-mode "'" "'" :actions nil))
+
+  (setq haskell-process-log t)
+  (setq haskell-interactive-popup-errors nil)
+
+  (set-popup-rules!
+    '(("^\\*HS-Error\\*" :slot -1 :vslot -1 :size 10 :select nil :quit t :ttl 0))))
+
 ;; themes
-(use-package! modus-operandi-theme
+(use-package modus-themes
+  :demand t
   :init
-  ;; disabled
-  (setq modus-operandi-theme-rainbow-headings nil)
-  (setq modus-operandi-theme-proportional-fonts nil)
-  (setq modus-operandi-theme-scale-headings nil)
-  (setq modus-operandi-theme-section-headings nil)
-  ;; enabled
-  (setq modus-operandi-theme-slanted-constructs t
-        modus-operandi-theme-bold-constructs t
-        modus-operandi-theme-visible-fringes t
-        modus-operandi-theme-3d-modeline t
-        modus-operandi-theme-subtle-diffs t
-        modus-operandi-theme-org-blocks t
-        modus-operandi-theme-scale-1 1.05
-        modus-operandi-theme-scale-2 1.1
-        modus-operandi-theme-scale-3 1.15
-        modus-operandi-theme-scale-4 1.2))
-(use-package! modus-vivendi-theme
-  :init
-  ;; disabled
-  (setq modus-vivendi-theme-rainbow-headings nil)
-  (setq modus-vivendi-theme-proportional-fonts nil)
-  (setq modus-vivendi-theme-scale-headings nil)
-  (setq modus-vivendi-theme-section-headings nil)
-  ;; enabled
-  (setq modus-vivendi-theme-slanted-constructs t
-        modus-vivendi-theme-bold-constructs t
-        modus-vivendi-theme-visible-fringes t
-        modus-vivendi-theme-3d-modeline t
-        modus-vivendi-theme-subtle-diffs t
-        modus-vivendi-theme-org-blocks t
-        modus-vivendi-theme-scale-1 1.05
-        modus-vivendi-theme-scale-2 1.1
-        modus-vivendi-theme-scale-3 1.15
-        modus-vivendi-theme-scale-4 1.2))
+  ;; Load the theme files before enabling a theme
+  (modus-themes-load-themes)
+  :config
+  ;; Load the theme of your choice:
+  ;; (modus-themes-load-vivendi)
+  (modus-themes-load-operandi))
 
 ;; doom-theme
-;; (setq doom-theme 'modus-operandi)
+(setq doom-theme 'modus-operandi)
 ;; (setq doom-theme 'modus-vivendi)
-(setq doom-theme 'wheatgrass)
+;; (setq doom-theme 'doom-solarized-light)
 
 ;; disable smartparens, scrolling large org files is very slow
 ;; (remove-hook 'doom-first-buffer-hook #'smartparens-global-mode)
@@ -882,9 +955,26 @@ Other errors while reverting a buffer are reported only as messages."
 
 (use-package! package-lint)
 
+(use-package! devdocs-browser
+  :commands (devdocs-browser-open
+             devdocs-browser-open-in
+             devdocs-browser-list-docs
+             devdocs-browser-update-docs
+             devdocs-browser-install-doc
+             devdocs-browser-uninstall-doc
+             devdocs-browser-upgrade-doc
+             devdocs-browser-download-offline-data
+             devdocs-browser-remove-offline-data))
+
 ;; ws-butler
 ;; Trim extra whitespace from modified lines
 (setq ws-butler-keep-whitespace-before-point nil)
 
 ;; safe vars
 (put 'lsp-java-vmargs 'safe-local-variable (lambda (_) t))
+
+;; eager load
+(yas-minor-mode)
+
+
+(load! "indeed")

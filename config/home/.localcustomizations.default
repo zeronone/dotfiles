@@ -1,3 +1,5 @@
 
 
+# sdks
+export PATH="$HOME/sdks/flutter/bin:$PATH"
 

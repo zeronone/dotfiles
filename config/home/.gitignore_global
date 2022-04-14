@@ -31,4 +31,14 @@ __pycache__
 .pycheckers
 **.egg-info/
 
+# direnv
 .direnv/
+.envrc
+
+# emacs
+.dir-locals.el
+
+# eclipse.jdt.ls
+target/
+*.iml
+.idea
