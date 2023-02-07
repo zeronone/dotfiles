@@ -22,6 +22,11 @@
 
 (setq org-startup-options '())
 
+;; Enable native compilation
+(setq native-comp-deferred-compilation nil)
+(after! (doom-packages straight)
+  (setq straight--native-comp-available t))
+
 (doom! :input
        ;;chinese
        ;;japanese
@@ -196,9 +201,3 @@
        :config
        ;;literate
        (default +evil +bindings +smartparens))
-
-;; Enable native compilation
-(setq native-comp-deferred-compilation nil)
-(after! (doom-packages straight)
-  (setq straight--native-comp-available t))
-

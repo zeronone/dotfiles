@@ -44,24 +44,20 @@
 ;; disable  pipenv
 (package! pipenv :disable t)
 
-;; tabnine completion
-;; (package! company-tabnine)
-;; (package! company-try-hard)
-
-;; corfu instead of company
-(package! corfu)
-
 ;; package-lint
 (package! package-lint)
 
-;; direnv
-(package! direnv)
-
 ;; lsp
 (package! lsp-pyright :recipe (:host github :repo "emacs-lsp/lsp-pyright"))
-;; unpins
-(unpin! dap-mode lsp-mode lsp-pyright lsp-java lsp-ui rustic org-roam)
-;; (package! lsp-ui :recipe (:host github :repo "zeronone/lsp-ui"))
+
+;; evil
+(package! evil-motion-trainer :recipe (:host github :repo "martinbaillie/evil-motion-trainer"))
 
 ;; devdocs
 (package! devdocs-browser)
+
+;; magit
+(package! magit-delta :recipe (:host github :repo "dandavison/magit-delta"))
+
+;; unpins
+;; (unpin! dap-mode lsp-mode lsp-pyright lsp-java lsp-ui rustic org-roam)

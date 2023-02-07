@@ -12,13 +12,23 @@
 (when IS-LINUX
   (setq xclip-method 'wl-copy))
 
+;; Same as defaults, just for reference
+;; Redefining CMD to meta causes OSX specific keybindings to fail
+;; For example: s-v is bound to yank
+(when IS-MAC
+  (setq mac-command-modifier      'super
+        ns-command-modifier       'super
+        mac-option-modifier       'meta
+        ns-option-modifier        'meta
+        mac-right-option-modifier 'none
+        ns-right-option-modifier  'none))
+
 ;;
 ;; Emacs startup
 ;;
 
 ;; load all packages when in deamon mode
 (setq use-package-always-demand (daemonp))
-
 
 ;; Initial frame size
 (when window-system (set-frame-size (selected-frame) 150 50))
@@ -39,7 +49,9 @@
 ;; https://github.com/hlissner/doom-emacs/issues/5160
 (setq doom-emoji-fallback-font-families nil)
 
-;; requires
+;; Eagerly loaded libraries
+(use-package! s
+  :demand t)
 (require 's)
 (require 'dash)
 
@@ -61,10 +73,9 @@
 (setq-default user-full-name    "Arif Rezai"
               user-mail-address "me@arifrezai.com")
 
-(setq
- ;; Line numbers are pretty slow all around. The performance boost of
- ;; disabling them outweighs the utility of always keeping them on.
- display-line-numbers-type nil)
+;; Line numbers are pretty slow all around. The performance boost of
+;; disabling them outweighs the utility of always keeping them on.
+(setq display-line-numbers-type nil)
 
 ;;
 ;; Definitions
@@ -86,30 +97,28 @@
                     concat (format "%s: %s + %s = %s\n" type used free total))))
 
 ;;
-;; Eagerly loaded packages
+;; Hydra (eagerly loaded)
 ;;
-
-;; lazy load for direnv was too late
-(use-package! direnv
-  :when (executable-find "direnv")
-  :demand t
-  :mode ("\\.envrc\\'" . +direnv-rc-mode)
-  :config
-  (direnv-mode +1))
-
-(use-package! hydra)
+(use-package! hydra
+  :demand t)
 (use-package! major-mode-hydra
   :demand t
   :config
-  (map! "M-SPC" #'major-mode-hydra))
-(use-package! pretty-hydra)
+  (map! "C-c m" #'major-mode-hydra))
+(use-package! pretty-hydra
+  :demand t)
+
+;; consult
+(after! consult
+  ;; Input debounce for commands like counsel-grep
+  (setq consult-async-input-debounce 0.5))
 
 ;;
 ;; which-key
 ;;
 (after! which-key
   (setq which-key-show-early-on-C-h t)          ;; Bind C-h to show help
-  (setq which-key-idle-delay 10000)             ;; don't show
+  (setq which-key-idle-delay 0.5)             ;; don't show
   (setq which-key-idle-secondary-delay 0.05)
   (which-key-setup-side-window-right-bottom))
 
@@ -161,66 +170,99 @@
   (setq-local show-trailing-whitespace nil))
 
 ;;; :editor evil
+;; Vim (and evil) move the cursor one character back when exiting insert mode.
+;; If you prefer that it didn’t, set:
+(setq evil-move-cursor-back nil)
 (setq evil-split-window-below t
       evil-vsplit-window-right t)
-;;
-;; Keybindings
-(map!
- ;; Easier window navigation
- :n "C-h"   #'evil-window-left
- :n "C-j"   #'evil-window-down
- :n "C-k"   #'evil-window-up
- :n "C-l"   #'evil-window-right)
 
+;; HACK
+(defun +arif/insert-mode-escape (&optional interactive)
+  "By default `+evil-escape-a' is called only after `#'evil-force-normal-state'
+Which is bound to [escape] in normal mode.  We would like to also run
+`doom-escape-hook' functions when [escape] is pressed in insert mode, and
+potentially abort calling `#'evil-normal-state', if any returns non-nil value"
+  (interactive (list 'interactive))
+  (cond ;; Run all escape hooks. If any returns non-nil, then stop there.
+   ((run-hook-with-args-until-success 'doom-escape-hook) t)
+   ;; don't abort macros
+   ((or defining-kbd-macro executing-kbd-macro) nil)))
+(defun +arif/evil-insert-mode-escape-a (orig-fn &rest r)
+  "Call `+arif/insert-mode-escape' if `evil-normal-state' is called interactively."
+  (if (called-interactively-p 'any)
+    (unless (call-interactively #'+arif/insert-mode-escape)
+      (apply orig-fn r))
+    (apply orig-fn r)))
+(advice-add #'evil-normal-state :around #'+arif/evil-insert-mode-escape-a)
+
+;; FIXME: doom/escape doesn't call keyboard-quit eventually
+;; (after! evil
+;;   (general-def 'insert 'override
+;;     "ESC" #'doom/escape)
+;;   (general-def 'insert 'override
+;;     [escape] #'doom/escape))
+
+;; Avy
+(after! avy
+  (setq avy-timeout-seconds 0.2)
+  (defun avy-action-embark (pt)
+    (unwind-protect
+        (save-excursion
+          (goto-char pt)
+          (embark-act))
+      (select-window
+       (cdr (ring-ref avy-ring 0))))
+    t)
+
+  (setf (alist-get ?\; avy-dispatch-alist) 'avy-action-embark))
+
+
+;; evil motion
+(setq evil-snipe-scope 'buffer)
+(use-package! evil-motion-trainer
+  :after evil
+  :config
+
+  (emt-add-suggestion 'evil-next-line 'evil-avy-goto-char-timer)
+  (emt-add-suggestion 'evil-previous-line 'evil-avy-goto-char-timer)
+
+  ;;(global-evil-motion-trainer-mode +1)
+)
+
+
+;; Use ace-window rather than C-[hjkl]
 ;; window-select (ace-window)
-(require 'ace-window)
-(global-set-key (kbd "M-o") #'ace-window)
+(map! :map 'override "M-o" #'ace-window)
 
 ;;
 ;; Treemacs
 ;;
-
-(setq +treemacs-git-mode 'simple)
+(setq treemacs-width 35)
+(setq treemacs-user-mode-line-format 'none)
+(setq treemacs-collapse-dirs 3)
+(setq treemacs-indentation 1)
+(setq treemacs-is-never-other-window nil)
+(setq treemacs-position 'right)
+(setq treemacs-width 35)
 (after! treemacs
   ;; too slow on TRAMP connections
   (setq treemacs-eldoc-display 'nil)
+  (treemacs-git-mode -1)
+  (treemacs-filewatch-mode -1)
 
-  (setq treemacs-user-mode-line-format 'none)
-  (setq treemacs-collapse-dirs 3)
-  (setq treemacs-indentation 1)
-  (setq treemacs-is-never-other-window nil)
-  (setq treemacs-position 'right)
-  (setq treemacs-width 60))
-
-;; treemacs
-(after! treemacs-evil
-  (define-key! treemacs-mode-map
-    "h" nil
-    "l" nil)
-
-  (evil-define-key 'treemacs treemacs-mode-map (kbd "h") nil)
-  (evil-define-key 'treemacs treemacs-mode-map (kbd "l") nil)
-
-  (define-key! evil-treemacs-state-map
-    "h" nil
-    "l" nil)
-
-  (map!
-   (:after treemacs-evil
-    (:map evil-treemacs-state-map
-     "C-h" #'evil-window-left
-     "C-l" #'evil-window-right))))
+  ;; Only show a single project at a time (current project)
+  (treemacs-project-follow-mode +1))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;; lang/org
 ;;;;;;;;;;;;;;;;;;;;;;;;
-
 (setq org-directory (expand-file-name "~/Dropbox/orgs/"))
 (setq +org-dir (expand-file-name "~/Dropbox/orgs/"))
 (setq +org-export-directory (expand-file-name "~/Dropbox/orgs/.export"))
 (setq org-attach-id-dir (expand-file-name "~/Dropbox/orgs/.attach"))
 (setq org-download-image-dir (expand-file-name "~/Dropbox/orgs/.attach"))
 (setq org-roam-directory "~/Dropbox/orgs/mywiki")
+(setq org-roam-dailies-directory "~/Dropbox/orgs/journal")
 
 ;; org-journal
 (setq org-journal-file-type 'weekly)
@@ -257,6 +299,8 @@
   (puthash "python" #'ignore org-eldoc-local-functions-cache))
 
 (after! org
+  (setq org-id-link-to-org-use-id t)
+
   ;; scrolling in large org files is too slow if enabled
   (setq org-highlight-latex-and-related nil)
 
@@ -453,10 +497,9 @@
         org-agenda-include-diary t
         org-agenda-block-separator nil
         org-agenda-compact-blocks t
-        org-agenda-span 'today
+        org-agenda-span 'day
         org-agenda-start-on-weekday nil
         org-agenda-start-with-log-mode t)
-  (setq org-agenda-time-grid '((daily today require-timed) "----------------------" nil))
 
   ;; Make evil keybindings in org-super-agenda headers
   ;; https://github.com/alphapapa/org-super-agenda/issues/50#issuecomment-817432643
@@ -526,8 +569,10 @@
   (setq deft-directory "~/Dropbox/orgs")
   (setq deft-archive-directory "~/Dropbox/orgs")
 
-  (map! :map deft-mode-map
-        [escape] #'quit-window))
+  ;; TODO use doom-escape-hook
+  ;; (map! :map deft-mode-map
+  ;;       [escape] #'quit-window)
+  )
 
 (after! pdf-view
   (setq pdf-view-use-scaling t
@@ -564,6 +609,10 @@
 ;; magit
 (setq +magit-hub-enable-by-default nil)
 (setq +magit-hub-features nil)
+(use-package! magit-delta
+ :after magit
+ :config
+ (magit-delta-mode +1))
 (after! magit
   (when IS-MAC
     (setq magit-git-executable "/usr/local/bin/git"))
@@ -587,20 +636,7 @@
 ;; Completion
 
 ;; Corfu (vertico equivalent for company)
-
-(use-package! corfu
-  :demand t
-
-  :init
-  (setq corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
-  (setq corfu-auto t)                 ;; Enable auto completion
-  (setq corfu-commit-predicate nil)   ;; Do not commit selected candidates on next input
-  (setq corfu-quit-at-boundary t)     ;; Automatically quit at word boundary
-  (setq corfu-quit-no-match t)        ;; Automatically quit if there is no match
-  (setq corfu-echo-documentation t)   ;; Show documentation in the echo area
-
-  (corfu-global-mode))
-
+;; See modules/completion/corfu
 
 ;;
 ;; help
@@ -617,13 +653,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setq lsp-auto-configure t)
-(setq lsp-headerline-breadcrumb-enable t)
+(setq lsp-headerline-breadcrumb-enable nil)
 (setq lsp-modeline-code-actions-enable t)
 (setq lsp-modeline-diagnostics-enable nil)   ;; we already have flycheck in modeline
 (setq lsp-modeline-diagnostics-scope :file)
 (setq lsp-enable-dap-auto-configure t)
 (setq lsp-lens-enable t)
-(setq lsp-completion-provider :capf)
 (setq lsp-enable-semantic-highlighting nil)
 (setq lsp-enable-links t)
 (setq lsp-headerline-breadcrumb-segments '(file symbols))
@@ -649,7 +684,11 @@
 ;; Until this is fixed: https://github.com/hlissner/doom-emacs/pull/4233
 (after! lsp-mode
   (remove-hook 'lsp-lens-mode-hook #'ccls-code-lens-mode)
-  (ccls-code-lens-mode -1))
+  (add-hook! lsp-mode
+             (defun +arif/remove-ccls-lens-mode ()
+               "Deactivate ccls-lens-mode from lsp-mode"
+               (when ccls-code-lens-mode
+                 (ccls-code-lens-mode -1)))))
 
 (use-package! lsp-pyright
   :defer t)
@@ -706,8 +745,7 @@
   (setq lsp-java-content-provider-preferred "fernflower")
 
   ;; lsp-java requires JDK11
-  (setq lsp-java-java-path "/Library/Java/JavaVirtualMachines/jdk11.0.10_9.jdk/Contents/Home/bin/java"
-        lsp-java-java-path (concat (string-trim-right (shell-command-to-string "/usr/libexec/java_home -v 11")) "/bin/java")
+  (setq lsp-java-java-path (concat (string-trim-right (shell-command-to-string "/usr/libexec/java_home -v 11")) "/bin/java")
         lsp-java-import-gradle-enabled t
         lsp-java-import-maven-enabled t
         lsp-java-maven-download-sources t
@@ -741,10 +779,6 @@
   ;; Don't render documentation in minibuffer
   (setq lsp-signature-render-documentation nil)
 
-  ;; details while completion
-  (setq lsp-completion-show-detail nil)
-  (setq lsp-completion-show-kind nil)
-
   (require 'lsp-treemacs)
   (lsp-treemacs-sync-mode 1)
 
@@ -755,6 +789,7 @@
   (require 'lsp-metals)
   (require 'lsp-javascript)
   (require 'lsp-haskell)
+  (require 'lsp-rust)
 
   ;;(defun lsp-register-remote-client (based-on &rest args)
   ;;  ;; Create a copy of based-on client
@@ -840,6 +875,7 @@
 
   (setq flycheck-check-syntax-automatically '(save))
 
+
   ;; (set-popup-rules!
   ;;   '(("^\\*Flycheck errors\\*"
   ;;      :modeline nil :select nil :quit current
@@ -877,15 +913,15 @@ Other errors while reverting a buffer are reported only as messages."
   (setq rustic-lsp-server 'rust-analyzer))
 
 ;; minizinc
-(require 'minizinc-mode)
-(add-to-list 'auto-mode-alist '("\\.mzn\\'" . minizinc-mode))
+;; (require 'minizinc-mode)
+;; (add-to-list 'auto-mode-alist '("\\.mzn\\'" . minizinc-mode))
 
 ;; (after! proof-general
 ;;   (require 'coq-inferior))
 
-(after! org-src
-  ;; ~/.doom.d/local/ob-minizinc.el
-  (require 'ob-minizinc))
+;; (after! org-src
+;;   ;; ~/.doom.d/local/ob-minizinc.el
+;;   (require 'ob-minizinc))
 
 ;; Haskell
 (after! haskell
@@ -916,27 +952,25 @@ Other errors while reverting a buffer are reported only as messages."
     '(("^\\*HS-Error\\*" :slot -1 :vslot -1 :size 10 :select nil :quit t :ttl 0))))
 
 ;; themes
-(use-package modus-themes
-  :demand t
-  :init
-  ;; Load the theme files before enabling a theme
-  (modus-themes-load-themes)
-  :config
-  ;; Load the theme of your choice:
-  ;; (modus-themes-load-vivendi)
-  (modus-themes-load-operandi))
+;;(use-package modus-themes
+;;  :demand t
+;;  :init
+;;  ;; Load the theme files before enabling a theme
+;;  (modus-themes-load-themes)
+;;  :config
+;;  ;; Load the theme of your choice:
+;;  (modus-themes-load-vivendi))
+;;  ;;(modus-themes-load-operandi))
 
 ;; doom-theme
-(setq doom-theme 'modus-operandi)
-;; (setq doom-theme 'modus-vivendi)
+(setq doom-theme 'doom-gruvbox-light)
+;; (setq doom-theme 'modus-operandi)
 ;; (setq doom-theme 'doom-solarized-light)
 
 ;; disable smartparens, scrolling large org files is very slow
 ;; (remove-hook 'doom-first-buffer-hook #'smartparens-global-mode)
 
 ;; file-templates
-(use-package! s
-  :demand t)
 (defvar +private-file-templates-dir
   (expand-file-name "templates/" (file-name-directory load-file-name))
   "The path to a directory of yasnippet folders to use for file templates.")
@@ -973,8 +1007,15 @@ Other errors while reverting a buffer are reported only as messages."
 ;; safe vars
 (put 'lsp-java-vmargs 'safe-local-variable (lambda (_) t))
 
-;; eager load
-(yas-minor-mode)
+;; https://github.com/hlissner/doom-emacs-private/blob/master/config.el
+(after! emacs-everywhere
+  ;; arif: Not on linux, but good to have nevertheless
+  ;; Easier to match with a bspwm rule:
+  ;;   bspc rule -a 'Emacs:emacs-everywhere' state=floating sticky=on
+  (setq emacs-everywhere-frame-name-format "emacs-anywhere")
 
+  ;; The modeline is not useful to me in the popup window. It looks much nicer
+  ;; to hide it.
+  (remove-hook 'emacs-everywhere-init-hooks #'hide-mode-line-mode))
 
 (load! "indeed")

@@ -11,5 +11,7 @@ set backspace=indent,eol,start  " more powerful backspacing
 
 set nofixendofline
 
+nnoremap <C-o> :action Back<CR>
+
 " set NERDTree
 

@@ -37,6 +37,7 @@ __pycache__
 
 # emacs
 .dir-locals.el
+tags
 
 # eclipse.jdt.ls
 target/

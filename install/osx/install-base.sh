@@ -126,3 +126,6 @@ brew install editorconfig
 
 # groovy
 brew install groovysdk
+
+# hammerspoon
+brew install hammerspoon --cask
