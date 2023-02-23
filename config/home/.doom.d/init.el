@@ -20,6 +20,8 @@
 ;;  (setq evil-respect-visual-line-mode t) ;; sane j and k behavior
 ;;  t)
 
+
+(setq straight-disable-native-compile t)
 (setq org-startup-options '())
 
 (doom! :input

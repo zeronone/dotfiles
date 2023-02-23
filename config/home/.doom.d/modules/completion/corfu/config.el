@@ -3,11 +3,17 @@
 ;; Experimental, remove once Doom Emacs has support for corfu
 ;; Taken/modified from: https://git.sr.ht/~gagbo/doom-config/tree/master/item/modules/completion/corfu/config.el
 
+(use-package! compat
+  :demand t)
+
 (setq tab-always-indent 'complete)
 (use-package! corfu
   :hook (doom-first-buffer . global-corfu-mode)
   :init
   (setq corfu-auto nil)               ;; Enable auto completion
+
+  ;; Enable the tab-and-go style, rather than TAB selecting the current candidate
+  (setq corfu-preselect 'prompt)
   (setq corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
 
   ;; enable poupinfo
@@ -15,7 +21,6 @@
   (corfu-popupinfo-mode +1)
 
   ;; Tab-and-go options
-  (setq corfu-preselect-first nil)    ;; Auto-select first candidate
   (setq corfu-separator ?\s)          ;; Orderless field separator
   (setq corfu-quit-no-match 'separator)
   (setq corfu-quit-at-boundary 'separator)
@@ -30,8 +35,6 @@
     (add-hook! 'lsp-completion-mode-hook
       (setf (alist-get 'lsp-capf completion-category-defaults) '((styles . (orderless))))))
 
-  ;; Enable the tab-and-go style, rather than TAB selecting the current candidate
-  ;; Note: corfu-preselect-first needs to be nil, for tab-and-go
   :config
   (defun +arif/corfu-quit-completion-in-region ()
     "Same as implementation of corfu-quit"
@@ -40,6 +43,13 @@
         t))
   (add-hook! 'doom-escape-hook :depth -100 #'+arif/corfu-quit-completion-in-region)
 
+  ;; keymaps
+  (defun corfu-move-to-minibuffer ()
+    (interactive)
+    (let ((completion-extra-properties corfu--extra)
+          completion-cycle-threshold completion-cycling)
+      (apply #'consult-completion-in-region completion-in-region--data)))
+
   (map! "C-SPC" #'completion-at-point
         :map corfu-map
         "C-SPC" #'corfu-insert-separator
@@ -47,7 +57,10 @@
         [tab] #'corfu-next
         "S-TAB" #'corfu-previous
         [backtab] #'corfu-previous
-        [escape] #'doom/escape))
+        "M-m" #'corfu-move-to-minibuffer
+        [escape] #'doom/escape)
+
+  )
 
 
 ;; Credits: https://github.com/XzoRit/home/blob/21463806fec8161251471c3f5d63d43b56a6ef95/.emacs

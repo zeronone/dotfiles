@@ -1,7 +1,9 @@
 #!/bin/sh
 
 # install brew
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+# And add to ~/.zshrc
+# /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
 
 ## Terminal
 # install oh-my-zsh
@@ -22,6 +24,12 @@ ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH/themes/spa
 # install sdkman
 #curl -s https://get.sdkman.io | bash
 
+# install fonts
+brew tap homebrew/cask-fonts
+brew install --cask font-iosevka
+brew install --cask font-cascadia-code-pl
+
+
 # Tools
 brew install git vim
 brew install stow
@@ -34,41 +42,14 @@ brew install --cask emacs-app
 # ripgrep installation is in install-rust-deps.sh
 brew install the_silver_searcher
 
-# iOS
-#brew install carthage
-#gem install cocoapods --user-install
-
 # fd (faster find)
-brew install fd
+# brew install fd
 
 # ip
 brew install iproute2mac
 
-# osquery
-#brew install osquery
-
-# wireshark and tshark
-brew cask install wireshark
-
 # libvterm
 brew install libvterm
-
-# mtr
-brew install mtr
-sudo mkdir -p /usr/local/sbin
-sudo chown "$(whoami)" /usr/local/sbin
-brew link mtr
-
-# sqlite3 (emacs + Dash docsets)
-brew install sqlite3
-
-# install db beaver
-brew cask install dbeaver-community
-
-# k8s
-brew install kubernetes-cli
-brew cask install minikube
-brew install kubernetes-helm
 
 # jq
 brew install jq
@@ -76,13 +57,7 @@ brew install jq
 # direnv
 curl -sfL https://direnv.net/install.sh | bash
 
-brew install aspell
-brew install ispell
-
 brew install fzf
-
-# cross platform prompt written in rust
-brew install starship
 
 # podman
 brew cask install podman
@@ -124,8 +99,9 @@ brew install ccls
 # editorconfig
 brew install editorconfig
 
-# groovy
-brew install groovysdk
-
 # hammerspoon
-brew install hammerspoon --cask
+# brew install hammerspoon --cask
+
+# cmake
+brew install cmake
+

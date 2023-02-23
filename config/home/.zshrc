@@ -2,6 +2,13 @@
 # Uncomment for profiling
 # set -xv
 
+# Should be at the top
+# Nix
+if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+    . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+fi
+# End Nix
+
 
 # python
 # locale
@@ -190,7 +197,7 @@ export PATH=$(consolidate-path.sh "$PATH")
 eval "$(direnv hook zsh)"
 
 ### CS
-eval "$(cs install --env)"
+### eval "$(cs install --env)"
 
 ### cargo
 . "$HOME/.cargo/env"
@@ -210,3 +217,4 @@ if [ -e "${INDEED_ENV_DIR}/etc/indeedrc" ]; then
     . "${INDEED_ENV_DIR}/etc/indeedrc"
 fi
 # END env Setup -- Managed by Ansible DO NOT EDIT.
+

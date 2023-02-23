@@ -612,10 +612,7 @@ potentially abort calling `#'evil-normal-state', if any returns non-nil value"
 (use-package! magit-delta
  :after magit
  :config
- (magit-delta-mode +1))
-(after! magit
-  (when IS-MAC
-    (setq magit-git-executable "/usr/local/bin/git"))
+ (magit-delta-mode +1)
 
   ;; https://jakemccrary.com/blog/2020/11/14/speeding-up-magit/
   ;; (remove-hook 'magit-status-sections-hook 'magit-insert-tags-header)
@@ -791,6 +788,14 @@ potentially abort calling `#'evil-normal-state', if any returns non-nil value"
   (require 'lsp-haskell)
   (require 'lsp-rust)
 
+  ;; make sure to run (dap-cpptools-setup)
+  (setq lsp-rust-analyzer-debug-lens-extra-dap-args
+        `(:MIMode "lldb"
+          :miDebuggerPath ,(f-join doom-local-dir "etc/dap-extension/vscode/cpptools/extension/debugAdapters/lldb-mi/bin/lldb-mi")
+          :stopAtEntry t
+          :externalConsole
+          :json-false))
+
   ;;(defun lsp-register-remote-client (based-on &rest args)
   ;;  ;; Create a copy of based-on client
   ;;  (let ((client (copy-lsp--client (gethash based-on lsp-clients))))
@@ -821,6 +826,8 @@ potentially abort calling `#'evil-normal-state', if any returns non-nil value"
 ;; Automatically call dap-hydra when execution stopped
 (after! dap-mode
   (dap-auto-configure-mode 1)
+
+  (require 'dap-cpptools)
   (add-hook 'dap-stopped-hook
           (lambda (_arg) (call-interactively #'dap-hydra))))
 

@@ -32,7 +32,7 @@ $ ./install-vim-config.sh
 
 # Install EMACS config
 $ cd $HOME
-$ git clone https://github.com/hlissner/doom-emacs.git $HOME/.emacs.d --depth 1
+$ git clone --recursive git@github.com:doomemacs/doomemacs.git $HOME/.emacs.d
 $ cd $HOME/.emacs.d
 $ doom install
 # Consider M-x install-all-fonts && M-x unicode-fonts-setup
